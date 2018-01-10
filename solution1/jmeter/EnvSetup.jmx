@@ -26,7 +26,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="hybridRole" elementType="Argument">
             <stringProp name="Argument.name">hybridRole</stringProp>
-            <stringProp name="Argument.value">hybridRoletest4</stringProp>
+            <stringProp name="Argument.value">hybridRole</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="publisherRole" elementType="Argument">
@@ -237,6 +237,235 @@
           <boolProp name="Assertion.assume_success">false</boolProp>
           <intProp name="Assertion.test_type">16</intProp>
         </ResponseAssertion>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Change tenant-conf.json" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">4</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1515577053000</longProp>
+        <longProp name="ThreadGroup.end_time">1515577053000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <UserParameters guiclass="UserParametersGui" testclass="UserParameters" testname="User Parameters" enabled="true">
+          <collectionProp name="UserParameters.names">
+            <stringProp name="-265713450">username</stringProp>
+            <stringProp name="1216985755">password</stringProp>
+          </collectionProp>
+          <collectionProp name="UserParameters.thread_values">
+            <collectionProp name="1955180045">
+              <stringProp name="146731693">Administrator</stringProp>
+              <stringProp name="-904517469">Admin123</stringProp>
+            </collectionProp>
+            <collectionProp name="1307957775">
+              <stringProp name="-1327510321">jane@finance.abc.com</stringProp>
+              <stringProp name="-1827185084">jane123</stringProp>
+            </collectionProp>
+            <collectionProp name="1419879324">
+              <stringProp name="1798071416">jane@core.abc.com</stringProp>
+              <stringProp name="-1827185084">jane123</stringProp>
+            </collectionProp>
+            <collectionProp name="1643984820">
+              <stringProp name="-999896507">jane@operations.abc.com</stringProp>
+              <stringProp name="-1827185084">jane123</stringProp>
+            </collectionProp>
+          </collectionProp>
+          <boolProp name="UserParameters.per_iteration">false</boolProp>
+        </UserParameters>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Update tenant-conf.json" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;EnableMonetization&quot; : false,&#xd;
+  &quot;IsUnlimitedTierPaid&quot; : false,&#xd;
+  &quot;ExtensionHandlerPosition&quot;: &quot;bottom&quot;,&#xd;
+  &quot;RESTAPIScopes&quot;: {&#xd;
+    &quot;Scope&quot;: [&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:api_publish&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin,Internal/publisher,hybridRole,publisherRole&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:api_create&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin,Internal/creator,hybridRole&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:api_view&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin,Internal/publisher,Internal/creator,hybridRole,publisherRole&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:subscribe&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin,Internal/subscriber,subscriberRole,hybridRole&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:tier_view&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin,Internal/publisher,Internal/creator&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:tier_manage&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:bl_view&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:bl_manage&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:subscription_view&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin,Internal/creator&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:subscription_block&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin,Internal/creator&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:mediation_policy_view&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:mediation_policy_create&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:api_workflow&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      }&#xd;
+    ]&#xd;
+  },&#xd;
+  &quot;NotificationsEnabled&quot;:&quot;false&quot;,&#xd;
+  &quot;Notifications&quot;:[{&#xd;
+    &quot;Type&quot;:&quot;new_api_version&quot;,&#xd;
+    &quot;Notifiers&quot; :[{&#xd;
+      &quot;Class&quot;:&quot;org.wso2.carbon.apimgt.impl.notification.NewAPIVersionEmailNotifier&quot;,&#xd;
+      &quot;ClaimsRetrieverImplClass&quot;:&quot;org.wso2.carbon.apimgt.impl.token.DefaultClaimsRetriever&quot;,&#xd;
+      &quot;Title&quot;: &quot;Version $2 of $1 Released&quot;,&#xd;
+      &quot;Template&quot;: &quot; &lt;html&gt; &lt;body&gt; &lt;h3 style=\&quot;color:Black;\&quot;&gt;We’re happy to announce the arrival of the next major version $2 of $1 API which is now available in Our API Store.&lt;/h3&gt;&lt;a href=\&quot;https://localhost:9443/store\&quot;&gt;Click here to Visit WSO2 API Store&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;&quot;&#xd;
+    }]&#xd;
+  }&#xd;
+  ],&#xd;
+  &quot;DefaultRoles&quot; : {&#xd;
+    &quot;PublisherRole&quot; : {&#xd;
+      &quot;CreateOnTenantLoad&quot; : true,&#xd;
+      &quot;RoleName&quot; : &quot;Internal/publisher&quot;&#xd;
+    },&#xd;
+    &quot;CreatorRole&quot; : {&#xd;
+      &quot;CreateOnTenantLoad&quot; : true,&#xd;
+      &quot;RoleName&quot; : &quot;Internal/creator&quot;&#xd;
+    },&#xd;
+    &quot;SubscriberRole&quot; : {&#xd;
+      &quot;CreateOnTenantLoad&quot; : true&#xd;
+    }&#xd;
+  }&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${host}</stringProp>
+          <stringProp name="HTTPSampler.port">${port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/resource/1.0.0/artifact/_system/config/apimgt/applicationdata/tenant-conf.json</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Basic ${encoded_ClientCredentials}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Media-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49590">204</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">16</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="cacheKey"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters">username,password</stringProp>
+            <stringProp name="script">import org.apache.commons.codec.binary.Base64;
+
+String forEncoding = vars.get(&quot;username&quot;) + &quot;:&quot; + vars.get(&quot;password&quot;);
+log.info(&quot;Username: &quot; + vars.get(&quot;username&quot;));
+log.info(&quot;Password: &quot; + vars.get(&quot;password&quot;));
+byte[] encoded_ClientCredentials = Base64.encodeBase64(forEncoding.getBytes());
+vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredentials));</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
         <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Hybrid Users in Tenants" enabled="false">
