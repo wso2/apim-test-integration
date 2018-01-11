@@ -792,7 +792,7 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">apid;apiname</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.id;$.name</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers">1;</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1;1</stringProp>
             <stringProp name="JSONPostProcessor.defaultValues">NOTFOUND;NOTFOUND</stringProp>
           </JSONPostProcessor>
           <hashTree/>
