@@ -1262,8 +1262,8 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">5</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <stringProp name="ThreadGroup.num_threads">6</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">120</stringProp>
         <longProp name="ThreadGroup.start_time">1515150848000</longProp>
         <longProp name="ThreadGroup.end_time">1515150848000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -1343,6 +1343,18 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="1039801451">all_tenants</stringProp>
               <stringProp name="3392903">null</stringProp>
               <stringProp name="414036517">/mobile/{id}</stringProp>
+              <stringProp name="-1503047521">/sample-data-backend/rservice/mobilepriceservice/</stringProp>
+            </collectionProp>
+            <collectionProp name="1669253384">
+              <stringProp name="146731693">Administrator</stringProp>
+              <stringProp name="-904517469">Admin123</stringProp>
+              <stringProp name="1078214558">QWRtaW5pc3RyYXRvcjpBZG1pbjEyMw==</stringProp>
+              <stringProp name="340114841">MobilePouch</stringProp>
+              <stringProp name="106856763">pouch</stringProp>
+              <stringProp name="-1924094359">PUBLIC</stringProp>
+              <stringProp name="951806716">specific_tenants</stringProp>
+              <stringProp name="2914">[]</stringProp>
+              <stringProp name="587509290">/pouch/{id}</stringProp>
               <stringProp name="-1503047521">/sample-data-backend/rservice/mobilepriceservice/</stringProp>
             </collectionProp>
           </collectionProp>
@@ -1507,11 +1519,15 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
           <boolProp name="CookieManager.clearEachIteration">false</boolProp>
         </CookieManager>
         <hashTree/>
-        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
           <boolProp name="displayJMeterProperties">true</boolProp>
           <boolProp name="displayJMeterVariables">true</boolProp>
           <boolProp name="displaySystemProperties">false</boolProp>
         </DebugSampler>
+        <hashTree/>
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="false">
+          <stringProp name="ConstantTimer.delay">300</stringProp>
+        </ConstantTimer>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create API" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -1587,6 +1603,7 @@ def task_api_id;
 def stock_api_id;
 def emp_api_id;
 def mobile_api_id;
+def pouch_api_id;
 def api_name = vars.get(&quot;apiname&quot;);
 def aid = vars.get(&quot;apid&quot;);
 
@@ -1616,6 +1633,11 @@ else if (api_name.equals(&quot;PhonePrice&quot;)){
 	mobile_api_id = aid;
 	props.put(&quot;mobileapiid&quot;, mobile_api_id);
 	log.info(&quot;Mobile Price Prop:&quot; + props.get(&quot;mobileapiid&quot;));
+}
+else if (api_name.equals(&quot;MobilePouch&quot;)){
+	pouch_api_id = aid;
+	props.put(&quot;pouchapiid&quot;, pouch_api_id);
+	log.info(&quot;Mobile Pouch Prop:&quot; + props.get(&quot;pouchapiid&quot;));
 }
 
 
@@ -1826,11 +1848,11 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
           <collectionProp name="Arguments.arguments">
             <elementProp name="appName" elementType="Argument">
               <stringProp name="Argument.name">appName</stringProp>
-              <stringProp name="Argument.value">ChathAppTest_1</stringProp>
+              <stringProp name="Argument.value">TestApplication</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
-            <elementProp name="maxTestCases" elementType="Argument">
-              <stringProp name="Argument.name">maxTestCases</stringProp>
+            <elementProp name="maxIterations" elementType="Argument">
+              <stringProp name="Argument.name">maxIterations</stringProp>
               <stringProp name="Argument.value">4</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
@@ -1844,7 +1866,7 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
         <hashTree/>
         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Authenticate and create apps" enabled="true">
           <boolProp name="LoopController.continue_forever">true</boolProp>
-          <stringProp name="LoopController.loops">${maxTestCases}</stringProp>
+          <stringProp name="LoopController.loops">${maxIterations}</stringProp>
         </LoopController>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
@@ -1856,7 +1878,7 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <boolProp name="recycle">false</boolProp>
             <stringProp name="shareMode">shareMode.all</stringProp>
             <boolProp name="stopThread">true</boolProp>
-            <stringProp name="variableNames">username,password,auth,expectedRe_Salary,expectedRe_Stock,expectedRe_Tasks,expectedRe_Emp,expectedRe_Price</stringProp>
+            <stringProp name="variableNames">username,password,auth,expectedRe_Salary,expectedRe_Stock,expectedRe_Tasks,expectedRe_Emp,expectedRe_Price,expectedRe_Pouch</stringProp>
           </CSVDataSet>
           <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Obtain client id and secret" enabled="true">
@@ -2380,7 +2402,68 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
             <hashTree/>
             <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
               <collectionProp name="Asserion.test_strings">
-                <stringProp name="-399257551">${expectedRe_Price}</stringProp>
+                <stringProp name="-401670529">${expectedRe_Pouch}</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">16</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create subscription - Mobile Pouch API" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+    &quot;tier&quot;: &quot;Unlimited&quot;,&#xd;
+    &quot;apiIdentifier&quot;: &quot;${__P(pouchapiid)}&quot;,&#xd;
+    &quot;applicationId&quot;: &quot;${__P(application_id_no)}&quot;&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/store/v0.11/subscriptions</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Bearer ${access_token_sub}</stringProp>
+                </elementProp>
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">application_id</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.applicationId</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+              <stringProp name="Sample.scope">all</stringProp>
+              <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="-401670529">${expectedRe_Pouch}</stringProp>
               </collectionProp>
               <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
               <boolProp name="Assertion.assume_success">false</boolProp>
