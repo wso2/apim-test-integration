@@ -19,7 +19,7 @@ Transferring contracts with app developers to newer versions.
 
 Covered Automations:
 
-Positive 
+Positive  
 
 Management Console
 
@@ -65,5 +65,6 @@ Need to configure API-M_HOME/repository/conf/output-event-adapters.xml file unde
        <property key="mail.smtp.password">password</property>
        <property key="mail.smtp.host">smtp.gmail.com</property>
        <property key="mail.smtp.port">587</property>
+
 
 If you are using a Google mail account, note that Google has restricted third-party apps and less secure apps from sending emails by default. Therefore, you need to configure your account to disable this restriction.
