@@ -2,19 +2,18 @@
 
 **This repository contains jmeter scripts created for APIM solution 06 described here[1]**
 
-Basically following scripts covering the API governance solution with ...
-scripts will be able to test :
+Basically following scripts covering the API governance solution with using sample implemented in apim scenario-samples and throttling policy features.
+By using the scripts we will be able to test :
 - Subscriber application
-- Throttling requests - API level/ Application level/ Subscription tiers
+- Throttling requests - API level/ Resource level/ Application level/ Subscription tiers
 - Analytics - Relevant Publisher/ Store analytics
 - Some load to verify more on analytics
 
-Scrips available:
+Scrips available :
 
 *01-Solution-06-ApplicationLevelThrottling.jmx*
-
-
-*02-Solution-06-RemoveAPIsApps.jmx*
+*02-Solution-06-ResourceLevelThrottling.jmx*
+*03-Solution-06-RemoveAPIsApps.jmx*
 
 
 
