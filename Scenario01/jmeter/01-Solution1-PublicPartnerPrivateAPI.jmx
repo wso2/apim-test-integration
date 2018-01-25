@@ -317,6 +317,10 @@
       {&#xd;
         &quot;Name&quot;: &quot;apim:api_workflow&quot;,&#xd;
         &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:app_owner_change&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
       }&#xd;
     ]&#xd;
   },&#xd;
@@ -2263,7 +2267,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">3</stringProp>
+        <stringProp name="ThreadGroup.num_threads">4</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1515587607000</longProp>
         <longProp name="ThreadGroup.end_time">1515587607000</longProp>
@@ -2293,6 +2297,11 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <stringProp name="-999896507">jane@operations.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
               <stringProp name="1482638565">amFuZUBvcGVyYXRpb25zLmFiYy5jb206amFuZTEyMw==</stringProp>
+            </collectionProp>
+            <collectionProp name="-1435345175">
+              <stringProp name="146731693">Administrator</stringProp>
+              <stringProp name="-904517469">Admin123</stringProp>
+              <stringProp name="1078214558">QWRtaW5pc3RyYXRvcjpBZG1pbjEyMw==</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -3991,6 +4000,10 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
       },&#xd;
       {&#xd;
         &quot;Name&quot;: &quot;apim:api_workflow&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:app_owner_change&quot;,&#xd;
         &quot;Roles&quot;: &quot;admin&quot;&#xd;
       }&#xd;
     ]&#xd;

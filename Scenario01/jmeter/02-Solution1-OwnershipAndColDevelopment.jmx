@@ -129,6 +129,10 @@
       {&#xd;
         &quot;Name&quot;: &quot;apim:api_workflow&quot;,&#xd;
         &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:app_owner_change&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
       }&#xd;
     ]&#xd;
   },&#xd;
@@ -496,7 +500,7 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
           </hashTree>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create and Publish APIs - Admin user" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create and Publish APIs" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -565,15 +569,15 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="1954193762">[&quot;testRole1&quot;,&quot;testRole2&quot;,&quot;testRole3&quot;]</stringProp>
               <stringProp name="-812190629">RESTRICTED</stringProp>
             </collectionProp>
-            <collectionProp name="-1199342823">
+            <collectionProp name="-587778536">
               <stringProp name="-1760199625">testCreator1</stringProp>
               <stringProp name="665276600">testCreator123</stringProp>
-              <stringProp name="340114841">MobilePouch</stringProp>
-              <stringProp name="106856763">pouch</stringProp>
+              <stringProp name="-840354521">MobileTestPouch</stringProp>
+              <stringProp name="-995381171">pouchtest</stringProp>
               <stringProp name="-1924094359">PUBLIC</stringProp>
               <stringProp name="1039801451">all_tenants</stringProp>
               <stringProp name="3392903">null</stringProp>
-              <stringProp name="587509290">/pouch/{id}</stringProp>
+              <stringProp name="-1870439307">/test/{id}</stringProp>
               <stringProp name="-67861311">/sample-data-backend/rservice/taskservice/</stringProp>
               <stringProp name="1475208495">[&quot;testRole1&quot;,&quot;testRole2&quot;]</stringProp>
               <stringProp name="-812190629">RESTRICTED</stringProp>
@@ -1006,7 +1010,7 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
         <stringProp name="ConstantTimer.delay">300</stringProp>
       </ConstantTimer>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="View APis - Admin created" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="View APis" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -2053,6 +2057,10 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
       },&#xd;
       {&#xd;
         &quot;Name&quot;: &quot;apim:api_workflow&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:app_owner_change&quot;,&#xd;
         &quot;Roles&quot;: &quot;admin&quot;&#xd;
       }&#xd;
     ]&#xd;
