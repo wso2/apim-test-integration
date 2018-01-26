@@ -37,6 +37,11 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
+      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Cache Invalidate Timer" enabled="true">
+        <stringProp name="TestPlan.comments">This will delay test execution till the default cache is invalidated</stringProp>
+        <stringProp name="ConstantTimer.delay">900000</stringProp>
+      </ConstantTimer>
+      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Add custom in sequence" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">

@@ -47,6 +47,11 @@
         <boolProp name="CookieManager.clearEachIteration">false</boolProp>
       </CookieManager>
       <hashTree/>
+      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Cache invalidate timeout" enabled="true">
+        <stringProp name="ConstantTimer.delay">900000</stringProp>
+        <stringProp name="TestPlan.comments">This will delay the script run by 15 min till the default cache invalidation period</stringProp>
+      </ConstantTimer>
+      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Change tenant-conf.json" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
