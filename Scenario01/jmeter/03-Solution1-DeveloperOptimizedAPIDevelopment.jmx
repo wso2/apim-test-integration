@@ -164,9 +164,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -375,7 +375,7 @@ String forEncoding = vars.get(&quot;username&quot;) + &quot;:&quot; + vars.get(&
 log.info(&quot;Username: &quot; + vars.get(&quot;username&quot;));
 log.info(&quot;Password: &quot; + vars.get(&quot;password&quot;));
 byte[] encoded_ClientCredentials = Base64.encodeBase64(forEncoding.getBytes());
-vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredentials));</stringProp>
+vars.put(&quot;auth&quot;, new String(encoded_ClientCredentials));</stringProp>
             <stringProp name="scriptLanguage">groovy</stringProp>
           </JSR223PreProcessor>
           <hashTree/>
@@ -830,7 +830,7 @@ String forEncoding = vars.get(&quot;username&quot;) + &quot;:&quot; + vars.get(&
 log.info(&quot;Username: &quot; + vars.get(&quot;username&quot;));
 log.info(&quot;Password: &quot; + vars.get(&quot;password&quot;));
 byte[] encoded_ClientCredentials = Base64.encodeBase64(forEncoding.getBytes());
-vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredentials));</stringProp>
+vars.put(&quot;auth&quot;, new String(encoded_ClientCredentials));</stringProp>
             <stringProp name="scriptLanguage">groovy</stringProp>
           </JSR223PreProcessor>
           <hashTree/>
@@ -1078,7 +1078,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="-2144068456">
+            <collectionProp name="-1483828233">
               <stringProp name="857398781">${__property(adminusername)}</stringProp>
               <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
@@ -1159,7 +1159,7 @@ String forEncoding = vars.get(&quot;username&quot;) + &quot;:&quot; + vars.get(&
 log.info(&quot;Username: &quot; + vars.get(&quot;username&quot;));
 log.info(&quot;Password: &quot; + vars.get(&quot;password&quot;));
 byte[] encoded_ClientCredentials = Base64.encodeBase64(forEncoding.getBytes());
-vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredentials));</stringProp>
+vars.put(&quot;auth&quot;, new String(encoded_ClientCredentials));</stringProp>
             <stringProp name="scriptLanguage">groovy</stringProp>
           </JSR223PreProcessor>
           <hashTree/>
@@ -1431,7 +1431,7 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="-2144068456">
+            <collectionProp name="-1483828233">
               <stringProp name="857398781">${__property(adminusername)}</stringProp>
               <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
@@ -1829,7 +1829,7 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="-2144068456">
+            <collectionProp name="-1483828233">
               <stringProp name="857398781">${__property(adminusername)}</stringProp>
               <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
