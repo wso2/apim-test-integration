@@ -1202,9 +1202,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="414036517">/mobile/{id}</stringProp>
               <stringProp name="-1503047521">/sample-data-backend/rservice/mobilepriceservice/</stringProp>
             </collectionProp>
-            <collectionProp name="2047535460">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="1138291189">
+              <stringProp name="146731693">${__property(adminusername)}</stringProp>
+              <stringProp name="-904517469">${__property(adminpassword)}</stringProp>
               <stringProp name="340114841">MobilePouch</stringProp>
               <stringProp name="106856763">pouch</stringProp>
               <stringProp name="-1924094359">PUBLIC</stringProp>
