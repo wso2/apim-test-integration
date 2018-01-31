@@ -33,7 +33,7 @@ Register and generate and token
 Create API with Version 1.0.0
 API Migration API Export
 Change API state from Create to Publish for API Version 1.0.0
-Change API Version 
+API Versioning 
 
 API Subscriber
 
@@ -45,7 +45,7 @@ Create subscription
 
 API Publisher
 
-Change new API state from create to publish
+Change versioned API state from create to publish
 
 Terminate Tests
 Unsubscribe Application
@@ -56,15 +56,15 @@ Delete new API
 
 Configurations
 
-Need to download Governance registry 5.4.0 and copy resource.war from G-Reg/repository/deployment/server/webapps to APIM-Home/repository/deployment/server/webapps. This is required to support Registry REST APIs by APIM
-Need to Copy the downloaded api-import-export-2.1.0-v3.war file to the APIM_HOME/repository/deployment/server/webapps folder.
-Need to configure API-M_HOME/repository/conf/output-event-adapters.xml file under the <adapterConfig type="email"> section as below
+Need to download Governance registry 5.4.0 and copy resource.war from G-Reg/repository/deployment/server/webapps to APIM-Home/repository/deployment/server/webapps. Then restart APIM server.This is required to support Registry REST APIs by APIM. But from APIM 2.1.0 update 7 onwards due to a spring framework update done resource.war is not supported. Therefore as a workaround untill a proper fix is given after deploying resource.war web app copy the springframework 3.0.7 .jars (7 jars) from /APIM/APIM220/wso2am-2.1.0-update6/lib/runtimes/cxf to /wso2am-2.1.0-update8/repository/deployment/server/webapps/resource/WEB-INF/lib folder
 
-<property key="mail.smtp.from">dewmi123455@gmail.com</property>
-       <property key="mail.smtp.user">dewmi123455</property>
-       <property key="mail.smtp.password">password</property>
-       <property key="mail.smtp.host">smtp.gmail.com</property>
-       <property key="mail.smtp.port">587</property>
+Need to configure API-M_HOME/repository/conf/output-event-adapters.xml file under the adapterConfig type="email" section as below
+
+       property key="mail.smtp.from">dewmi123455@gmail.com
+       property key="mail.smtp.user">dewmi123455
+       property key="mail.smtp.password">password
+       property key="mail.smtp.host">smtp.gmail.com
+       property key="mail.smtp.port">587
 
 
 If you are using a Google mail account, note that Google has restricted third-party apps and less secure apps from sending emails by default. Therefore, you need to configure your account to disable this restriction.
