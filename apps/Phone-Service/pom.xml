@@ -26,23 +26,30 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.wso2.apimtest</groupId>
-    <artifactId>APIMTestClient</artifactId>
+    <groupId>org.phone</groupId>
+    <artifactId>Phone-Service</artifactId>
     <version>0.1-SNAPSHOT</version>
     <name>WSO2 MSF4J Microservice</name>
 
 
     <dependencies>
-            <dependency>
+    <!-- Uncomment the following if you want to enable metrics & monitoring -->
+    <!--
+    <dependency>
+       <groupId>org.wso2.msf4j</groupId>
+       <artifactId>msf4j-analytics</artifactId>
+    </dependency>
+    -->
+        <dependency>
                 <groupId>org.wso2</groupId>
-                <artifactId>org.wso2.client.PizzaShackAPI</artifactId>
+                <artifactId>org.wso2.client.AppDevelopmentAPI</artifactId>
                 <version>1.0.0</version>
                 <scope>compile</scope>
-            </dependency>
+        </dependency>
     </dependencies>
 
     <properties>
-        <microservice.mainClass>org.wso2.apimtest.Application</microservice.mainClass>
+        <microservice.mainClass>org.phone.service.Application</microservice.mainClass>
     </properties>
 
 </project>

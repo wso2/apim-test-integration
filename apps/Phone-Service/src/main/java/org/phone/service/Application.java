@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.apimtest;
+package org.phone.service;
 
 import org.wso2.msf4j.MicroservicesRunner;
 
@@ -26,7 +26,7 @@ import org.wso2.msf4j.MicroservicesRunner;
 public class Application {
     public static void main(String[] args) {
         new MicroservicesRunner()
-                .deploy(new HelloService())
+                .deploy(new PhoneOrder())
                 .start();
     }
 }
