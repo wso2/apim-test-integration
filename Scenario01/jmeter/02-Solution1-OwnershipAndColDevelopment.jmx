@@ -9,17 +9,27 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="host" elementType="Argument">
             <stringProp name="Argument.name">host</stringProp>
-            <stringProp name="Argument.value">localhost</stringProp>
+            <stringProp name="Argument.value">${__property(serverHost)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="port" elementType="Argument">
             <stringProp name="Argument.name">port</stringProp>
-            <stringProp name="Argument.value">9443</stringProp>
+            <stringProp name="Argument.value">${__property(serverPort)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="servletPort" elementType="Argument">
             <stringProp name="Argument.name">servletPort</stringProp>
-            <stringProp name="Argument.value">8243</stringProp>
+            <stringProp name="Argument.value">${__property(servletPort)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="tomcathost" elementType="Argument">
+            <stringProp name="Argument.name">tomcathost</stringProp>
+            <stringProp name="Argument.value">${__property(tomcatHost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="tomcatport" elementType="Argument">
+            <stringProp name="Argument.name">tomcatport</stringProp>
+            <stringProp name="Argument.value">${__property(tomcatPort)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -27,6 +37,16 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
+      <CacheManager guiclass="CacheManagerGui" testclass="CacheManager" testname="HTTP Cache Manager" enabled="true">
+        <boolProp name="clearEachIteration">true</boolProp>
+        <boolProp name="useExpires">false</boolProp>
+      </CacheManager>
+      <hashTree/>
+      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+        <collectionProp name="CookieManager.cookies"/>
+        <boolProp name="CookieManager.clearEachIteration">false</boolProp>
+      </CookieManager>
+      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Change tenant-conf.json" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -39,18 +59,25 @@
         <longProp name="ThreadGroup.end_time">1515577053000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="ThreadGroup.delay">900000</stringProp>
       </ThreadGroup>
       <hashTree>
+        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Test Execution Delay Till Cache Invalidation" enabled="true">
+          <intProp name="ActionProcessor.action">1</intProp>
+          <intProp name="ActionProcessor.target">0</intProp>
+          <stringProp name="ActionProcessor.duration">900000</stringProp>
+          <stringProp name="TestPlan.comments">This will delay </stringProp>
+        </TestAction>
+        <hashTree/>
         <UserParameters guiclass="UserParametersGui" testclass="UserParameters" testname="User Parameters" enabled="true">
           <collectionProp name="UserParameters.names">
             <stringProp name="-265713450">username</stringProp>
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -118,6 +145,10 @@
       },&#xd;
       {&#xd;
         &quot;Name&quot;: &quot;apim:api_workflow&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:app_owner_change&quot;,&#xd;
         &quot;Roles&quot;: &quot;admin&quot;&#xd;
       }&#xd;
     ]&#xd;
@@ -229,9 +260,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -358,9 +389,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -486,7 +517,7 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
           </hashTree>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create and Publish APIs - Admin user" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create and Publish APIs" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -516,9 +547,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="798502745">accessControl</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1181233728">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="892752790">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
               <stringProp name="2131966200">SalaryDetails</stringProp>
               <stringProp name="-909719094">salary</stringProp>
               <stringProp name="-1924094359">PUBLIC</stringProp>
@@ -529,9 +560,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="148214205">[&quot;testRole1&quot;]</stringProp>
               <stringProp name="-812190629">RESTRICTED</stringProp>
             </collectionProp>
-            <collectionProp name="1837502559">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="1549021621">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
               <stringProp name="343028596">MobileStock</stringProp>
               <stringProp name="109770518">stock</stringProp>
               <stringProp name="-1924094359">PUBLIC</stringProp>
@@ -542,9 +573,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="-1312206031">[&quot;testRole2&quot;,&quot;testRole3&quot;]</stringProp>
               <stringProp name="-812190629">RESTRICTED</stringProp>
             </collectionProp>
-            <collectionProp name="-1767187511">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-2055668449">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
               <stringProp name="1586670657">MaintainceTasks</stringProp>
               <stringProp name="110132110">tasks</stringProp>
               <stringProp name="-1924094359">PUBLIC</stringProp>
@@ -555,15 +586,15 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="1954193762">[&quot;testRole1&quot;,&quot;testRole2&quot;,&quot;testRole3&quot;]</stringProp>
               <stringProp name="-812190629">RESTRICTED</stringProp>
             </collectionProp>
-            <collectionProp name="-1199342823">
+            <collectionProp name="-587778536">
               <stringProp name="-1760199625">testCreator1</stringProp>
               <stringProp name="665276600">testCreator123</stringProp>
-              <stringProp name="340114841">MobilePouch</stringProp>
-              <stringProp name="106856763">pouch</stringProp>
+              <stringProp name="-840354521">MobileTestPouch</stringProp>
+              <stringProp name="-995381171">pouchtest</stringProp>
               <stringProp name="-1924094359">PUBLIC</stringProp>
               <stringProp name="1039801451">all_tenants</stringProp>
               <stringProp name="3392903">null</stringProp>
-              <stringProp name="587509290">/pouch/{id}</stringProp>
+              <stringProp name="-1870439307">/test/{id}</stringProp>
               <stringProp name="-67861311">/sample-data-backend/rservice/taskservice/</stringProp>
               <stringProp name="1475208495">[&quot;testRole1&quot;,&quot;testRole2&quot;]</stringProp>
               <stringProp name="-812190629">RESTRICTED</stringProp>
@@ -996,7 +1027,7 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
         <stringProp name="ConstantTimer.delay">300</stringProp>
       </ConstantTimer>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="View APis - Admin created" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="View APis" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -1291,9 +1322,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -1723,9 +1754,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -1851,9 +1882,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -1973,9 +2004,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -2043,6 +2074,10 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
       },&#xd;
       {&#xd;
         &quot;Name&quot;: &quot;apim:api_workflow&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:app_owner_change&quot;,&#xd;
         &quot;Roles&quot;: &quot;admin&quot;&#xd;
       }&#xd;
     ]&#xd;

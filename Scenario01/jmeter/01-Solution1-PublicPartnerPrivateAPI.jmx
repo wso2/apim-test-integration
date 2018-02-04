@@ -9,17 +9,17 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="host" elementType="Argument">
             <stringProp name="Argument.name">host</stringProp>
-            <stringProp name="Argument.value">localhost</stringProp>
+            <stringProp name="Argument.value">${__property(serverHost)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="port" elementType="Argument">
             <stringProp name="Argument.name">port</stringProp>
-            <stringProp name="Argument.value">9443</stringProp>
+            <stringProp name="Argument.value">${__property(serverPort)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="servletPort" elementType="Argument">
             <stringProp name="Argument.name">servletPort</stringProp>
-            <stringProp name="Argument.value">8243</stringProp>
+            <stringProp name="Argument.value">${__property(servletPort)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="hybridRole" elementType="Argument">
@@ -37,11 +37,31 @@
             <stringProp name="Argument.value">subscriberRole</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="tomcathost" elementType="Argument">
+            <stringProp name="Argument.name">tomcathost</stringProp>
+            <stringProp name="Argument.value">${__property(tomcatHost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="tomcatport" elementType="Argument">
+            <stringProp name="Argument.name">tomcatport</stringProp>
+            <stringProp name="Argument.value">${__property(tomcatPort)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
+      <CacheManager guiclass="CacheManagerGui" testclass="CacheManager" testname="HTTP Cache Manager" enabled="true">
+        <boolProp name="clearEachIteration">true</boolProp>
+        <boolProp name="useExpires">false</boolProp>
+      </CacheManager>
+      <hashTree/>
+      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+        <collectionProp name="CookieManager.cookies"/>
+        <boolProp name="CookieManager.clearEachIteration">false</boolProp>
+      </CookieManager>
+      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Tenants" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -69,9 +89,14 @@
               <stringProp name="Argument.value">test@gmail.com</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
-            <elementProp name="adminBasicAuthHeader" elementType="Argument">
-              <stringProp name="Argument.name">adminBasicAuthHeader</stringProp>
-              <stringProp name="Argument.value">Basic QWRtaW5pc3RyYXRvcjpBZG1pbjEyMw==</stringProp>
+            <elementProp name="adminUsername" elementType="Argument">
+              <stringProp name="Argument.name">adminUsername</stringProp>
+              <stringProp name="Argument.value">${__property(adminusername)}</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="adminPassword" elementType="Argument">
+              <stringProp name="Argument.name">adminPassword</stringProp>
+              <stringProp name="Argument.value">${__property(adminpassword)}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -187,7 +212,7 @@
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Basic QWRtaW5pc3RyYXRvcjpBZG1pbjEyMw==</stringProp>
+                <stringProp name="Header.value">Basic ${encoded_ClientCredentials}</stringProp>
               </elementProp>
             </collectionProp>
           </HeaderManager>
@@ -200,6 +225,20 @@
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="cacheKey"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters">adminUsername,adminPassword</stringProp>
+            <stringProp name="script">import org.apache.commons.codec.binary.Base64;
+
+String forEncoding = vars.get(&quot;adminUsername&quot;) + &quot;:&quot; + vars.get(&quot;adminPassword&quot;);
+log.info(&quot;Username: &quot; + vars.get(&quot;adminUsername&quot;));
+log.info(&quot;Password: &quot; + vars.get(&quot;adminPassword&quot;));
+byte[] encoded_ClientCredentials = Base64.encodeBase64(forEncoding.getBytes());
+vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredentials));</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
           <hashTree/>
         </hashTree>
       </hashTree>
@@ -224,9 +263,9 @@
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
             <collectionProp name="1307957775">
               <stringProp name="-1327510321">jane@finance.abc.com</stringProp>
@@ -306,6 +345,10 @@
       },&#xd;
       {&#xd;
         &quot;Name&quot;: &quot;apim:api_workflow&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:app_owner_change&quot;,&#xd;
         &quot;Roles&quot;: &quot;admin&quot;&#xd;
       }&#xd;
     ]&#xd;
@@ -437,9 +480,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="1572758503">hybridUser</stringProp>
               <stringProp name="1325367464">hybird123</stringProp>
             </collectionProp>
-            <collectionProp name="380066188">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1677038346">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
               <stringProp name="1572758503">hybridUser</stringProp>
               <stringProp name="1325367464">hybird123</stringProp>
             </collectionProp>
@@ -671,9 +714,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="1447404028">publisher</stringProp>
               <stringProp name="-977482219">pub123</stringProp>
             </collectionProp>
-            <collectionProp name="-482173014">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="1755689748">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
               <stringProp name="1447404028">publisher</stringProp>
               <stringProp name="-977482219">pub123</stringProp>
             </collectionProp>
@@ -894,9 +937,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="-1219769240">subscriber</stringProp>
               <stringProp name="-891594766">sub123</stringProp>
             </collectionProp>
-            <collectionProp name="1116392375">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-940712159">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
               <stringProp name="-1219769240">subscriber</stringProp>
               <stringProp name="-891594766">sub123</stringProp>
             </collectionProp>
@@ -1095,7 +1138,6 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
           <collectionProp name="UserParameters.names">
             <stringProp name="-265713450">username</stringProp>
             <stringProp name="1216985755">password</stringProp>
-            <stringProp name="3005864">auth</stringProp>
             <stringProp name="-799647835">apiname</stringProp>
             <stringProp name="951530927">context</stringProp>
             <stringProp name="1941332754">visibility</stringProp>
@@ -1105,10 +1147,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="-347208044">backend</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1625572218">
+            <collectionProp name="1630241918">
               <stringProp name="-1327510321">jane@finance.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
-              <stringProp name="359803349">amFuZUBmaW5hbmNlLmFiYy5jb206amFuZTEyMw==</stringProp>
               <stringProp name="2131966200">SalaryDetails</stringProp>
               <stringProp name="-909719094">salary</stringProp>
               <stringProp name="403485027">PRIVATE</stringProp>
@@ -1117,10 +1158,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="623833597">/salary/{id}</stringProp>
               <stringProp name="2119074694">/sample-data-backend/rservice/salaryservice/</stringProp>
             </collectionProp>
-            <collectionProp name="-933428578">
+            <collectionProp name="-1803615377">
               <stringProp name="1798071416">jane@core.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
-              <stringProp name="254652083">amFuZUBjb3JlLmFiYy5jb206amFuZTEyMw==</stringProp>
               <stringProp name="343028596">MobileStock</stringProp>
               <stringProp name="109770518">stock</stringProp>
               <stringProp name="403485027">PRIVATE</stringProp>
@@ -1129,10 +1169,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="2064558383">/stock/{id}</stringProp>
               <stringProp name="-2033417906">/sample-data-backend/rservice/stockservice/</stringProp>
             </collectionProp>
-            <collectionProp name="-222628565">
+            <collectionProp name="-759452673">
               <stringProp name="-999896507">jane@operations.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
-              <stringProp name="1482638565">amFuZUBvcGVyYXRpb25zLmFiYy5jb206amFuZTEyMw==</stringProp>
               <stringProp name="1586670657">MaintainceTasks</stringProp>
               <stringProp name="110132110">tasks</stringProp>
               <stringProp name="403485027">PRIVATE</stringProp>
@@ -1141,10 +1180,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="-509408414">/task/{id}</stringProp>
               <stringProp name="-67861311">/sample-data-backend/rservice/taskservice/</stringProp>
             </collectionProp>
-            <collectionProp name="1224934750">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
-              <stringProp name="1078214558">QWRtaW5pc3RyYXRvcjpBZG1pbjEyMw==</stringProp>
+            <collectionProp name="-519986032">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
               <stringProp name="-1564341092">EmployeeInfo</stringProp>
               <stringProp name="3237038">info</stringProp>
               <stringProp name="-1924094359">PUBLIC</stringProp>
@@ -1153,10 +1191,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="-63968423">/employee/{id}</stringProp>
               <stringProp name="1309350890">/sample-data-backend/rservice/employeeservice/</stringProp>
             </collectionProp>
-            <collectionProp name="1330804010">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
-              <stringProp name="1078214558">QWRtaW5pc3RyYXRvcjpBZG1pbjEyMw==</stringProp>
+            <collectionProp name="-414116772">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
               <stringProp name="155620507">PhonePrice</stringProp>
               <stringProp name="106934601">price</stringProp>
               <stringProp name="-1924094359">PUBLIC</stringProp>
@@ -1165,10 +1202,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
               <stringProp name="414036517">/mobile/{id}</stringProp>
               <stringProp name="-1503047521">/sample-data-backend/rservice/mobilepriceservice/</stringProp>
             </collectionProp>
-            <collectionProp name="1669253384">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
-              <stringProp name="1078214558">QWRtaW5pc3RyYXRvcjpBZG1pbjEyMw==</stringProp>
+            <collectionProp name="1138291189">
+              <stringProp name="146731693">${__property(adminusername)}</stringProp>
+              <stringProp name="-904517469">${__property(adminpassword)}</stringProp>
               <stringProp name="340114841">MobilePouch</stringProp>
               <stringProp name="106856763">pouch</stringProp>
               <stringProp name="-1924094359">PUBLIC</stringProp>
@@ -1243,6 +1279,20 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="cacheKey"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters">username, password</stringProp>
+            <stringProp name="script">import org.apache.commons.codec.binary.Base64;
+
+String forEncoding = vars.get(&quot;username&quot;) + &quot;:&quot; + vars.get(&quot;password&quot;);
+log.info(&quot;username: &quot; + vars.get(&quot;username&quot;));
+log.info(&quot;password: &quot; + vars.get(&quot;password&quot;));
+byte[] encoded_ClientCredentials = Base64.encodeBase64(forEncoding.getBytes());
+vars.put(&quot;auth&quot;, new String(encoded_ClientCredentials));</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Generate access token - api create" enabled="true">
@@ -2253,7 +2303,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">3</stringProp>
+        <stringProp name="ThreadGroup.num_threads">4</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1515587607000</longProp>
         <longProp name="ThreadGroup.end_time">1515587607000</longProp>
@@ -2266,23 +2316,23 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
           <collectionProp name="UserParameters.names">
             <stringProp name="-265713450">username</stringProp>
             <stringProp name="1216985755">password</stringProp>
-            <stringProp name="3005864">auth</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="674217619">
+            <collectionProp name="1307957775">
               <stringProp name="-1327510321">jane@finance.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
-              <stringProp name="359803349">amFuZUBmaW5hbmNlLmFiYy5jb206amFuZTEyMw==</stringProp>
             </collectionProp>
-            <collectionProp name="-733361331">
+            <collectionProp name="1419879324">
               <stringProp name="1798071416">jane@core.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
-              <stringProp name="254652083">amFuZUBjb3JlLmFiYy5jb206amFuZTEyMw==</stringProp>
             </collectionProp>
-            <collectionProp name="1608689672">
+            <collectionProp name="1643984820">
               <stringProp name="-999896507">jane@operations.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
-              <stringProp name="1482638565">amFuZUBvcGVyYXRpb25zLmFiYy5jb206amFuZTEyMw==</stringProp>
+            </collectionProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -2350,6 +2400,20 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="cacheKey"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters">username, password</stringProp>
+            <stringProp name="script">import org.apache.commons.codec.binary.Base64;
+
+String forEncoding = vars.get(&quot;username&quot;) + &quot;:&quot; + vars.get(&quot;password&quot;);
+log.info(&quot;username: &quot; + vars.get(&quot;username&quot;));
+log.info(&quot;username: &quot; + vars.get(&quot;password&quot;));
+byte[] encoded_ClientCredentials = Base64.encodeBase64(forEncoding.getBytes());
+vars.put(&quot;auth&quot;, new String(encoded_ClientCredentials));</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Generate access token -store" enabled="true">
@@ -2832,28 +2896,23 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
           <collectionProp name="UserParameters.names">
             <stringProp name="-265713450">username</stringProp>
             <stringProp name="1216985755">password</stringProp>
-            <stringProp name="3005864">auth</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="674217619">
+            <collectionProp name="1307957775">
               <stringProp name="-1327510321">jane@finance.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
-              <stringProp name="359803349">amFuZUBmaW5hbmNlLmFiYy5jb206amFuZTEyMw==</stringProp>
             </collectionProp>
-            <collectionProp name="-733361331">
+            <collectionProp name="1419879324">
               <stringProp name="1798071416">jane@core.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
-              <stringProp name="254652083">amFuZUBjb3JlLmFiYy5jb206amFuZTEyMw==</stringProp>
             </collectionProp>
-            <collectionProp name="1608689672">
+            <collectionProp name="1643984820">
               <stringProp name="-999896507">jane@operations.abc.com</stringProp>
               <stringProp name="-1827185084">jane123</stringProp>
-              <stringProp name="1482638565">amFuZUBvcGVyYXRpb25zLmFiYy5jb206amFuZTEyMw==</stringProp>
             </collectionProp>
-            <collectionProp name="-1435345175">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
-              <stringProp name="1078214558">QWRtaW5pc3RyYXRvcjpBZG1pbjEyMw==</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -2921,6 +2980,20 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
+          <hashTree/>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="cacheKey"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters">username, password</stringProp>
+            <stringProp name="script">import org.apache.commons.codec.binary.Base64;
+
+String forEncoding = vars.get(&quot;username&quot;) + &quot;:&quot; + vars.get(&quot;password&quot;);
+log.info(&quot;username: &quot; + vars.get(&quot;username&quot;));
+log.info(&quot;username: &quot; + vars.get(&quot;password&quot;));
+byte[] encoded_ClientCredentials = Base64.encodeBase64(forEncoding.getBytes());
+vars.put(&quot;auth&quot;, new String(encoded_ClientCredentials));</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PreProcessor>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Generate access token -store" enabled="true">
@@ -3174,10 +3247,10 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="-94099284">
+            <collectionProp name="761859734">
               <stringProp name="1572758503">hybridUser</stringProp>
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
             <collectionProp name="-741321554">
               <stringProp name="1572758503">hybridUser</stringProp>
@@ -3362,10 +3435,10 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1460102660">
+            <collectionProp name="-1978905618">
               <stringProp name="1447404028">publisher</stringProp>
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
             <collectionProp name="812880390">
               <stringProp name="1447404028">publisher</stringProp>
@@ -3550,10 +3623,10 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="-514274802">
+            <collectionProp name="341684216">
               <stringProp name="-1219769240">subscriber</stringProp>
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
             <collectionProp name="-1161497072">
               <stringProp name="-1219769240">subscriber</stringProp>
@@ -3738,20 +3811,20 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1325178787">
+            <collectionProp name="-2113829491">
               <stringProp name="740476897">finance.abc.com</stringProp>
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
-            <collectionProp name="1847629015">
+            <collectionProp name="-1591379263">
               <stringProp name="856134310">core.abc.com</stringProp>
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
-            <collectionProp name="-1447027633">
+            <collectionProp name="-591068615">
               <stringProp name="-603578893">operations.abc.com</stringProp>
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -3911,9 +3984,9 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <stringProp name="1216985755">password</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1955180045">
-              <stringProp name="146731693">Administrator</stringProp>
-              <stringProp name="-904517469">Admin123</stringProp>
+            <collectionProp name="-1483828233">
+              <stringProp name="857398781">${__property(adminusername)}</stringProp>
+              <stringProp name="-197807486">${__property(adminpassword)}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -3981,6 +4054,10 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
       },&#xd;
       {&#xd;
         &quot;Name&quot;: &quot;apim:api_workflow&quot;,&#xd;
+        &quot;Roles&quot;: &quot;admin&quot;&#xd;
+      },&#xd;
+      {&#xd;
+        &quot;Name&quot;: &quot;apim:app_owner_change&quot;,&#xd;
         &quot;Roles&quot;: &quot;admin&quot;&#xd;
       }&#xd;
     ]&#xd;
