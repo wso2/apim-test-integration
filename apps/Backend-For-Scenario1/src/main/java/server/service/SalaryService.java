@@ -29,9 +29,16 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/salaryservice/") @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON) public class SalaryService {
+@Path("/salaryservice/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class SalaryService {
 
     Map<String, Salary> salaryMap = new HashMap<>();
+
+    public SalaryService() {
+        init();
+    }
 
     public void init() {
 
@@ -52,12 +59,10 @@ import java.util.Map;
 
     }
 
-    public SalaryService() {
-        init();
-    }
-
-    @GET @Path("/salary/{id}/") public Salary getEmployeeSalary(@PathParam("id") String id,
-            @Context HttpHeaders headers) {
+    @GET
+    @Path("/salary/{id}/")
+    public Salary getEmployeeSalary(@PathParam("id") String id,
+                                    @Context HttpHeaders headers) {
         Salary salary = salaryMap.get(id);
         return salary;
     }

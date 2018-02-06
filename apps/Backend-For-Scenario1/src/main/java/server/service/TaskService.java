@@ -29,9 +29,16 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/taskservice/") @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON) public class TaskService {
+@Path("/taskservice/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class TaskService {
 
     Map<String, Task> taskMap = new HashMap<>();
+
+    public TaskService() {
+        init();
+    }
 
     public void init() {
 
@@ -50,11 +57,9 @@ import java.util.Map;
 
     }
 
-    public TaskService() {
-        init();
-    }
-
-    @GET @Path("/task/{id}/") public Task getEmployee(@PathParam("id") String id, @Context HttpHeaders headers) {
+    @GET
+    @Path("/task/{id}/")
+    public Task getEmployee(@PathParam("id") String id, @Context HttpHeaders headers) {
         return taskMap.get(id);
     }
 }

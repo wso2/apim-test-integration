@@ -29,9 +29,16 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/mobilepriceservice/") @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON) public class MobilePriceService {
+@Path("/mobilepriceservice/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class MobilePriceService {
 
     Map<String, Mobile> mobileMap = new HashMap<>();
+
+    public MobilePriceService() {
+        init();
+    }
 
     public void init() {
 
@@ -59,11 +66,9 @@ import java.util.Map;
 
     }
 
-    public MobilePriceService() {
-        init();
-    }
-
-    @GET @Path("/mobile/{id}/") public Mobile getMobile(@PathParam("id") String id, @Context HttpHeaders headers) {
+    @GET
+    @Path("/mobile/{id}/")
+    public Mobile getMobile(@PathParam("id") String id, @Context HttpHeaders headers) {
         Mobile mobile = mobileMap.get(id);
         return mobile;
     }

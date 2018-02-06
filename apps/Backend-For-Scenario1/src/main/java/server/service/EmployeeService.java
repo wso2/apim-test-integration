@@ -29,9 +29,16 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/employeeservice/") @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON) public class EmployeeService {
+@Path("/employeeservice/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class EmployeeService {
 
     Map<String, Employee> employeeMap = new HashMap<String, Employee>();
+
+    public EmployeeService() {
+        init();
+    }
 
     public void init() {
 
@@ -48,12 +55,10 @@ import java.util.Map;
 
     }
 
-    public EmployeeService() {
-        init();
-    }
-
-    @GET @Path("/employee/{id}/") public Employee getEmployee(@PathParam("id") String id,
-            @Context HttpHeaders headers) {
+    @GET
+    @Path("/employee/{id}/")
+    public Employee getEmployee(@PathParam("id") String id,
+                                @Context HttpHeaders headers) {
         Employee employee = employeeMap.get(id);
         return employee;
     }

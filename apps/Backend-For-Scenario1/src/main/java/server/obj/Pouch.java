@@ -18,7 +18,8 @@ package server.obj;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "Pouch") public class Pouch {
+@XmlRootElement(name = "Pouch")
+public class Pouch {
 
     private int id;
     private String brand;

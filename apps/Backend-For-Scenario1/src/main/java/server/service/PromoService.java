@@ -29,9 +29,16 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/promoservice/") @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON) public class PromoService {
+@Path("/promoservice/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class PromoService {
 
     Map<String, Promo> promoMap = new HashMap<>();
+
+    public PromoService() {
+        init();
+    }
 
     public void init() {
 
@@ -48,11 +55,9 @@ import java.util.Map;
 
     }
 
-    public PromoService() {
-        init();
-    }
-
-    @GET @Path("/promo/{id}/") public Promo getPromo(@PathParam("id") String id, @Context HttpHeaders headers) {
+    @GET
+    @Path("/promo/{id}/")
+    public Promo getPromo(@PathParam("id") String id, @Context HttpHeaders headers) {
         Promo promo = promoMap.get(id);
         return promo;
     }

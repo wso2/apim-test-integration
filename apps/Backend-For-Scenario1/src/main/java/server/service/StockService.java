@@ -31,10 +31,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@Path("/stockservice/") @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON) public class StockService {
+@Path("/stockservice/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class StockService {
 
     Map<String, Mobile> mobileListOne = new HashMap<>();
     Map<String, Mobile> mobileListTwo = new HashMap<>();
+
+    public StockService() {
+        init();
+    }
 
     public void init() {
 
@@ -73,12 +80,10 @@ import java.util.Objects;
         this.mobileListTwo.put("1", mobileThree);
     }
 
-    public StockService() {
-        init();
-    }
-
-    @GET @Path("/stock/{id}/") public int getAvailableStockCount(@PathParam("id") String id,
-            @Context HttpHeaders headers) {
+    @GET
+    @Path("/stock/{id}/")
+    public int getAvailableStockCount(@PathParam("id") String id,
+                                      @Context HttpHeaders headers) {
         int count = 0;
         if (Objects.equals(id, "1")) {
             count = mobileListOne.size();

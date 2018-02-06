@@ -29,9 +29,16 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/pouchpriceservice/") @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON) public class PouchPriceService {
+@Path("/pouchpriceservice/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class PouchPriceService {
 
     Map<String, Pouch> pouchMap = new HashMap<>();
+
+    public PouchPriceService() {
+        init();
+    }
 
     public void init() {
 
@@ -59,11 +66,9 @@ import java.util.Map;
 
     }
 
-    public PouchPriceService() {
-        init();
-    }
-
-    @GET @Path("/pouch/{id}/") public Pouch getPouch(@PathParam("id") String id, @Context HttpHeaders headers) {
+    @GET
+    @Path("/pouch/{id}/")
+    public Pouch getPouch(@PathParam("id") String id, @Context HttpHeaders headers) {
         Pouch pouch = pouchMap.get(id);
         return pouch;
     }
