@@ -58,5 +58,4 @@ public class Salary {
         this.empId = empId;
     }
 
-
 }
