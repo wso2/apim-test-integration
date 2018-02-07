@@ -24,6 +24,6 @@ Prerequisite
         <transition event="Retire" target="Retired"/>
 </state>
 
-Steps
-1. copy locale_default.json file to <API-M_HOME>/repository/deployment/server/jaggeryapps/publisher/site/conf/locales/jaggery/ directory.
-2. Restart the server
+3. Copy locale_default.jason file.
+ a. copy locale_default.json file to <API-M_HOME>/repository/deployment/server/jaggeryapps/publisher/site/conf/locales/jaggery/ directory.
+ b. Restart the server

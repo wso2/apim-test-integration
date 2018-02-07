@@ -8,8 +8,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apim.lctest</groupId>
-  <artifactId>Test-Service</artifactId>
-  <name>WSO2 MSF4J Microservice</name>
+  <artifactId>events-service</artifactId>
+  <name>API LifeCycle Event Service</name>
   <version>0.1-SNAPSHOT</version>
   <properties>
     <microservice.mainClass>org.apim.lctest.Application</microservice.mainClass>

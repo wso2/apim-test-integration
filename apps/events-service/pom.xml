@@ -27,9 +27,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apim.lctest</groupId>
-    <artifactId>Test-Service</artifactId>
+    <artifactId>events-service</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <name>WSO2 MSF4J Microservice</name>
+    <name>API LifeCycle Event Service</name>
 
 
     <dependencies>
