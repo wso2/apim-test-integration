@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#TODO: this is on hold untill TG implements the logic for execution
+#TODO: compete the script when TestGrid implements support for this
 prgdir=$(dirname "$0")
 rootDir=$(cd "$prgdir"; pwd)
 

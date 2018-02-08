@@ -14,6 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#content TBD
-
-export JMETER_HOME=/home/ubuntu/user
+#TODO: compete the script when TestGrid implements support for this
+#export JMETER_HOME=/home/ubuntu/user
