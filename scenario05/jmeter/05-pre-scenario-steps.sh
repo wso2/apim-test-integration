@@ -15,7 +15,7 @@
 # limitations under the License.
 
 serverHost=$serverHost
-serverPort=443
+serverPort=$serverPort
 
 
 prgdir=$(dirname "$0")

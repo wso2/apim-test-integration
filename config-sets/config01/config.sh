@@ -26,7 +26,9 @@ cd $productHome/bin
 #verify file copy status and exit on failure
 statusval=$?
 if [ $statusval -eq 0 ]; then
+ echo "file copying success!"
  #stop the server
+ echo "shutting down the server now..."
  sh wso2server.sh stop
 else
     echo "file copy command failed..."
