@@ -32,7 +32,7 @@ scenarios:
     dir: scenario05
   -
     name: 'API Governance'
-    dir: scenario05
+    dir: scenario06
 
 #config value sets need to be mentioned
 config-change-sets:
@@ -41,7 +41,7 @@ config-change-sets:
     applies-to:
       - scenario04
   - name: config02
-    description: 'config changes required for deploying registry api.'
+    description: 'Config changes required for deploying registry api.'
     applies-to:
       - scenario01
       - scenario05

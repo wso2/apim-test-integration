@@ -75,7 +75,7 @@ Go to APIM and IS user-mgt.xml and comment out the available userstore details a
 In both IS and APIM user-mgt.xml change the datasource name to match with the jndi name given in the master-datasource.xml 
 Go to APIM and IS registry.xml and without commenting out the available user store details add the datasource jndi name for the user store (step2) the to match with the master-datasource.xml 
 
-```sh
+```xml
 
 <dbConfig name="govregistry">
         <dataSource>jdbc/WSO2REG_DB</dataSource>
@@ -85,7 +85,7 @@ Go to APIM and IS registry.xml and without commenting out the available user sto
 
 Add the details related to sharing the registry and mounting in both IS and APIM
 
-```sh
+```xml
   
 <remoteInstance url="https://localhost">   
         <id>gov</id>
