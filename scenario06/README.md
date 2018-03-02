@@ -16,7 +16,6 @@ Scrips available :
 *03-Solution-06-RemoveAPIsApps.jmx*
 
 
-
 **How To Run**
 
 Pre condition :
