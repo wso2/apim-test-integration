@@ -195,7 +195,7 @@
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
+            <stringProp name="HTTPSampler.path">/client-registration/v0.12/register</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -378,7 +378,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -459,7 +459,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -604,7 +604,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -647,7 +647,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Demote to Created</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Demote to Created</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -689,7 +689,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Demote to Prototyped</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Demote to Prototyped</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -731,7 +731,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Deploy as a Prototype</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Deploy as a Prototype</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -773,7 +773,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Block</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Block</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -815,7 +815,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Deprecate</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Deprecate</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -857,7 +857,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Retire</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Retire</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -899,7 +899,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Re-Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Re-Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -941,7 +941,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Demote to Created</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Demote to Created</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -983,7 +983,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1022,10 +1022,10 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
             <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
-            <stringProp name="HTTPSampler.port">${pubPort}}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Block</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Block</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1067,7 +1067,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1109,7 +1109,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Deploy as a Prototype</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Deploy as a Prototype</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1151,7 +1151,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Retire</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Retire</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1193,7 +1193,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Re-Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Re-Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1235,7 +1235,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Demote to Created</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Demote to Created</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1277,7 +1277,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1319,7 +1319,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Deprecate</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Deprecate</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1361,7 +1361,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Retire</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Retire</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1403,7 +1403,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Deploy as a Prototype</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Deploy as a Prototype</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1445,7 +1445,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid1}&amp;action=Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1509,8 +1509,8 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/services/InfoAdminService.InfoAdminServiceHttpsSoap11Endpoint</stringProp>
@@ -1628,7 +1628,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid2}&amp;action=Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid2}&amp;action=Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1849,7 +1849,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/${__P(apid1)}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/${__P(apid1)}</stringProp>
             <stringProp name="HTTPSampler.method">DELETE</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1891,7 +1891,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/${__P(apid2)}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/${__P(apid2)}</stringProp>
             <stringProp name="HTTPSampler.method">DELETE</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
