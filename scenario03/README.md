@@ -1,4 +1,4 @@
-# Scenario 03 - App Development with APIs
+## Scenario 03 - App Development with APIs
 
 ### High level scenario description
 In the APP Development with API WSO2 APIM provides SDKs to many popular development languages. Basically an API subscriber can quick start his app using the SDK provided.

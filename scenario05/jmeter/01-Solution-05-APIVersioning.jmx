@@ -586,8 +586,8 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubStore}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubHost}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
@@ -642,8 +642,8 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${servPort}</stringProp>
+            <stringProp name="HTTPSampler.domain">${gwMgrHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${gwMgrPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/token</stringProp>
@@ -729,8 +729,8 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis</stringProp>
@@ -788,8 +788,8 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid}&amp;action=Publish</stringProp>
@@ -840,8 +840,8 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/copy-api?apiId=${apid}&amp;newVersion=2.0.0 &amp;isDefaultVersion=true</stringProp>
@@ -946,8 +946,8 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
             <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
@@ -1003,8 +1003,8 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${servPort}</stringProp>
+            <stringProp name="HTTPSampler.domain">${gwMgrHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${gwMgrPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/token</stringProp>
@@ -1076,8 +1076,8 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${storeHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/api/am/store/v0.11/applications</stringProp>
@@ -1146,8 +1146,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${storeHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/api/am/store/v0.11/subscriptions</stringProp>
@@ -1198,8 +1198,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${newversionapid}&amp;action=Publish&amp;lifecycleChecklist=requireResubscription:true</stringProp>
@@ -1245,8 +1245,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
               </elementProp>
-              <stringProp name="HTTPSampler.domain">${host}</stringProp>
-              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.domain">${storeHost}</stringProp>
+              <stringProp name="HTTPSampler.port">${storePort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">/api/am/store/v0.11/subscriptions/${subscriptionId}</stringProp>
@@ -1290,8 +1290,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
               </elementProp>
-              <stringProp name="HTTPSampler.domain">${host}</stringProp>
-              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.domain">${storeHost}</stringProp>
+              <stringProp name="HTTPSampler.port">${storePort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">/api/am/store/v0.11/applications/${application_id}</stringProp>
@@ -1566,8 +1566,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
               </elementProp>
-              <stringProp name="HTTPSampler.domain">${host}</stringProp>
-              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+              <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/${apid}</stringProp>
@@ -1611,8 +1611,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
               </elementProp>
-              <stringProp name="HTTPSampler.domain">${host}</stringProp>
-              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+              <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/${newversionapid}</stringProp>
