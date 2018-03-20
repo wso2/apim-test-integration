@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.2 r1790748">
+<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3 r1808647">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="API Versioning" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -14,22 +14,10 @@
       <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
         <collectionProp name="CookieManager.cookies"/>
         <boolProp name="CookieManager.clearEachIteration">false</boolProp>
-        <stringProp name="CookieManager.policy">standard</stringProp>
-        <stringProp name="CookieManager.implementation">org.apache.jmeter.protocol.http.control.HC4CookieHandler</stringProp>
       </CookieManager>
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
-          <elementProp name="host" elementType="Argument">
-            <stringProp name="Argument.name">host</stringProp>
-            <stringProp name="Argument.value">${__property(serverHost)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="port" elementType="Argument">
-            <stringProp name="Argument.name">port</stringProp>
-            <stringProp name="Argument.value">${__property(serverPort)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="adminUsername" elementType="Argument">
             <stringProp name="Argument.name">adminUsername</stringProp>
             <stringProp name="Argument.value">${__property(adminUsername)}</stringProp>
@@ -80,9 +68,44 @@
             <stringProp name="Argument.value">${__property(subscriberPassword)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="servPort" elementType="Argument">
-            <stringProp name="Argument.name">servPort</stringProp>
-            <stringProp name="Argument.value">${__property(servPort)}</stringProp>
+          <elementProp name="nioPort" elementType="Argument">
+            <stringProp name="Argument.name">nioPort</stringProp>
+            <stringProp name="Argument.value">${__property(nioPort)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="serverHostnPorts" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="pubHost" elementType="Argument">
+            <stringProp name="Argument.name">pubHost</stringProp>
+            <stringProp name="Argument.value">${__property(pubHost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="pubPort" elementType="Argument">
+            <stringProp name="Argument.name">pubPort</stringProp>
+            <stringProp name="Argument.value">${__property(pubPort)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="gwMgrHost" elementType="Argument">
+            <stringProp name="Argument.name">gwMgrHost</stringProp>
+            <stringProp name="Argument.value">${__property(gwMgrHost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="gwMgrPort" elementType="Argument">
+            <stringProp name="Argument.name">gwMgrPort</stringProp>
+            <stringProp name="Argument.value">${__property(gwMgrPort)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="storeHost" elementType="Argument">
+            <stringProp name="Argument.name">storeHost</stringProp>
+            <stringProp name="Argument.value">${__property(storeHost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="storePort" elementType="Argument">
+            <stringProp name="Argument.name">storePort</stringProp>
+            <stringProp name="Argument.value">${__property(storePort)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -128,8 +151,8 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/services/AuthenticationAdmin.AuthenticationAdminHttpsSoap11Endpoint/</stringProp>
@@ -194,11 +217,11 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">https://${host}:${port}/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
+            <stringProp name="HTTPSampler.path">/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -224,7 +247,7 @@
             <hashTree/>
             <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Create Role1 Response Assertion" enabled="true">
               <collectionProp name="Asserion.test_strings">
-                <stringProp name="49588">202</stringProp>
+                <stringProp name="49586">200</stringProp>
               </collectionProp>
               <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
               <boolProp name="Assertion.assume_success">false</boolProp>
@@ -257,11 +280,11 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">https://${host}:${port}/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
+            <stringProp name="HTTPSampler.path">/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -287,7 +310,7 @@
             <hashTree/>
             <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Create Role2 Response Assertion" enabled="true">
               <collectionProp name="Asserion.test_strings">
-                <stringProp name="49588">202</stringProp>
+                <stringProp name="49586">200</stringProp>
               </collectionProp>
               <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
               <boolProp name="Assertion.assume_success">false</boolProp>
@@ -318,8 +341,8 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
@@ -387,8 +410,8 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
@@ -523,8 +546,8 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/resource/1.0.0/artifact/_system/config/apimgt/applicationdata/tenant-conf.json</stringProp>
@@ -586,11 +609,11 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${pubStore}</stringProp>
-            <stringProp name="HTTPSampler.port">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
+            <stringProp name="HTTPSampler.path">/client-registration/v0.12/register</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -733,7 +756,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -792,7 +815,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid}&amp;action=Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid}&amp;action=Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -844,7 +867,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/copy-api?apiId=${apid}&amp;newVersion=2.0.0 &amp;isDefaultVersion=true</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/copy-api?apiId=${apid}&amp;newVersion=2.0.0 &amp;isDefaultVersion=true</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -891,8 +914,8 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+            <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/api-import-export-2.1.0-v3/export-api?name=${APIName}&amp;version=2.0.0&amp;provider=admin</stringProp>
@@ -950,7 +973,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
+            <stringProp name="HTTPSampler.path">/client-registration/v0.12/register</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1080,7 +1103,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/store/v0.11/applications</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/store/v0.12/applications</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1150,7 +1173,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/store/v0.11/subscriptions</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/store/v0.12/subscriptions</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1202,7 +1225,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${newversionapid}&amp;action=Publish&amp;lifecycleChecklist=requireResubscription:true</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${newversionapid}&amp;action=Publish&amp;lifecycleChecklist=requireResubscription:true</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1249,7 +1272,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <stringProp name="HTTPSampler.port">${storePort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-              <stringProp name="HTTPSampler.path">/api/am/store/v0.11/subscriptions/${subscriptionId}</stringProp>
+              <stringProp name="HTTPSampler.path">/api/am/store/v0.12/subscriptions/${subscriptionId}</stringProp>
               <stringProp name="HTTPSampler.method">DELETE</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1294,7 +1317,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <stringProp name="HTTPSampler.port">${storePort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-              <stringProp name="HTTPSampler.path">/api/am/store/v0.11/applications/${application_id}</stringProp>
+              <stringProp name="HTTPSampler.path">/api/am/store/v0.12/applications/${application_id}</stringProp>
               <stringProp name="HTTPSampler.method">DELETE</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1350,8 +1373,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
                   </elementProp>
                 </collectionProp>
               </elementProp>
-              <stringProp name="HTTPSampler.domain">${host}</stringProp>
-              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+              <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
@@ -1407,8 +1430,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
                   </elementProp>
                 </collectionProp>
               </elementProp>
-              <stringProp name="HTTPSampler.domain">${host}</stringProp>
-              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+              <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
@@ -1464,8 +1487,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
                   </elementProp>
                 </collectionProp>
               </elementProp>
-              <stringProp name="HTTPSampler.domain">${host}</stringProp>
-              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+              <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">https://${host}:${port}/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
@@ -1494,7 +1517,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <hashTree/>
               <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="ResRemove Role1 ponse Assertion" enabled="true">
                 <collectionProp name="Asserion.test_strings">
-                  <stringProp name="49588">202</stringProp>
+                  <stringProp name="49586">200</stringProp>
                 </collectionProp>
                 <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
                 <boolProp name="Assertion.assume_success">false</boolProp>
@@ -1521,8 +1544,8 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
                   </elementProp>
                 </collectionProp>
               </elementProp>
-              <stringProp name="HTTPSampler.domain">${host}</stringProp>
-              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.domain">${pubHost}</stringProp>
+              <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">https://${host}:${port}/services/UserAdmin.UserAdminHttpsSoap11Endpoint/</stringProp>
@@ -1551,7 +1574,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <hashTree/>
               <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Remove Role2 Response Assertion" enabled="true">
                 <collectionProp name="Asserion.test_strings">
-                  <stringProp name="49588">202</stringProp>
+                  <stringProp name="49586">200</stringProp>
                 </collectionProp>
                 <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
                 <boolProp name="Assertion.assume_success">false</boolProp>
@@ -1570,7 +1593,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-              <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/${apid}</stringProp>
+              <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/${apid}</stringProp>
               <stringProp name="HTTPSampler.method">DELETE</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1615,7 +1638,7 @@ log.info(&quot;ApplicationId:&quot; + props.get(&quot;application_id_no&quot;));
               <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
               <stringProp name="HTTPSampler.protocol">https</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-              <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/${newversionapid}</stringProp>
+              <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/${newversionapid}</stringProp>
               <stringProp name="HTTPSampler.method">DELETE</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
