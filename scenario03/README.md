@@ -10,7 +10,7 @@ This solution covers the below areas
 
 ### Current folder structure
 ```
-Scenario1
+scenario03
 |-jmeter
     |-01-Scenario03-App-Development-with-APIs.jmx
 
