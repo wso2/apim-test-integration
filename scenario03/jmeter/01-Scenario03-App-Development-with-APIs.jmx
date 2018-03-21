@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3 r1808647">
+<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.2 r1790748">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan - App Development with APIs" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -135,6 +135,11 @@
             <stringProp name="Argument.value">${__property(nioPort)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="nioHTTPPort" elementType="Argument">
+            <stringProp name="Argument.name">nioHTTPPort</stringProp>
+            <stringProp name="Argument.value">${__property(nioHTTPPort)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -177,7 +182,7 @@
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
+            <stringProp name="HTTPSampler.path">/client-registration/v0.12/register</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -329,7 +334,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
+            <stringProp name="HTTPSampler.path">/client-registration/v0.12/register</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -549,7 +554,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -634,7 +639,7 @@ ${__setProperty(access_token_api_create, ${access_token_api_create})};
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
+            <stringProp name="HTTPSampler.path">/client-registration/v0.12/register</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -761,7 +766,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid}&amp;action=Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid}&amp;action=Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -826,7 +831,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">api/am/store/v0.11/applications</stringProp>
+            <stringProp name="HTTPSampler.path">api/am/store/v0.12/applications</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -835,7 +840,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
-            <stringProp name="TestPlan.comments">/api/am/store/v0.11/apis</stringProp>
+            <stringProp name="TestPlan.comments">/api/am/store/v0.12/apis</stringProp>
           </HTTPSamplerProxy>
           <hashTree>
             <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
@@ -907,7 +912,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/store/v0.11/subscriptions</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/store/v0.12/subscriptions</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -916,7 +921,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
-            <stringProp name="TestPlan.comments">/api/am/store/v0.11/apis</stringProp>
+            <stringProp name="TestPlan.comments">/api/am/store/v0.12/apis</stringProp>
           </HTTPSamplerProxy>
           <hashTree>
             <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
@@ -979,7 +984,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/store/v0.11/applications/generate-keys?applicationId=${ApplicationID}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/store/v0.12/applications/generate-keys?applicationId=${ApplicationID}</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -988,7 +993,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
-            <stringProp name="TestPlan.comments">https://localhost:9443/api/am/store/v0.11/applications/4bab054f-be43-4cc8-88c9-f6aeff66c842</stringProp>
+            <stringProp name="TestPlan.comments">https://localhost:9443/api/am/store/v0.12/applications/4bab054f-be43-4cc8-88c9-f6aeff66c842</stringProp>
           </HTTPSamplerProxy>
           <hashTree>
             <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
@@ -1032,7 +1037,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${MSF4JPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">http</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/phones/getPhone?serverHost=${storeHost}&amp;accessToken=${application_accessToken}&amp;serverPort=${storePort}</stringProp>
+            <stringProp name="HTTPSampler.path">/phones/getPhone?serverHost=${storeHost}&amp;accessToken=${application_accessToken}&amp;serverPort=${nioHTTPPort}</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1087,7 +1092,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/store/v0.11/applications/${__property(ApplicationID)}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/store/v0.12/applications/${__property(ApplicationID)}</stringProp>
             <stringProp name="HTTPSampler.method">DELETE</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1096,7 +1101,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
-            <stringProp name="TestPlan.comments">/api/am/store/v0.11/apis</stringProp>
+            <stringProp name="TestPlan.comments">/api/am/store/v0.12/apis</stringProp>
           </HTTPSamplerProxy>
           <hashTree>
             <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
@@ -1141,7 +1146,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">api/am/publisher/v0.11/apis/${__property(apid)}</stringProp>
+            <stringProp name="HTTPSampler.path">api/am/publisher/v0.12/apis/${__property(apid)}</stringProp>
             <stringProp name="HTTPSampler.method">DELETE</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1150,7 +1155,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
-            <stringProp name="TestPlan.comments">/api/am/store/v0.11/apis</stringProp>
+            <stringProp name="TestPlan.comments">/api/am/store/v0.12/apis</stringProp>
           </HTTPSamplerProxy>
           <hashTree>
             <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
