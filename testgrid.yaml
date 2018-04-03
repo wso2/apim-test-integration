@@ -14,25 +14,32 @@
 #   limitations under the License.
 ###############################################################################
 
-scenarios:
+scenarioConfig:
+  scenarios:
   -
-    name: 'API Development'
+    name: scenario01
+    description: 'API Development'
     dir: scenario01
   -
-    name: 'API security'
-    dir: scenario02
-  -
-    name: 'App Development with APIs'
+    name: scenario03
+    description: 'App Development with APIs'
     dir: scenario03
   -
-    name: 'API Lifecycle Management'
+    name: scenario04
+    description: 'API Lifecycle Management'
     dir: scenario04
   -
-    name: 'API Versioning'
+    name: scenario05
+    description: 'API Versioning'
     dir: scenario05
   -
-    name: 'API Governance'
+    name: scenario06
+    description: 'API Governance'
     dir: scenario06
+  -
+    name: scenario09
+    description: 'Developer Enablement and Community Building'
+    dir: scenario09
 
 #config value sets need to be mentioned
 config-change-sets:
