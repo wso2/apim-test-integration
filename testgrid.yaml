@@ -16,10 +16,10 @@
 
 scenarioConfig:
   scenarios:
-  -
-    name: scenario01
-    description: 'API Development'
-    dir: scenario01
+#  -
+#    name: scenario01
+#    description: 'API Development'
+#    dir: scenario01
   -
     name: scenario03
     description: 'App Development with APIs'
@@ -32,14 +32,10 @@ scenarioConfig:
     name: scenario05
     description: 'API Versioning'
     dir: scenario05
-  -
-    name: scenario06
-    description: 'API Governance'
-    dir: scenario06
-  -
-    name: scenario09
-    description: 'Developer Enablement and Community Building'
-    dir: scenario09
+#  -
+#    name: scenario06
+#    description: 'API Governance'
+#    dir: scenario06
 
 #config value sets need to be mentioned
 config-change-sets:
