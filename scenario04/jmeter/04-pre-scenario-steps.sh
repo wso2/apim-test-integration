@@ -16,8 +16,16 @@
 
 serverHost=$serverHost
 serverPort=$serverPort
-msf4jServiceHost=ms4fjServerHostTBD
-msf4jServicePort=8080
+pubHost=$pubHost
+pubPort=$pubPort
+storeHost=$storeHost
+storePort=$storePort
+gwMgrHost=$gwMgrHost
+gwMgrPort=$gwMgrPort
+gwWrkHost=$gwWrkHost
+gwWrkPort=$gwWrkPort
+msf4jServiceHost=$msf4jServiceHost
+msf4jServicePort=$msf4jServicePort
 
 prgdir=$(dirname "$0")
 scriptPath=$(cd "$prgdir"; pwd)
@@ -27,6 +35,14 @@ echo "working directory : "$scriptPath
 #updating jmeter properties - user.properties
 sed -i "s|^\(serverHost\s*=\s*\).*\$|\1${serverHost}|" $scriptPath/../resources/user.properties
 sed -i "s|^\(serverPort\s*=\s*\).*\$|\1${serverPort}|" $scriptPath/../resources/user.properties
+sed -i "s|^\(pubHost\s*=\s*\).*\$|\1${pubHost}|" $scriptPath/../resources/user.properties
+sed -i "s|^\(pubPort\s*=\s*\).*\$|\1${pubPort}|" $scriptPath/../resources/user.properties
+sed -i "s|^\(storeHost\s*=\s*\).*\$|\1${storeHost}|" $scriptPath/../resources/user.properties
+sed -i "s|^\(storePort\s*=\s*\).*\$|\1${storePort}|" $scriptPath/../resources/user.properties
+sed -i "s|^\(gwMgrHost\s*=\s*\).*\$|\1${gwMgrHost}|" $scriptPath/../resources/user.properties
+sed -i "s|^\(gwMgrPort\s*=\s*\).*\$|\1${gwMgrPort}|" $scriptPath/../resources/user.properties
+sed -i "s|^\(gwWrkHost\s*=\s*\).*\$|\1${gwWrkHost}|" $scriptPath/../resources/user.properties
+sed -i "s|^\(gwWrkPort\s*=\s*\).*\$|\1${gwWrkPort}|" $scriptPath/../resources/user.properties
 sed -i "s|^\(msf4jServiceHost\s*=\s*\).*\$|\1${msf4jServiceHost}|" $scriptPath/../resources/user.properties
 sed -i "s|^\(msf4jServicePort\s*=\s*\).*\$|\1${msf4jServicePort}|" $scriptPath/../resources/user.properties
 #run base-setup.sh
