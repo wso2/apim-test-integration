@@ -21,7 +21,7 @@
           </elementProp>
           <elementProp name="port" elementType="Argument">
             <stringProp name="Argument.name">port</stringProp>
-            <stringProp name="Argument.value">${__property(servicePort)}</stringProp>
+            <stringProp name="Argument.value">${__property(serverPort)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">9443</stringProp>
           </elementProp>
@@ -177,7 +177,7 @@
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
+            <stringProp name="HTTPSampler.path">/client-registration/v0.12/register</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -329,7 +329,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
+            <stringProp name="HTTPSampler.path">/client-registration/v0.12/register</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -493,7 +493,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
     &quot;visibleTenants&quot;:&#xd;
     [&#xd;
     ],&#xd;
-    &quot;endpointConfig&quot;:&quot;{\&quot;production_endpoints\&quot;:{\&quot;url\&quot;:\&quot;http://localhost:8080/phones\&quot;,\&quot;config\&quot;:null,\&quot;template_not_supported\&quot;:false},\&quot;sandbox_endpoints\&quot;:{\&quot;url\&quot;:\&quot;http://localhost:8080/service\&quot;,\&quot;config\&quot;:null,\&quot;template_not_supported\&quot;:false},\&quot;endpoint_type\&quot;:\&quot;http\&quot;}&quot;,&#xd;
+    &quot;endpointConfig&quot;:&quot;{\&quot;production_endpoints\&quot;:{\&quot;url\&quot;:\&quot;http://${MSF4JHost}:${MSF4JPort}/phones\&quot;,\&quot;config\&quot;:null,\&quot;template_not_supported\&quot;:false},\&quot;sandbox_endpoints\&quot;:{\&quot;url\&quot;:\&quot;http://${MSF4JHost}:${MSF4JPort}/service\&quot;,\&quot;config\&quot;:null,\&quot;template_not_supported\&quot;:false},\&quot;endpoint_type\&quot;:\&quot;http\&quot;}&quot;,&#xd;
     &quot;endpointSecurity&quot;:null,&#xd;
     &quot;gatewayEnvironments&quot;:&quot;Production and Sandbox&quot;,&#xd;
     &quot;sequences&quot;:&#xd;
@@ -549,7 +549,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -634,7 +634,7 @@ ${__setProperty(access_token_api_create, ${access_token_api_create})};
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/client-registration/v0.11/register</stringProp>
+            <stringProp name="HTTPSampler.path">/client-registration/v0.12/register</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -761,7 +761,7 @@ byte[] b64encrypted = Base64.encodeBase64(concatValue.getBytes());
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.11/apis/change-lifecycle?apiId=${apid}&amp;action=Publish</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/publisher/v0.12/apis/change-lifecycle?apiId=${apid}&amp;action=Publish</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -826,7 +826,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">api/am/store/v0.11/applications</stringProp>
+            <stringProp name="HTTPSampler.path">api/am/store/v0.12/applications</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -907,7 +907,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/store/v0.11/subscriptions</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/store/v0.12/subscriptions</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -979,7 +979,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/store/v0.11/applications/generate-keys?applicationId=${ApplicationID}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/store/v0.12/applications/generate-keys?applicationId=${ApplicationID}</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1032,7 +1032,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${MSF4JPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">http</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/phones/getPhone?serverHost=${storeHost}&amp;accessToken=${application_accessToken}&amp;serverPort=${storePort}</stringProp>
+            <stringProp name="HTTPSampler.path">/phones/getPhone?serverHost=${storeHost}&amp;accessToken=${application_accessToken}&amp;serverPort=${httpPort}</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1087,7 +1087,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${storePort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-            <stringProp name="HTTPSampler.path">/api/am/store/v0.11/applications/${__property(ApplicationID)}</stringProp>
+            <stringProp name="HTTPSampler.path">/api/am/store/v0.12/applications/${__property(ApplicationID)}</stringProp>
             <stringProp name="HTTPSampler.method">DELETE</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1141,7 +1141,7 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <stringProp name="HTTPSampler.port">${pubPort}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">api/am/publisher/v0.11/apis/${__property(apid)}</stringProp>
+            <stringProp name="HTTPSampler.path">api/am/publisher/v0.12/apis/${__property(apid)}</stringProp>
             <stringProp name="HTTPSampler.method">DELETE</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1194,25 +1194,68 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <dataType>true</dataType>
             <encoding>false</encoding>
             <assertions>true</assertions>
-            <subresults>true</subresults>
+            <subresults>false</subresults>
             <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
+            <samplerData>true</samplerData>
+            <xml>true</xml>
             <fieldNames>true</fieldNames>
-            <responseHeaders>false</responseHeaders>
+            <responseHeaders>true</responseHeaders>
             <requestHeaders>false</requestHeaders>
             <responseDataOnError>false</responseDataOnError>
             <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
             <sentBytes>true</sentBytes>
+            <url>true</url>
+            <fileName>true</fileName>
+            <hostname>true</hostname>
             <threadCounts>true</threadCounts>
             <idleTime>true</idleTime>
             <connectTime>true</connectTime>
           </value>
         </objProp>
         <stringProp name="TestPlan.comments">148f9080-678c-4714-b56b-936db0c7a648</stringProp>
-        <stringProp name="filename"></stringProp>
+        <stringProp name="filename">scenarioResults.jtl</stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>true</encoding>
+            <assertions>true</assertions>
+            <subresults>false</subresults>
+            <responseData>true</responseData>
+            <samplerData>true</samplerData>
+            <xml>true</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>true</responseHeaders>
+            <requestHeaders>true</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <fileName>true</fileName>
+            <hostname>true</hostname>
+            <threadCounts>true</threadCounts>
+            <sampleCount>true</sampleCount>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename">scenarioResults.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>
