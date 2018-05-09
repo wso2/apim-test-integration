@@ -1,0 +1,3 @@
+#!/bin/bash
+nohup java -jar /home/ubuntu/Phone-Service.jar > phone-service.out &
+nohup java -jar /home/ubuntu/event-service.jar > event-service.out &

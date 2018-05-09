@@ -36,6 +36,13 @@ scenarioConfig:
 #    name: scenario06
 #    description: 'API Governance'
 #    dir: scenario06
+  scripts:
+  -
+    file: "init.sh"
+    phase: CREATE
+  -
+    file: "cleanup.sh"
+    phase: DESTROY
 
 #config value sets need to be mentioned
 config-change-sets:

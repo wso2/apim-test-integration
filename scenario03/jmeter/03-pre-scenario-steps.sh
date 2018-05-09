@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
+
 serverHost=$serverHost
 serverPort=$serverPort
 pubHost=$pubHost
@@ -24,8 +26,6 @@ gwMgrHost=$gwMgrHost
 gwMgrPort=$gwMgrPort
 gwWrkHost=$gwWrkHost
 gwWrkPort=$gwWrkPort
-MSF4JHost=$MSF4JHost
-MSF4JPort=$MSF4JPort
 
 prgdir=$(dirname "$0")
 scriptPath=$(cd "$prgdir"; pwd)
@@ -43,8 +43,6 @@ sed -i "s|^\(gwMgrHost\s*=\s*\).*\$|\1${gwMgrHost}|" $scriptPath/../resources/us
 sed -i "s|^\(gwMgrPort\s*=\s*\).*\$|\1${gwMgrPort}|" $scriptPath/../resources/user.properties
 sed -i "s|^\(gwWrkHost\s*=\s*\).*\$|\1${gwWrkHost}|" $scriptPath/../resources/user.properties
 sed -i "s|^\(gwWrkPort\s*=\s*\).*\$|\1${gwWrkPort}|" $scriptPath/../resources/user.properties
-sed -i "s|^\(MSF4JHost\s*=\s*\).*\$|\1${MSF4JHost}|" $scriptPath/../resources/user.properties
-sed -i "s|^\(MSF4JPort\s*=\s*\).*\$|\1${MSF4JPort}|" $scriptPath/../resources/user.properties
 #run base-setup.sh
 source $scriptPath/../base-setup.sh > $scriptPath/basesetup.log
 

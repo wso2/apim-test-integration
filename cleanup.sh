@@ -15,3 +15,29 @@
 # limitations under the License.
 
 #TODO: compete the script when TestGrid implements support for this
+
+set -e
+
+prgdir=$(dirname "$0")
+scriptPath=$(cd "$prgdir"; pwd)
+
+keyName=qaKey
+sgId=sg-19b31c52
+instanceId=i-0223b0cef006319d4
+
+echo "Destroying additionally created infrastructure..."
+
+# Destroy the EC2 instance
+instanceState=$(aws ec2 terminate-instances --instance-ids $instanceId --query 'TerminatingInstances[0].CurrentState.Name' | cut -d '"' -f2)
+counter=1
+while [ $instanceState != "terminated" -a $counter -lt 10 ]; do
+    sleep 15
+    instanceState=$(aws ec2 terminate-instances --instance-ids $instanceId --query 'TerminatingInstances[0].CurrentState.Name' | cut -d '"' -f2)
+    counter=$((counter+1))
+done
+sleep 30
+
+# Delete the securty group, generated key pairs
+aws ec2 delete-security-group --group-id $sgId
+aws ec2 delete-key-pair --key-name $keyName
+rm -f $scriptPath/key.pem
