@@ -4154,8 +4154,8 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
           <name>saveConfig</name>
           <value class="SampleSaveConfiguration">
             <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
+            <latency>false</latency>
+            <timestamp>false</timestamp>
             <success>true</success>
             <label>true</label>
             <code>true</code>
@@ -4164,24 +4164,25 @@ vars.put(&quot;encoded_ClientCredentials&quot;, new String(encoded_ClientCredent
             <dataType>true</dataType>
             <encoding>false</encoding>
             <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
+            <subresults>false</subresults>
+            <responseData>true</responseData>
+            <samplerData>true</samplerData>
+            <xml>true</xml>
             <fieldNames>true</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
+            <responseHeaders>true</responseHeaders>
+            <requestHeaders>true</requestHeaders>
             <responseDataOnError>false</responseDataOnError>
             <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
             <sentBytes>true</sentBytes>
+            <url>true</url>
+            <hostname>true</hostname>
             <threadCounts>true</threadCounts>
-            <idleTime>true</idleTime>
+            <sampleCount>true</sampleCount>
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename"></stringProp>
+        <stringProp name="filename">scenario-01-results.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>

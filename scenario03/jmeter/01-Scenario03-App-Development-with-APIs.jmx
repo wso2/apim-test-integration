@@ -1184,8 +1184,8 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
           <name>saveConfig</name>
           <value class="SampleSaveConfiguration">
             <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
+            <latency>false</latency>
+            <timestamp>false</timestamp>
             <success>true</success>
             <label>true</label>
             <code>true</code>
@@ -1195,12 +1195,12 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <encoding>false</encoding>
             <assertions>true</assertions>
             <subresults>false</subresults>
-            <responseData>false</responseData>
+            <responseData>true</responseData>
             <samplerData>true</samplerData>
             <xml>true</xml>
             <fieldNames>true</fieldNames>
             <responseHeaders>true</responseHeaders>
-            <requestHeaders>false</requestHeaders>
+            <requestHeaders>true</requestHeaders>
             <responseDataOnError>false</responseDataOnError>
             <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
@@ -1210,12 +1210,11 @@ ${__setProperty(access_token_publish, ${access_token_publish})};</stringProp>
             <fileName>true</fileName>
             <hostname>true</hostname>
             <threadCounts>true</threadCounts>
-            <idleTime>true</idleTime>
-            <connectTime>true</connectTime>
+            <sampleCount>true</sampleCount>
           </value>
         </objProp>
         <stringProp name="TestPlan.comments">148f9080-678c-4714-b56b-936db0c7a648</stringProp>
-        <stringProp name="filename">scenarioResults.jtl</stringProp>
+        <stringProp name="filename">scenario-03-results.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
       <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="true">
