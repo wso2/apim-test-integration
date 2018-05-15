@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+# Copyright (c) 2017, WSO2 Inc. (http://wso2.com) All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#run pre-scenario-steps
-source $rootDir/jmeter/04-pre-scenario-steps.sh
-#TODO: Verify output of above step.
-#run jmeter file/s.
-$JMETER_HOME/bin/jmeter.sh -n -t jmeter/01-Scenario04-ManageLifeCycle.jmx -p resources/user.properties
-#run post-scenario-steps
-source jmeter/04-post-scenario-steps.sh
+$JMETER_HOME/bin/jmeter.sh -n -t jmeter/01-Solution-06-ApplicationLevelThrottling.jmx -p resources/user.properties
