@@ -18,6 +18,6 @@
 source $rootDir/jmeter/04-pre-scenario-steps.sh
 #TODO: Verify output of above step.
 #run jmeter file/s.
-$JMETER_HOME/bin/jmeter.sh -n -t 01-Scenario04-ManageLifeCycle.jmx -p resources/user.properties
+$JMETER_HOME/bin/jmeter.sh -n -t jmeter/01-Scenario04-ManageLifeCycle.jmx -p resources/user.properties
 #run post-scenario-steps
 source jmeter/04-post-scenario-steps.sh
