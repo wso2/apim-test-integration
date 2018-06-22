@@ -55,6 +55,7 @@ setup_java_env() {
         if [[ $REQUESTED_JDK_PRESENT = 0 ]]; then
            printf "The requested JDK, ${JDK}, not found in /etc/environment: \n $(cat /etc/environment)."
             #exit 1; // todo: inform via cfn-signal
+            #### Install java if already not exist
             # install_java;
         fi
 
@@ -86,30 +87,9 @@ get_jenkins_build() {
 	echo "Downloadable URL: "$downloadable_url
 	sudo wget $downloadable_url
 
-
-#    jenkins_url="https://wso2.org/jenkins/job/products/job/product-apim_2.x/"
-
-    ## Get the Latest Successful Build URL from jenkins
-#    last_successfull_build=$(curl -s "$jenkins_url/api/xml?xpath=//lastSuccessfulBuild/url")
-
-    ## Extract the URL from the last_successfull_build
-#    last_successfull_build_url=$(echo $last_successfull_build | sed -n 's:.*<url>\(.*\)</url>.*:\1:p')
-#    echo "Latest Successful Build URL : "$last_successfull_build_url
-
-    ## Get the relativePath of the distribution pack; # e.g : org.wso2.am/wso2am/2.5.1-SNAPSHOT/wso2am-2.5.1-SNAPSHOT.zip
-#    disrtribution_url=$(curl -s -G $last_successfull_build_url"org.wso2.am\$wso2am/api/xml" -d xpath=\(/mavenBuild//relativePath\)[4])
-
-    # Extracting the relative path to the distribution pack
-#    distribution_pack=$(echo $disrtribution_url | sed -n 's:.*<relativePath>\(.*\)</relativePath>.*:\1:p')
-#    echo "Relative distribution pack :" $distribution_pack
-
-#    download_url=$last_successfull_build_url"org.wso2.am\$wso2am/artifact/"$distribution_pack
-#    echo "Downloadable URL: "$download_url
-#    sudo wget $download_url
-
 }
 
-#### Starts run-scenario 
+###################### Starts run-scenario
 
 prgdir=$(dirname "$0")
 productPath=$(cd "$prgdir"; pwd)
@@ -117,25 +97,13 @@ productPath=$(cd "$prgdir"; pwd)
 #### If reads from properties file #repo=$(grep -i 'git_location' $FILE  | cut -f2 -d'=')
 ####Take product choice from CLI; e.g. apim or is
 repo=$1
-
 echo "Working path: "$productPath
 
-#### Call to set java home 
+#### Call to check set java home
 #setup_java_env;
 
 
-#### Install MAVEN
-
-#echo "Installing Apache Maven"
-#    sudo wget https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
-#    sudo tar -xzvf apache-maven-3.3.9-bin.tar.gz
-#    sudo ln -s -f apache-maven-3.3.9 maven
-#    export MAVEN_OPTS="-Xmx2048m -Xms256m"
-#    export PATH=/opt/wso2/maven/bin/:$PATH
-#    echo "Maven installation success ============"
-
 #### Clone the product; Build the distribution pack
-
 echo "cloning the repo product-"$repo
     if [ "$repo" = "apim" ]
         then
@@ -149,7 +117,7 @@ echo "cloning the repo product-"$repo
 	git status
 
 #### Get copied from jenkins build
-cd $productPath
+cd ${productPath}
 get_jenkins_build
 echo "Download .zip success ==========="
 
@@ -165,20 +133,48 @@ echo "zip file copied to target success =========="
 #cd $temp_repo/target
 #temp_pack2=$(ls -t | grep .zip | head -1)
 #sudo unzip -qq $temp_pack2
-#### Incorporate the datasource script here
-#### =========== Call config.sh
+#### Incorporate the datasource script here; and call run-schema.sh to create RDBMS schemas
+#run-schema.sh
+#### =========== Call config-production.python #given by lasantha
+
 
 echo "Configurations done and unzip success ==========="
 
 #### TODO: Run Integration tests now
 
-intg_repo=$productPath/inte_test_apim/product-apim/modules/integration/tests-integration/tests-backend
+cd ${productPath}
+pack=$(ls -t | grep .zip | head -1)
+
+for f in $pack; do
+
+    prod=${f%%-*}
+    suffix=${f#*-}
+        for n in $suffix; do
+        version=${n%%.zip}
+        done
+done
+
+intg_repo=$productPath/inte_test_apim/product-apim/modules/integration
+
+#### Change the pom for version
+    file=$intg_repo/tests-integration/tests-backend/pom.xml
+
+    xmlstarlet edit -L -N w=http://maven.apache.org/POM/4.0.0 \
+    -u "/w:build/w:plugins/w:plugin/w:configuration/w:systemProperties/w:property[@name='carbon.zip']" -v "${basedir}/../../../distribution/product/target/wso2am-2.5.0.zip" $file
+
+    if [ $? -ne 0 ]; then
+    echo "Could not find the file in the given location"
+    exit 1
+    fi
+
+    echo "Values added to the file: $file"
+
 cd $intg_repo
 mvn clean install
 echo "Integration test completed =========="
 
 
-
+#### If user pass product two (is)
 elif [ "$repo" = "is" ]
  then
  mkdir -p $productPath/inte_test_is
