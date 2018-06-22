@@ -19,8 +19,10 @@ set -e
 sudo yum update && \
 sudo yum install -y git man zip vim wget tar
 
-sudo mkdir -p /opt/wso2
-cd /opt/wso2
+DEPL_OUT_DIRECTORY=/opt
+FILE=$DEPL_OUT_DIRECTORY/out.properties
+WORKSPACE_DIR=$(grep -i 'WORKSPACE_DIR' $FILE  | cut -f2 -d'=')
+cd ${WORKSPACE_DIR}
 
 
 #### TODO : Copy the run-integration.sh into /opt/wso2
@@ -30,7 +32,7 @@ install_java() {
 	if [[ "$userJava" = "oraclejdk" ]];then
 		echo "Installing Oracle JDK"
 		MACHINE_TYPE='uname -m'
-			
+
 		if [ ${MACHINE_TYPE} == 'x86_64' ]; then
 			sudo wget   http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/jdk-8u171-linux-x64.tar.gz
 			sudo tar -xzf jdk-8u171-linux-x64.tar.gz
@@ -75,26 +77,35 @@ setup_java_env() {
 
 get_jenkins_build() {
 
-    echo "Get distribution build from jenkins"
-    jenkins_url="https://wso2.org/jenkins/job/products/job/product-apim_2.x/"
+	echo "Get distribution build from jenkins"
+	jenkins_url="https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/"
+	distribution_url=$(curl -s -G $jenkins_url/api/xml -d xpath=\(/mavenModuleSetBuild//relativePath\)[3])
+	distribution_pack=$(echo $distribution_url | sed -n 's:.*<relativePath>\(.*\)</relativePath>.*:\1:p')
+	echo "Distribution Pack: "$distribution_pack
+	downloadable_url=$jenkins_url"artifact/"$distribution_pack
+	echo "Downloadable URL: "$downloadable_url
+	sudo wget $downloadable_url
+
+
+#    jenkins_url="https://wso2.org/jenkins/job/products/job/product-apim_2.x/"
 
     ## Get the Latest Successful Build URL from jenkins
-    last_successfull_build=$(curl -s "$jenkins_url/api/xml?xpath=//lastSuccessfulBuild/url")
+#    last_successfull_build=$(curl -s "$jenkins_url/api/xml?xpath=//lastSuccessfulBuild/url")
 
     ## Extract the URL from the last_successfull_build
-    last_successfull_build_url=$(echo $last_successfull_build | sed -n 's:.*<url>\(.*\)</url>.*:\1:p')
-    echo "Latest Successful Build URL : "$last_successfull_build_url
+#    last_successfull_build_url=$(echo $last_successfull_build | sed -n 's:.*<url>\(.*\)</url>.*:\1:p')
+#    echo "Latest Successful Build URL : "$last_successfull_build_url
 
     ## Get the relativePath of the distribution pack; # e.g : org.wso2.am/wso2am/2.5.1-SNAPSHOT/wso2am-2.5.1-SNAPSHOT.zip
-    disrtribution_url=$(curl -s -G $last_successfull_build_url"org.wso2.am\$wso2am/api/xml" -d xpath=\(/mavenBuild//relativePath\)[4])
+#    disrtribution_url=$(curl -s -G $last_successfull_build_url"org.wso2.am\$wso2am/api/xml" -d xpath=\(/mavenBuild//relativePath\)[4])
 
     # Extracting the relative path to the distribution pack
-    distribution_pack=$(echo $disrtribution_url | sed -n 's:.*<relativePath>\(.*\)</relativePath>.*:\1:p')
-    echo "Relative distribution pack :" $distribution_pack
+#    distribution_pack=$(echo $disrtribution_url | sed -n 's:.*<relativePath>\(.*\)</relativePath>.*:\1:p')
+#    echo "Relative distribution pack :" $distribution_pack
 
-    download_url=$last_successfull_build_url"org.wso2.am\$wso2am/artifact/"$distribution_pack
-    echo "Downloadable URL: "$download_url
-    sudo wget $download_url
+#    download_url=$last_successfull_build_url"org.wso2.am\$wso2am/artifact/"$distribution_pack
+#    echo "Downloadable URL: "$download_url
+#    sudo wget $download_url
 
 }
 
@@ -115,14 +126,13 @@ echo "Working path: "$productPath
 
 #### Install MAVEN
 
-cd $productPath/
-echo "Installing Apache Maven"
-    sudo wget https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
-    sudo tar -xzvf apache-maven-3.3.9-bin.tar.gz
-    #ln -s apache-maven-3.3.9 maven
-    export MAVEN_OPTS="-Xmx2048m -Xms256m"
-    export PATH=/opt/wso2/maven/bin/:$PATH
-    echo "Maven installation success ============"
+#echo "Installing Apache Maven"
+#    sudo wget https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+#    sudo tar -xzvf apache-maven-3.3.9-bin.tar.gz
+#    sudo ln -s -f apache-maven-3.3.9 maven
+#    export MAVEN_OPTS="-Xmx2048m -Xms256m"
+#    export PATH=/opt/wso2/maven/bin/:$PATH
+#    echo "Maven installation success ============"
 
 #### Clone the product; Build the distribution pack
 
@@ -134,23 +144,40 @@ echo "cloning the repo product-"$repo
         sudo git clone https://github.com/wso2/product-apim.git
         sleep 10
         echo "Product clone success ==========="
+	cd product-apim
+	sudo git checkout 2.x
+	git status
 
- #### Get copied from jenkins build
+#### Get copied from jenkins build
+cd $productPath
 get_jenkins_build
 echo "Download .zip success ==========="
 
-cd $productPath/inte_test_apim/product-apim
-sudo git checkout remotes/origin/2.x
-git status
-sudo mkdir -p temp_pack
-sudo cp $productPath/inte_test_apim/wso2am-2.5.1-SNAPSHOT.zip modules/distribution/temp_pack
-#/$(ls -t ${WUM_PRODUCT_DIR} | grep .zip | head -1)
-#mvn clean install Dmaven.test.skip=true
+temp_repo=$productPath/inte_test_apim/product-apim/modules/distribution/product
+sudo mkdir -p $temp_repo/target
+
+temp_pack=$(ls -t $productPath | grep .zip | head -1)
+sudo cp $temp_pack $temp_repo/target
+echo "zip file copied to target success =========="
  
-#### TODO: Configure datasources
+#### TODO: Configure datasources and compress
+
+#cd $temp_repo/target
+#temp_pack2=$(ls -t | grep .zip | head -1)
+#sudo unzip -qq $temp_pack2
+#### Incorporate the datasource script here
 #### =========== Call config.sh
- 
+
+echo "Configurations done and unzip success ==========="
+
 #### TODO: Run Integration tests now
+
+intg_repo=$productPath/inte_test_apim/product-apim/modules/integration/tests-integration/tests-backend
+cd $intg_repo
+mvn clean install
+echo "Integration test completed =========="
+
+
 
 elif [ "$repo" = "is" ]
  then
@@ -164,4 +191,7 @@ echo "$repo"
 
 fi
 
-### Script ends                                                                    
+
+
+### Script ends
+                                                                     
