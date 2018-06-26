@@ -15,6 +15,7 @@
 # limitations under the License.
 
 set -e
+set -o xtrace
 
 sudo yum update && \
 sudo yum install -y git man zip vim wget tar
