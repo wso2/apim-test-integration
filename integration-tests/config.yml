@@ -34,6 +34,7 @@
 #product_name: product-x
 #repository_name: product-x
 #workspace: /home/TG/workspace
+#product_storage : /home/TG/workspace/storage
 #
 ####################################################
 
@@ -50,3 +51,4 @@ pom_file_paths:
 product_name:
 repository_name:
 workspace:
+product_storage :
