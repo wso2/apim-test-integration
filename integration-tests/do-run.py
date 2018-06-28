@@ -22,6 +22,7 @@ import os
 import shutil
 import pymysql
 import sqlparse
+import requests
 from pathlib import Path
 
 git_repo_url = None
@@ -30,7 +31,7 @@ os_type = None
 workspace_dir = None
 product_name = None
 product_id = None
-jeinkins_build_url = "https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/artifact/target/checkout/modules/distribution/product/target/wso2am-2.5.0.zip"
+product_dist_download_api = "https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/api/"
 database_names = None
 db_type = None
 database_config = None
@@ -63,6 +64,34 @@ def function_logger(file_level, console_level = None):
     logger.addHandler(fh)
 
     return logger
+
+def get_product_name(jkns_api_url):
+    #https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/api/
+    req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/fileName'
+    headers = {'Accept':'application/xml'}
+    response = requests.get(req_url, headers=headers)
+    if response.status_code == 200:
+        root = ET.fromstring(response.content)
+        #resval = response.content.decode('utf-8')
+        product_name = root.text.split('-')[0] + "-" + root.text.split('-')[1]
+        return product_name
+    else:
+        logger.infor('Failure on jenkins api call')
+
+def get_product_dist_rel_path(jkns_api_url):
+    req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/relativePath'
+    headers = {'Accept':'application/xml'}
+    response = requests.get(req_url, headers=headers)
+    if response.status_code == 200:
+        root = ET.fromstring(response.content)
+        #resval = response.content.decode('utf-8')
+        dist_rel_path = root.text.split('wso2')[0]
+        return dist_rel_path
+    else:
+        logger.infor('Failure on jenkins api call')
+def get_product_dist_arifact_path(jkns_api_url):
+    artfct_path = jkns_api_url.split('/api')[0] + '/artifact/'
+    return artfct_path
 
 def read_config_file():
     """Read the configs from config.yaml file.
@@ -231,23 +260,19 @@ def main():
     try:
         read_config_file()
         logger = function_logger(logging.DEBUG, logging.DEBUG)
-
-        #clone the product repo
+        #product name retrieve from jenkins api
+        product_name = get_product_name(product_dist_download_api)
+        
+        #clone product repo
         subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace_dir)
         logger.info('cloning repo done.')
-
-        #build the product
-        subprocess.call(['mvn', 'clean', 'install'], cwd='path/to/product/repo')
-        
-        #TODO: need to generate the url in correct way.
-        #xpath=https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/api/xml?xpath=/*/artifact[1]/fileName
-        url = jeinkins_build_url
+        #TODO: product_dist_download_api should receive from external file
         product_file_name = product_name + ".zip"
-
+        dist_downl_url = get_product_dist_arifact_path(product_dist_download_api) + get_product_dist_rel_path(product_dist_download_api) + product_file_name
         destination = Path(workspace_dir + "/storage/" + product_file_name)
 
         #download the last released pack from Jenkins
-        download_file(url, str(destination))
+        download_file(dist_downl_url, str(destination))
         logger.info('downloading the pack from Jenkins done.')
 
         #run python file for product configuration
