@@ -20,20 +20,22 @@ set -o xtrace
 DIR=$2
 FILE1=${DIR}/infrastructure.properties
 FILE2=${DIR}/testplan-props.properties
-REM_DIR=/opt/wso2
-echo $FILE1
-echo $FILE2
 
-PROP_KEY=keyFileLocation    #pem file
+PROP_KEY=sshKeyFileLocation    #pem file
 PROP_USER=user              #OS name e.g. centos
 PROP_HOST=WSO2PublicIP      #host IP
+PROP_REMOTE_DIR=RemoteWorkspaceDirPosix
 
+REM_DIR=`cat ${FILE2} | grep -w "$PROP_REMOTE_DIR" | cut -d'=' -f2`
 key_pem=`cat ${FILE1} | grep -w "$PROP_KEY" | cut -d'=' -f2`
-user=`cat ${FILE2} | grep -w "$PROP_USER" | cut -d'=' -f2`
+#user=`cat ${FILE2} | grep -w "$PROP_USER" | cut -d'=' -f2`
+user=centos
 host=`cat ${FILE1} | grep -w "$PROP_HOST" | cut -d'=' -f2`
 
 scp -o StrictHostKeyChecking=no -i ${key_pem} do-run.sh ${user}@${host}:${REM_DIR}
+
 scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE1} ${user}@${host}:${REM_DIR}
+
 scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE2} ${user}@${host}:${REM_DIR}
 echo "=== File do-run.sh copied to success ==="
 

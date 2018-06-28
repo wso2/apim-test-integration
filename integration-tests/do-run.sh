@@ -119,35 +119,70 @@ echo "Cloning product repo"
 
 ################################## Starts run-scenario ###########################################
 
+####Read from properties file
 
-#### Read yaml file
-eval $(parse_yaml config.yml "config_")
+WORKSPACE_DIR=/opt/wso2/workspace
+FILE1=${WORKSPACE_DIR}/infrastructure.properties
+FILE2=${WORKSPACE_DIR}/testplan-props.properties
 
 #### User Variables
-WORKSPACE_DIR=$(echo $config_workspace_dir)
-GIT_LOCATION=$(echo $config_git_location)
-GIT_BRANCH=$(echo $config_git_branch)
+GIT_LOCATION=$(grep -i 'gitURL' ${FILE2}  | cut -f2 -d'=')
+GIT_BRANCH=$(grep -i 'gitBranch' ${FILE2}  | cut -f2 -d'=')
 
-USERNAME=$(echo $config_database_user)
-DB_HOST=$(echo $config_database_host)
-DB_PORT=$(echo $config_database_port)
+USERNAME=$(grep -i 'DatabaseUser' ${FILE1}  | cut -f2 -d'=')
+DB_HOST=$(grep -i 'DatabaseHost' ${FILE1}  | cut -f2 -d'=')
+DB_PORT=$(grep -i 'DatabasePort' ${FILE1}  | cut -f2 -d'=')
 #DB_ENGINE=$(echo $config_database_..)
-DB_VERSION=$(echo $config_database_version)
-DB_TYPE=$(echo $config_database_type)
+DB_VERSION=$(grep -i 'DBEngineVersion' ${FILE2}  | cut -f2 -d'=')
+DB_TYPE=$(grep -i 'DBEngine' ${FILE2}  | cut -f2 -d'=')
 
 ## MySQL connection details
-MYSQL_USERNAME=$(echo $config_database_user)
-MYSQL_PASSWORD=$(echo $config_database_passwd)
+MYSQL_USERNAME=$(grep -i 'DatabaseUser' ${FILE1}  | cut -f2 -d'=')
+MYSQL_PASSWORD=$(grep -i 'DatabasePassword' ${FILE1}  | cut -f2 -d'=')
 
 ## databases
-UM_DB=$(echo $config_database_umdb)
-AM_DB=$(echo $config_database_amdb)
-GOV_REG_DB=$(echo $config_database_govregdb)
-METRICS_DB=$(echo $config_database_metricsdb)
+CARBON_DB="WSO2_CARBON_DB"
+UM_DB="WSO2UM_DB"
+AM_DB="WSO2AM_DB"
+STATS_DB="WSO2AM_STATS_DB"
+MB_DB="WSO2_MB_STORE_DB"
+GOV_REG_DB="WSO2REG_DB"
+METRICS_DB="WSO2METRICS_DB"
 
 ## database users
-MYSQL_DB_USER=$(echo $config_database_mysql_user)
-MYSQL_DB_USER_PWD=$(echo $config_database_mysql_passwd)
+MYSQL_DB_USER=wso2
+MYSQL_DB_USER_PWD=wso2
+
+
+
+#### Read yaml file
+#eval $(parse_yaml config.yml "config_")
+
+#### User Variables
+#WORKSPACE_DIR=$(echo $config_workspace_dir)
+#GIT_LOCATION=$(echo $config_git_location)
+#GIT_BRANCH=$(echo $config_git_branch)
+
+#USERNAME=$(echo $config_database_user)
+#DB_HOST=$(echo $config_database_host)
+#DB_PORT=$(echo $config_database_port)
+#DB_ENGINE=$(echo $config_database_..)
+#DB_VERSION=$(echo $config_database_version)
+#DB_TYPE=$(echo $config_database_type)
+
+## MySQL connection details
+#MYSQL_USERNAME=$(echo $config_database_user)
+#MYSQL_PASSWORD=$(echo $config_database_passwd)
+
+## databases
+#UM_DB=$(echo $config_database_umdb)
+#AM_DB=$(echo $config_database_amdb)
+#GOV_REG_DB=$(echo $config_database_govregdb)
+#METRICS_DB=$(echo $config_database_metricsdb)
+
+## database users
+#MYSQL_DB_USER=$(echo $config_database_mysql_user)
+#MYSQL_DB_USER_PWD=$(echo $config_database_mysql_passwd)
 
 
 cd ${WORKSPACE_DIR}
@@ -221,17 +256,17 @@ echo "============= Database created success ==============================="
 intg_repo=$productPath/product-apim/modules/integration
 
 ## Change the pom.xml for required version change
-    file=$intg_repo/tests-integration/tests-backend/pom.xml
-
-    sudo xmlstarlet edit -L -N w=http://maven.apache.org/POM/4.0.0 \
-    -u "/w:build/w:plugins/w:plugin/w:configuration/w:systemProperties/w:property[@name='carbon.zip']" -v "${basedir}/../../../distribution/product/target/wso2am-2.5.0.zip" $file
-
-    if [ $? -ne 0 ]; then
-    echo "Could not find the file in the given location"
-    exit 1
-    fi
-
-    echo "Values added to the file: $file"
+#    file=$intg_repo/tests-integration/tests-backend/pom.xml
+#
+#    sudo xmlstarlet edit -L -N w=http://maven.apache.org/POM/4.0.0 \
+#    -u "/w:build/w:plugins/w:plugin/w:configuration/w:systemProperties/w:property[@name='carbon.zip']" -v "${basedir}/../../../distribution/product/target/wso2am-2.5.0.zip" $file
+#
+#    if [ $? -ne 0 ]; then
+#    echo "Could not find the file in the given location"
+#    exit 1
+#    fi
+#
+#    echo "Values added to the file: $file"
 
 cd $intg_repo
 mvn clean install
