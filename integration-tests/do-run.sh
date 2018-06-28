@@ -69,9 +69,9 @@ get_jenkins_build() {
 setup_mysql_databases() {
     echo "MySQL setting up" >> ${WORKSPACE_DIR}/java.txt
     echo ">> Creating databases..."
-    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $UM_DB; DROP DATABASE IF
-    EXISTS $AM_DB; DROP DATABASE IF EXISTS $GOV_REG_DB; DROP DATABASE IF EXISTS $METRICS_DB;
-    CREATE DATABASE $UM_DB; CREATE DATABASE $AM_DB; CREATE DATABASE $GOV_REG_DB; CREATE DATABASE $METRICS_DB;"
+    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $CARBON_DB; DROP DATABASE IF
+    EXISTS $AM_DB; DROP DATABASE IF EXISTS $STATS_DB; DROP DATABASE IF EXISTS $METRICS_DB; DROP DATABASE IF EXISTS $MB_DB;
+    CREATE DATABASE $CARBON_DB; CREATE DATABASE $AM_DB; CREATE DATABASE $STATS_DB; CREATE DATABASE $METRICS_DB; CREATE DATABASE $MB_DB;"
     echo ">> Databases created!"
 
     echo ">> Creating users..."
@@ -80,21 +80,21 @@ setup_mysql_databases() {
     echo ">> Users created!"
 
     echo ">> Grant access for users..."
-    mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "GRANT ALL PRIVILEGES ON $UM_DB.* TO '$MYSQL_DB_USER'@'%';
-    GRANT ALL PRIVILEGES ON $AM_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $GOV_REG_DB.* TO
-    '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $METRICS_DB.* TO '$MYSQL_DB_USER'@'%';"
+    mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "GRANT ALL PRIVILEGES ON $CARBON_DB.* TO '$MYSQL_DB_USER'@'%';
+    GRANT ALL PRIVILEGES ON $AM_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $STATS_DB.* TO
+    '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $METRICS_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $MB_DB.* TO '$MYSQL_DB_USER'@'%';"
     echo ">> Access granted!"
 
     echo ">> Creating tables..."
     if [ ${DB_VERSION} ==  "5.7" ]
     then
-        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $UM_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql;
-        USE $GOV_REG_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql5.7.sql;
-        USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql;"
+        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql;
+        USE $STATS_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql5.7.sql;
+        USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql; USE $MB_DB; SOURCE $DB_SCRIPT_HOME/mb-store/mysql-mb.sql;"
     else
-        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $UM_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql;
-        USE $GOV_REG_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql.sql;
-        USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql;"
+        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql;
+        USE $STATS_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql.sql;
+        USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql; USE $MB_DB; SOURCE $DB_SCRIPT_HOME/mb-store/mysql-mb.sql;"
     fi
     echo ">> Tables created!"
 }
@@ -142,11 +142,11 @@ MYSQL_PASSWORD=$(grep -i 'DatabasePassword' ${FILE1}  | cut -f2 -d'=')
 
 ## databases
 CARBON_DB="WSO2_CARBON_DB"
-UM_DB="WSO2UM_DB"
+#UM_DB="WSO2UM_DB"
 AM_DB="WSO2AM_DB"
 STATS_DB="WSO2AM_STATS_DB"
 MB_DB="WSO2_MB_STORE_DB"
-GOV_REG_DB="WSO2REG_DB"
+#GOV_REG_DB="WSO2REG_DB"
 METRICS_DB="WSO2METRICS_DB"
 
 ## database users
@@ -210,12 +210,7 @@ sudo cp $temp_pack $temp_repo/target
 echo "============= zip file copied to target success ==============================="
 
 
-#### Configure datasources and compress
-## Calling config-production python
-python3 Configure_Product.py
-echo "============= Datasource configurations are success ==============================="
-
-
+#### Configure database, datasources and compress
 #### Populate database schemas
 cd ${productPath}
 pack=$(ls -t | grep .zip | head -1)
@@ -249,6 +244,11 @@ unzip -qq ${PRODUCT_HOME}.zip
         fi
 
 echo "============= Database created success ==============================="
+
+#### Calling config-production python
+python3 Configure_Product.py ${PRODUCT_HOME}.zip product-apim
+
+echo "============= Datasource configurations are success ==============================="
 
 
 #### Run Integration tests now
