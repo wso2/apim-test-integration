@@ -15,6 +15,7 @@
 # limitations under the License.
 
 set -e
+set -o xtrace
 
 DIR=$2
 FILE1=${DIR}/infrastructure.properties
@@ -31,14 +32,16 @@ key_pem=`cat ${FILE1} | grep -w "$PROP_KEY" | cut -d'=' -f2`
 user=`cat ${FILE2} | grep -w "$PROP_USER" | cut -d'=' -f2`
 host=`cat ${FILE1} | grep -w "$PROP_HOST" | cut -d'=' -f2`
 
-scp -i ${key_pem} do-run.sh ${user}@${host}:${REM_DIR}
+scp -o StrictHostKeyChecking=no -i ${key_pem} do-run.sh ${user}@${host}:${REM_DIR}
+scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE1} ${user}@${host}:${REM_DIR}
+scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE2} ${user}@${host}:${REM_DIR}
 echo "=== File do-run.sh copied to success ==="
 
-ssh -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
 
 ### Get the reports from integration test
-scp -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports .
-scp -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log .
+scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports .
+scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log .
 echo "=== Reports are copied success ==="
 
 ##script ends
