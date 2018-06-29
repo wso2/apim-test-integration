@@ -24,13 +24,13 @@ FILE2=${DIR}/testplan-props.properties
 PROP_KEY=sshKeyFileLocation    #pem file
 PROP_USER=user              #OS name e.g. centos
 PROP_HOST=WSO2PublicIP      #host IP
-PROP_REMOTE_DIR=RemoteWorkspaceDirPosix
+PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_UNIX
 
-REM_DIR=`cat ${FILE2} | grep -w "$PROP_REMOTE_DIR" | cut -d'=' -f2`
-key_pem=`cat ${FILE1} | grep -w "$PROP_KEY" | cut -d'=' -f2`
-#user=`cat ${FILE2} | grep -w "$PROP_USER" | cut -d'=' -f2`
+REM_DIR=`grep -w "$PROP_REMOTE_DIR" ${FILE1} ${FILE2} | cut -d'=' -f2`
+key_pem=`grep -w "$PROP_KEY" ${FILE1} ${FILE2} | cut -d'=' -f2`
+#user=`cat ${FILE2} | grep -w "$PROP_USER" ${FILE1} ${FILE2} | cut -d'=' -f2`
 user=centos
-host=`cat ${FILE1} | grep -w "$PROP_HOST" | cut -d'=' -f2`
+host=`grep -w "$PROP_HOST" ${FILE1} ${FILE2} | cut -d'=' -f2`
 
 scp -o StrictHostKeyChecking=no -i ${key_pem} do-run.sh ${user}@${host}:${REM_DIR}
 
