@@ -18,7 +18,7 @@ set -e
 set -o xtrace
 
 #### Find the OS to run the script on particular OS
-var=$(cat /etc/os-release | sed -e 1b -e '$!d' | awk '{print $1;}')
+    var=$(cat /etc/os-release | sed -e 1b -e '$!d' | awk '{print $1;}')
 
     for f in $var; do
         os_type=${f#*\"}
@@ -102,13 +102,50 @@ setup_mysql_databases() {
 
 #### To populate MSSQL schema and tables
 setup_mssql_databases(){
-    echo "MSSQL"
-    #TODO: add mssql scrip here
+    echo ">> Setting up SQLServer databases ..."
+    echo ">> Creating databases..."
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $CARBON_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $AM_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $STATS_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $MB_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $METRICS_DB"
+    echo ">> Databases created!"
+
+    echo ">> Creating tables..."
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $CARBON_DB -i $DB_SCRIPT_HOME/mssql.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $AM_DB -i $DB_SCRIPT_HOME/apimgt/mssql.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $STATS_DB -i $DB_SCRIPT_HOME/mssql.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $MB_DB -i $DB_SCRIPT_HOME/mb-store/mssql-mb.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $METRICS_DB -i $DB_SCRIPT_HOME/metrics/mssql.sql
 }
+
+#### To populate ORACLE schema and tables
+setup_oracle_databases(){
+    url="(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=pasinduoracletest.c8jlhntiji2j.us-east-1.rds.amazonaws.com)(PORT=1521))(CONNECT_DATA=(SID=ORCL)))"
+
+    echo ">> Setting up Oracle user create script ..."
+    echo "CREATE USER $CARBON_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $CARBON_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $CARBON_DB;" >> oracle.sql
+    echo "CREATE USER $AM_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $AM_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $AM_DB;" >> oracle.sql
+    echo "CREATE USER $STATS_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $STATS_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $STATS_DB;" >> oracle.sql
+    echo "CREATE USER $MB_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $MB_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $MB_DB;" >> oracle.sql
+    echo "CREATE USER $METRICS_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $METRICS_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $METRICS_DB;" >> oracle.sql
+
+    echo ">> Setting up Oracle schemas ..."
+    echo exit | sqlplus ${DB_USERNAME}/${DB_PASSWORD}@//${DB_HOST}:${DB_PORT}/$ORACLE_SID @oracle.sql
+
+    echo ">> Setting up Oracle tables ..."
+    echo exit | sqlplus $CARBON_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/oracle.sql
+    echo exit | sqlplus $AM_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/apimgt/oracle.sql
+    echo exit | sqlplus $STATS_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/oracle.sql
+    echo exit | sqlplus $MB_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/mb-store/oracle-mb.sql
+    echo exit | sqlplus $METRICS_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/metrics/oracle.sql
+    echo ">> Tables created ..."
+}
+
 
 ####
 git_product_clone(){
-echo "Cloning product repo"
+    echo "Cloning product repo"
     cd ${productPath}
     sudo git clone ${GIT_LOCATION}
     sleep 10
@@ -121,7 +158,7 @@ echo "Cloning product repo"
 
 ####Read from properties file
 
-WORKSPACE_DIR=/opt/wso2/workspace
+WORKSPACE_DIR=$(grep -i 'REMOTE_WORKSPACE_DIR_UNIX' ${FILE2} ${FILE1}  | cut -f2 -d'=')
 FILE1=${WORKSPACE_DIR}/infrastructure.properties
 FILE2=${WORKSPACE_DIR}/testplan-props.properties
 
@@ -137,8 +174,10 @@ DB_VERSION=$(grep -i 'DBEngineVersion' ${FILE2} ${FILE1} | cut -f2 -d'=')
 DB_TYPE=$(grep -i 'DBEngine' ${FILE2} ${FILE1} | cut -f2 -d'=')
 
 ## MySQL connection details
-MYSQL_USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
-MYSQL_PASSWORD=$(grep -i 'DatabasePassword' ${FILE1} ${FILE2} | cut -f2 -d'=')
+DB_USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
+DB_PASSWORD=$(grep -i 'DatabasePassword' ${FILE1} ${FILE2} | cut -f2 -d'=')
+#ORACLE_SID=$(grep -i 'OracleSID' ${FILE1} ${FILE2} | cut -f2 -d'=')
+ORACLE_SID=ORCL
 
 ## databases
 CARBON_DB="WSO2_CARBON_DB"
@@ -233,14 +272,17 @@ unzip -qq ${PRODUCT_HOME}.zip
 
 #### Create the schemas based on the selected RDBMS
 
-        if [[ ${DB_TYPE}==MySQL ]]; then
-        echo "Creating MYSQL schema"
+        if [ ${DB_TYPE} = "mysql" ]; then
+        echo "Creating MYSQL schemas"
         setup_mysql_databases
-        elif [[${DB_TYPE}==MSSQL]]; then
-        echo "Creating MSSQL schema"
+        elif [ ${DB_TYPE} = "mssql" ]; then
+        echo "Creating MSSQL schemas"
         setup_mssql_databases
+        elif [ ${DB_TYPE} = "oracle" ];then
+        echo "Creating ORACLE schemas"
+        setup_oracle_databases
         else
-        echo "No database created yet"
+        echo "No database engine selected"
         fi
 
 echo "============= Database created success ==============================="
