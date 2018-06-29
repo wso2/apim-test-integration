@@ -49,8 +49,8 @@ scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE5} ${user}@${host}:${REM_DIR
 echo "=== Files copied success ==="
 
 
-ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
-#ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} python3 ${REM_DIR}/do-run.py
+#ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} python3 ${REM_DIR}/do-run.py
 
 ### Get the reports from integration test
 scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports .
