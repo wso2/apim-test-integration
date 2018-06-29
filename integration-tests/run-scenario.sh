@@ -35,6 +35,8 @@ key_pem=`grep -w "$PROP_KEY" ${FILE1} ${FILE2} | cut -d'=' -f2`
 user=centos
 host=`grep -w "$PROP_HOST" ${FILE1} ${FILE2} | cut -d'=' -f2`
 
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p ${REM_DIR}
+
 scp -o StrictHostKeyChecking=no -i ${key_pem} do-run.sh ${user}@${host}:${REM_DIR}
 
 scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE1} ${user}@${host}:${REM_DIR}
