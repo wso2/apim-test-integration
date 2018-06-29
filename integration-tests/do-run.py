@@ -335,7 +335,7 @@ def main():
         product_name = get_product_name(product_dist_download_api)
 
         # clone the product repo
-        #subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
+        subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
         logger.info('cloning repo done.')
 
         product_file_name = product_name + ".zip"
