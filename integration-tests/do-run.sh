@@ -69,9 +69,9 @@ get_jenkins_build() {
 setup_mysql_databases() {
     echo "MySQL setting up" >> ${WORKSPACE_DIR}/java.txt
     echo ">> Creating databases..."
-    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $UM_DB; DROP DATABASE IF
-    EXISTS $AM_DB; DROP DATABASE IF EXISTS $GOV_REG_DB; DROP DATABASE IF EXISTS $METRICS_DB;
-    CREATE DATABASE $UM_DB; CREATE DATABASE $AM_DB; CREATE DATABASE $GOV_REG_DB; CREATE DATABASE $METRICS_DB;"
+    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $CARBON_DB; DROP DATABASE IF
+    EXISTS $AM_DB; DROP DATABASE IF EXISTS $STATS_DB; DROP DATABASE IF EXISTS $METRICS_DB; DROP DATABASE IF EXISTS $MB_DB;
+    CREATE DATABASE $CARBON_DB; CREATE DATABASE $AM_DB; CREATE DATABASE $STATS_DB; CREATE DATABASE $METRICS_DB; CREATE DATABASE $MB_DB;"
     echo ">> Databases created!"
 
     echo ">> Creating users..."
@@ -80,21 +80,21 @@ setup_mysql_databases() {
     echo ">> Users created!"
 
     echo ">> Grant access for users..."
-    mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "GRANT ALL PRIVILEGES ON $UM_DB.* TO '$MYSQL_DB_USER'@'%';
-    GRANT ALL PRIVILEGES ON $AM_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $GOV_REG_DB.* TO
-    '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $METRICS_DB.* TO '$MYSQL_DB_USER'@'%';"
+    mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "GRANT ALL PRIVILEGES ON $CARBON_DB.* TO '$MYSQL_DB_USER'@'%';
+    GRANT ALL PRIVILEGES ON $AM_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $STATS_DB.* TO
+    '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $METRICS_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $MB_DB.* TO '$MYSQL_DB_USER'@'%';"
     echo ">> Access granted!"
 
     echo ">> Creating tables..."
     if [ ${DB_VERSION} ==  "5.7" ]
     then
-        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $UM_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql;
-        USE $GOV_REG_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql5.7.sql;
-        USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql;"
+        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql;
+        USE $STATS_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql5.7.sql;
+        USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql; USE $MB_DB; SOURCE $DB_SCRIPT_HOME/mb-store/mysql-mb.sql;"
     else
-        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $UM_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql;
-        USE $GOV_REG_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql.sql;
-        USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql;"
+        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql;
+        USE $STATS_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql.sql;
+        USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql; USE $MB_DB; SOURCE $DB_SCRIPT_HOME/mb-store/mysql-mb.sql;"
     fi
     echo ">> Tables created!"
 }
@@ -119,35 +119,70 @@ echo "Cloning product repo"
 
 ################################## Starts run-scenario ###########################################
 
+####Read from properties file
 
-#### Read yaml file
-eval $(parse_yaml config.yml "config_")
+WORKSPACE_DIR=/opt/wso2/workspace
+FILE1=${WORKSPACE_DIR}/infrastructure.properties
+FILE2=${WORKSPACE_DIR}/testplan-props.properties
 
 #### User Variables
-WORKSPACE_DIR=$(echo $config_workspace_dir)
-GIT_LOCATION=$(echo $config_git_location)
-GIT_BRANCH=$(echo $config_git_branch)
+GIT_LOCATION=$(grep -i 'gitURL' ${FILE2} ${FILE1}  | cut -f2 -d'=')
+GIT_BRANCH=$(grep -i 'gitBranch' ${FILE2} ${FILE1}  | cut -f2 -d'=')
 
-USERNAME=$(echo $config_database_user)
-DB_HOST=$(echo $config_database_host)
-DB_PORT=$(echo $config_database_port)
+USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
+DB_HOST=$(grep -i 'DatabaseHost' ${FILE1} ${FILE2} | cut -f2 -d'=')
+DB_PORT=$(grep -i 'DatabasePort' ${FILE1} ${FILE2} | cut -f2 -d'=')
 #DB_ENGINE=$(echo $config_database_..)
-DB_VERSION=$(echo $config_database_version)
-DB_TYPE=$(echo $config_database_type)
+DB_VERSION=$(grep -i 'DBEngineVersion' ${FILE2} ${FILE1} | cut -f2 -d'=')
+DB_TYPE=$(grep -i 'DBEngine' ${FILE2} ${FILE1} | cut -f2 -d'=')
 
 ## MySQL connection details
-MYSQL_USERNAME=$(echo $config_database_user)
-MYSQL_PASSWORD=$(echo $config_database_passwd)
+MYSQL_USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
+MYSQL_PASSWORD=$(grep -i 'DatabasePassword' ${FILE1} ${FILE2} | cut -f2 -d'=')
 
 ## databases
-UM_DB=$(echo $config_database_umdb)
-AM_DB=$(echo $config_database_amdb)
-GOV_REG_DB=$(echo $config_database_govregdb)
-METRICS_DB=$(echo $config_database_metricsdb)
+CARBON_DB="WSO2_CARBON_DB"
+#UM_DB="WSO2UM_DB"
+AM_DB="WSO2AM_DB"
+STATS_DB="WSO2AM_STATS_DB"
+MB_DB="WSO2_MB_STORE_DB"
+#GOV_REG_DB="WSO2REG_DB"
+METRICS_DB="WSO2METRICS_DB"
 
 ## database users
-MYSQL_DB_USER=$(echo $config_database_mysql_user)
-MYSQL_DB_USER_PWD=$(echo $config_database_mysql_passwd)
+MYSQL_DB_USER=wso2
+MYSQL_DB_USER_PWD=wso2
+
+
+
+#### Read yaml file
+#eval $(parse_yaml config.yml "config_")
+
+#### User Variables
+#WORKSPACE_DIR=$(echo $config_workspace_dir)
+#GIT_LOCATION=$(echo $config_git_location)
+#GIT_BRANCH=$(echo $config_git_branch)
+
+#USERNAME=$(echo $config_database_user)
+#DB_HOST=$(echo $config_database_host)
+#DB_PORT=$(echo $config_database_port)
+#DB_ENGINE=$(echo $config_database_..)
+#DB_VERSION=$(echo $config_database_version)
+#DB_TYPE=$(echo $config_database_type)
+
+## MySQL connection details
+#MYSQL_USERNAME=$(echo $config_database_user)
+#MYSQL_PASSWORD=$(echo $config_database_passwd)
+
+## databases
+#UM_DB=$(echo $config_database_umdb)
+#AM_DB=$(echo $config_database_amdb)
+#GOV_REG_DB=$(echo $config_database_govregdb)
+#METRICS_DB=$(echo $config_database_metricsdb)
+
+## database users
+#MYSQL_DB_USER=$(echo $config_database_mysql_user)
+#MYSQL_DB_USER_PWD=$(echo $config_database_mysql_passwd)
 
 
 cd ${WORKSPACE_DIR}
@@ -175,12 +210,7 @@ sudo cp $temp_pack $temp_repo/target
 echo "============= zip file copied to target success ==============================="
 
 
-#### Configure datasources and compress
-## Calling config-production python
-python3 Configure_Product.py
-echo "============= Datasource configurations are success ==============================="
-
-
+#### Configure database, datasources and compress
 #### Populate database schemas
 cd ${productPath}
 pack=$(ls -t | grep .zip | head -1)
@@ -215,23 +245,28 @@ unzip -qq ${PRODUCT_HOME}.zip
 
 echo "============= Database created success ==============================="
 
+#### Calling config-production python
+python3 Configure_Product.py ${PRODUCT_HOME}.zip product-apim
+
+echo "============= Datasource configurations are success ==============================="
+
 
 #### Run Integration tests now
 
 intg_repo=$productPath/product-apim/modules/integration
 
 ## Change the pom.xml for required version change
-    file=$intg_repo/tests-integration/tests-backend/pom.xml
-
-    sudo xmlstarlet edit -L -N w=http://maven.apache.org/POM/4.0.0 \
-    -u "/w:build/w:plugins/w:plugin/w:configuration/w:systemProperties/w:property[@name='carbon.zip']" -v "${basedir}/../../../distribution/product/target/wso2am-2.5.0.zip" $file
-
-    if [ $? -ne 0 ]; then
-    echo "Could not find the file in the given location"
-    exit 1
-    fi
-
-    echo "Values added to the file: $file"
+#    file=$intg_repo/tests-integration/tests-backend/pom.xml
+#
+#    sudo xmlstarlet edit -L -N w=http://maven.apache.org/POM/4.0.0 \
+#    -u "/w:build/w:plugins/w:plugin/w:configuration/w:systemProperties/w:property[@name='carbon.zip']" -v "${basedir}/../../../distribution/product/target/wso2am-2.5.0.zip" $file
+#
+#    if [ $? -ne 0 ]; then
+#    echo "Could not find the file in the given location"
+#    exit 1
+#    fi
+#
+#    echo "Values added to the file: $file"
 
 cd $intg_repo
 mvn clean install
