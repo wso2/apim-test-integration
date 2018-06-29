@@ -151,7 +151,10 @@ def modify_datasources():
                     user = configuration.find('username')
                     passwd = configuration.find('password')
                     drive_class_name = configuration.find('driverClassName')
-                    url.text = url.text.replace(url.text, database_config['url'] + table_name)
+                    if ORACLE_DB_ENGINE != database_config['db_engine'].upper():
+                        url.text = url.text.replace(url.text, database_config['url'] + table_name)
+                    else:
+                        url.text = url.text.replace(url.text, database_config['url'] + DEFAULT_ORACLE_SID)
                     user.text = user.text.replace(user.text, database_config['user'])
                     passwd.text = passwd.text.replace(passwd.text, database_config['password'])
                     drive_class_name.text = drive_class_name.text.replace(drive_class_name.text,

@@ -328,6 +328,7 @@ def main():
             database_config["sql_driver_location"] = sql_driver_location
             database_config["url"] = construct_url(db_meta_data["prefix"])
             database_config["user"] = db_username
+            database_config["db_engine"] = db_engine
         else:
             raise BaseException("Creating process of Database configuration is failed")
 
