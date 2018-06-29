@@ -25,7 +25,7 @@ import pymysql
 import sqlparse
 from pathlib import Path
 import requests
-import Configure_Product as cp
+import configure_product as cp
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
     PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB
 
