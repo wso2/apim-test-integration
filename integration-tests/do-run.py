@@ -13,7 +13,8 @@
 # limitations under the License.
 
 # importing required modules
-import yaml
+import sys
+from xml.etree import ElementTree as ET
 import subprocess
 import wget
 import logging
@@ -22,41 +23,114 @@ import os
 import shutil
 import pymysql
 import sqlparse
-import requests
 from pathlib import Path
+import requests
+import Configure_Product as cp
+from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
+    PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB
 
 git_repo_url = None
 git_branch = None
 os_type = None
-workspace_dir = None
+workspace = None
 product_name = None
 product_id = None
-product_dist_download_api = "https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/api/"
-database_names = None
-db_type = None
-database_config = None
-log_file_name = 'integration.log'
+log_file_name = None
 target_path = None
-DB_CARBON_DB = 'WSO2_CARBON_DB'
-DB_AM_DB = 'WSO2AM_DB'
-DB_STAT_DB = 'WSO2AM_STATS_DB'
-DB_MB_DB = 'WSO2_MB_STORE_DB'
+db_engine = None
+db_engine_version = None
+product_dist_download_api = None
+sql_driver_location = None
+db_host = None
+db_port = None
+db_username = None
+db_password = None
+database_config = {}
 
-def function_logger(file_level, console_level = None):
+
+def read_proprty_files():
+    global db_engine
+    global db_engine_version
+    global git_repo_url
+    global git_branch
+    global product_dist_download_api
+    global sql_driver_location
+    global db_host
+    global db_port
+    global db_username
+    global db_password
+    global workspace
+    global product_name
+    global product_id
+    global database_config
+
+    cwd = os.getcwd()
+    property_file_paths = []
+    test_plan_prop_path = Path(cwd + "/" + TEST_PLAN_PROPERTY_FILE_NAME)
+    infra_prop_path = Path(cwd + "/" + INFRA_PROPERTY_FILE_NAME)
+
+    if Path.exists(test_plan_prop_path) and Path.exists(infra_prop_path):
+        property_file_paths.append(test_plan_prop_path)
+        property_file_paths.append(infra_prop_path)
+
+        for path in property_file_paths:
+            with open(path, 'r') as filehandle:
+                for line in filehandle:
+                    prop = line.split("=")
+                    key = prop[0]
+                    val = prop[1]
+                    if key == "DBEngine":
+                        db_engine = val.strip()
+                    elif key == "DBEngineVersion":
+                        db_engine_version = val
+                    elif key == "gitURL":
+                        git_repo_url = val.strip()
+                        product_id = git_repo_url.split("/")[-1].split('.')[0]
+                    elif key == "gitBranch":
+                        git_branch = val.strip()
+                    elif key == "productDistDownloadApi":
+                        product_dist_download_api = val.strip()
+                    elif key == "sqlDriversLocationUnix" and not sys.platform.startswith('win'):
+                        sql_driver_location = val.strip()
+                    elif key == "sqlDriversLocationWindows" and sys.platform.startswith('win'):
+                        sql_driver_location = val.strip()
+                    elif key == "DatabaseHost":
+                        db_host = val.strip()
+                    elif key == "DatabasePort":
+                        db_port = val.strip()
+                    elif key == "DatabaseUsername":
+                        db_username = val.strip()
+                    elif key == "DatabasePassword":
+                        db_password = val.strip()
+
+
+def get_db_meta_data(argument):
+    switcher = DB_META_DATA
+    return switcher.get(argument, False)
+
+
+def construct_url(prefix):
+    url = prefix + db_host + ":" + db_port + "/"
+    return url
+
+
+def function_logger(file_level, console_level=None):
+    global log_file_name
+    log_file_name = LOG_FILE_NAME
     function_name = inspect.stack()[1][3]
     logger = logging.getLogger(function_name)
-    #By default, logs all messages
+    # By default, logs all messages
     logger.setLevel(logging.DEBUG)
 
     if console_level != None:
-        #StreamHandler logs to console
-        ch = logging.StreamHandler() 
+        # StreamHandler logs to console
+        ch = logging.StreamHandler()
         ch.setLevel(console_level)
         ch_format = logging.Formatter('%(asctime)s - %(message)s')
         ch.setFormatter(ch_format)
         logger.addHandler(ch)
 
-    #log in to a file
+    # log in to a file
     fh = logging.FileHandler("{0}.log".format(function_name))
     fh.setLevel(file_level)
     fh_format = logging.Formatter('%(asctime)s - %(lineno)d - %(levelname)-8s - %(message)s')
@@ -65,59 +139,6 @@ def function_logger(file_level, console_level = None):
 
     return logger
 
-def get_product_name(jkns_api_url):
-    #https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/api/
-    req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/fileName'
-    headers = {'Accept':'application/xml'}
-    response = requests.get(req_url, headers=headers)
-    if response.status_code == 200:
-        root = ET.fromstring(response.content)
-        #resval = response.content.decode('utf-8')
-        product_name = root.text.split('-')[0] + "-" + root.text.split('-')[1]
-        return product_name
-    else:
-        logger.infor('Failure on jenkins api call')
-
-def get_product_dist_rel_path(jkns_api_url):
-    req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/relativePath'
-    headers = {'Accept':'application/xml'}
-    response = requests.get(req_url, headers=headers)
-    if response.status_code == 200:
-        root = ET.fromstring(response.content)
-        #resval = response.content.decode('utf-8')
-        dist_rel_path = root.text.split('wso2')[0]
-        return dist_rel_path
-    else:
-        logger.infor('Failure on jenkins api call')
-def get_product_dist_arifact_path(jkns_api_url):
-    artfct_path = jkns_api_url.split('/api')[0] + '/artifact/'
-    return artfct_path
-
-def read_config_file():
-    """Read the configs from config.yaml file.
-    """
-    global git_repo_url
-    global git_branch
-    global os_type
-    global workspace_dir
-    global product_name
-    global product_id
-    global database_names
-    global db_type
-    global database_config
-    
-    with open("config.yml", 'r') as ymlfile:
-        cfg = yaml.load(ymlfile)
-
-    git_repo_url = cfg['git_repo_url']
-    git_branch = cfg['git_branch']
-    os_type = cfg['os_type']
-    workspace_dir = cfg['workspace_dir']
-    product_name = cfg['product_name']
-    product_id = cfg['product_id']
-    database_names = cfg['database_names']
-    db_type = cfg['db_type']
-    database_config = cfg['database']
 
 def download_file(url, destination):
     """Download a file using wget package.
@@ -125,42 +146,51 @@ def download_file(url, destination):
     """
     wget.download(url, destination)
 
+
 def get_db_hostname(url, db_type):
     """Retreive db hostname from jdbc url
     """
     if db_type == 'ORACLE':
-        #TODO: implementation for oracle db_type
+        # TODO: implementation for oracle db_type
         hostname = "testurl123"
     else:
-        hostname = url.split(':')[2].replace("//","")
+        hostname = url.split(':')[2].replace("//", "")
     return hostname
+
 
 def run_sqlserver_commands(sql_host, sql_user, sql_pass, sql_query):
     """Run SQL_SERVER commands using sqlcmd utility.
     """
     subprocess.call(['sqlcmd', '-S', sql_host, '-U', sql_user, '-P', sql_pass, '-Q', sql_query])
 
+
 def get_mysql_connection(dbName=None):
     if dbName is not None:
-        conn = pymysql.connect(host=get_db_hostname(database_config['url'], 'MYSQL'), user=database_config['user'], passwd=database_config['passwd'], db=dbName)
+        conn = pymysql.connect(host=get_db_hostname(database_config['url'], 'MYSQL'), user=database_config['user'],
+                               passwd=database_config['password'], db=dbName)
     else:
-        conn = pymysql.connect(host=get_db_hostname(database_config['url'], 'MYSQL'), user=database_config['user'], passwd=database_config['passwd'])
+        conn = pymysql.connect(host=get_db_hostname(database_config['url'], 'MYSQL'), user=database_config['user'],
+                               passwd=database_config['password'])
     return conn
+
 
 def run_mysql_commands(query):
     """Run mysql commands using mysql client when db name not provided.
     """
-    #subprocess.call(['mysql', '-H', host, '-u', user, '-p', passwrd, '-e', query])
+    # subprocess.call(['mysql', '-H', host, '-u', user, '-p', passwrd, '-e', query])
+
     conn = get_mysql_connection()
     conectr = conn.cursor()
     conectr.execute(query)
     conn.close()
 
+
 def run_sqlserver_script_file(sql_host, sql_user, sql_pass, db_name, script_path):
     """Run SQL_SERVER script file on a provided database.
     """
-    #sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $UM_DB -i $DB_SCRIPTS_PATH/mssql.sql
+    # sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $UM_DB -i $DB_SCRIPTS_PATH/mssql.sql
     subprocess.call(['sqlcmd', '-S', sql_host, '-U', sql_user, '-P', sql_pass, '-d', db_name, '-i', script_path])
+
 
 def run_mysql_script_file(db_name, script_path):
     """Run MYSQL db script file on a provided database.
@@ -169,136 +199,171 @@ def run_mysql_script_file(db_name, script_path):
     conectr = conn.cursor()
 
     sql = open(script_path).read()
-    sql_parts = sqlparse.split( sql )
+    sql_parts = sqlparse.split(sql)
     for sql_part in sql_parts:
-        if sql_part.strip() ==  '':
-            continue 
-        conectr.execute( sql_part )
+        if sql_part.strip() == '':
+            continue
+        conectr.execute(sql_part)
     conn.close()
 
 
-def copy_file(os_type, source, target):
-    if(os_type == "WINDOWS"):
-        source = make_windows_path(source)
-        target = make_windows_path(target)
+def copy_file(source, target):
+    if sys.platform.startswith('win'):
+        source = cp.winapi_path(source)
+        target = cp.winapi_path(target)
         shutil.copy(source, target)
-    elif (os_type == "LINUX"):
-        shutil.copy(source, target)
-
-def make_windows_path(win_path, encoding=None):
-    path = os.path.abspath(win_path)
-    if path.startswith("\\\\"):
-        path = "\\\\?\\UNC\\" + path[2:]
     else:
-        path = "\\\\?\\" + path
-    return path
+        shutil.copy(source, target)
 
-def setup_databases(script_path):
+
+def get_product_name(jkns_api_url):
+    # https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/api/
+    req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/fileName'
+    headers = {'Accept': 'application/xml'}
+    response = requests.get(req_url, headers=headers)
+    if response.status_code == 200:
+        root = ET.fromstring(response.content)
+        product_name = root.text.split('-')[0] + "-" + root.text.split('-')[1]
+        return product_name
+    else:
+        logger.infor('Failure on jenkins api call')
+
+
+def get_product_dist_rel_path(jkns_api_url):
+    req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/relativePath'
+    headers = {'Accept': 'application/xml'}
+    response = requests.get(req_url, headers=headers)
+    if response.status_code == 200:
+        root = ET.fromstring(response.content)
+        dist_rel_path = root.text.split('wso2')[0]
+        return dist_rel_path
+    else:
+        logger.info('Failure on jenkins api call')
+
+
+def get_product_dist_arifact_path(jkns_api_url):
+    artfct_path = jkns_api_url.split('/api')[0] + '/artifact/'
+    return artfct_path
+
+
+def setup_databases(script_path, db_names):
     """Create required databases.
-    """  
-    print('Creating databases...')
-    for database in database_names:
+    """
+    for database in db_names:
         if database == DB_CARBON_DB:
-            if db_type == 'MSSQL':
-                #create database
-                run_sqlserver_commands(get_db_hostname(database_config['url'],'MSSQL'), database_config['user'], database_config['passwd'], 'CREATE DATABASE WSO2_CARBON_DB')
-                #manipulate script path
+            if db_engine.upper() == 'MSSQL':
+                # create database
+                run_sqlserver_commands(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
+                                       database_config['passwd'], 'CREATE DATABASE WSO2_CARBON_DB')
+                # manipulate script path
                 scriptPath = script_path / 'mssql.sql'
-                #run db scripts
-                run_sqlserver_script_file(get_db_hostname(database_config['url'],'MSSQL'), database_config['user'], database_config['passwd'], database, str(scriptPath))              
-            elif db_type == 'MYSQL':
+                # run db scripts
+                run_sqlserver_script_file(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
+                                          database_config['passwd'], database, str(scriptPath))
+            elif db_engine.upper() == 'MYSQL':
+                print('test123')
                 scriptPath = script_path / 'mysql5.7.sql'
-                #create database
+                # create database
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-                #run db script
+                # run db script
                 run_mysql_script_file(database, str(scriptPath))
 
-            elif db_type == 'ORACLE':
-                #TODO: oracle implementation
+            elif db_engine.upper() == 'ORACLE':
+                # TODO: oracle implementation
                 testval = 'testValue'
                 pass
         elif database == DB_AM_DB:
-            if db_type == 'MSSQL':
-                #create database
-                run_sqlserver_commands(get_db_hostname(database_config['url'],'MSSQL'), database_config['user'], database_config['passwd'], 'CREATE DATABASE WSO2AM_DB')
-                #manipulate script path
+            if db_engine.upper() == 'MSSQL':
+                # create database
+                run_sqlserver_commands(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
+                                       database_config['passwd'], 'CREATE DATABASE WSO2AM_DB')
+                # manipulate script path
                 scriptPath = script_path / 'apimgt/mssql.sql'
-                #run db scripts
-                run_sqlserver_script_file(get_db_hostname(database_config['url'],'MSSQL'), database_config['user'], database_config['passwd'], database, str(scriptPath))
-            elif db_type == 'MYSQL':
+                # run db scripts
+                run_sqlserver_script_file(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
+                                          database_config['passwd'], database, str(scriptPath))
+            elif db_engine.upper() == 'MYSQL':
                 scriptPath = script_path / 'apimgt/mysql5.7.sql'
-                #create database
+                # create database
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-                #run db script
+                # run db script
                 run_mysql_script_file(database, str(scriptPath))
-            elif db_type == 'ORACLE':
+            elif db_engine.upper() == 'ORACLE':
                 pass
         elif database == DB_STAT_DB:
-            if db_type == 'MSSQL':
-                #create database
-                run_sqlserver_commands(get_db_hostname(database_config['url'],'MSSQL'), database_config['user'], database_config['passwd'], 'CREATE DATABASE WSO2AM_STATS_DB')               
-            elif db_type == 'MYSQL':
-                #create database
+            if db_engine.upper() == 'MSSQL':
+                # create database
+                run_sqlserver_commands(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
+                                       database_config['passwd'], 'CREATE DATABASE WSO2AM_STATS_DB')
+            elif db_engine.upper() == 'MYSQL':
+                # create database
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-            elif db_type == 'ORACLE':
+            elif db_engine.upper() == 'ORACLE':
                 pass
         elif database == DB_MB_DB:
-            if db_type == 'MSSQL':
+            if db_engine.upper() == 'MSSQL':
                 pass
-            elif db_type == 'MYSQL':
-                #create database
+            elif db_engine.upper() == 'MYSQL':
+                # create database
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-                #manipulate script path
+                # manipulate script path
                 scriptPath = script_path / 'mb-store/mysql-mb.sql'
-                #run db scripts
+                # run db scripts
                 run_mysql_script_file(database, str(scriptPath))
-            elif db_type == 'ORACLE':
+            elif db_engine.upper() == 'ORACLE':
                 pass
 
 
 def main():
     try:
-        read_config_file()
+        global workspace
+        global logger
         logger = function_logger(logging.DEBUG, logging.DEBUG)
-        #product name retrieve from jenkins api
-        product_name = get_product_name(product_dist_download_api)
-        
-        #clone product repo
-        subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace_dir)
-        logger.info('cloning repo done.')
-        #TODO: product_dist_download_api should receive from external file
-        product_file_name = product_name + ".zip"
-        dist_downl_url = get_product_dist_arifact_path(product_dist_download_api) + get_product_dist_rel_path(product_dist_download_api) + product_file_name
-        destination = Path(workspace_dir + "/storage/" + product_file_name)
+        read_proprty_files()
+        workspace = os.getcwd()
+        db_meta_data = get_db_meta_data(db_engine.upper())
+        if db_meta_data:
+            database_config["driver_class_name"] = db_meta_data["driverClassName"]
+            database_config["password"] = db_password
+            database_config["sql_driver_location"] = sql_driver_location
+            database_config["url"] = construct_url(db_meta_data["prefix"])
+            database_config["user"] = db_username
+        else:
+            raise BaseException("Creating process of Database configuration is failed")
 
-        #download the last released pack from Jenkins
+        # product name retrieve from jenkins api
+        product_name = get_product_name(product_dist_download_api)
+
+        # clone the product repo
+        subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
+        logger.info('cloning repo done.')
+
+        product_file_name = product_name + ".zip"
+        dist_downl_url = get_product_dist_arifact_path(product_dist_download_api) + get_product_dist_rel_path(
+            product_dist_download_api) + product_file_name
+
+        destination = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_file_name)
+        if not Path.exists(destination):
+            Path(destination).mkdir(parents=True, exist_ok=True)
+
+        # download the last released pack from Jenkins
         download_file(dist_downl_url, str(destination))
         logger.info('downloading the pack from Jenkins done.')
 
-        #run python file for product configuration
-        #subprocess.call(['python', 'Configure_Product.py'])
-
-        #populate databases
-        script_path = Path(workspace_dir + "/storage/" + product_name + "/" + 'dbscripts')
-        setup_databases(script_path)
+        # populate databases
+        script_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_name + "/" + 'dbscripts')
+        setup_databases(script_path, cp.configure_product(product_name, product_id, database_config, workspace))
         logger.info('Database setting up is done.')
 
-        #create directory structure inside cloned repo and copy product distribution
-        target_path = Path(workspace_dir + "/" + product_id + "/" + 'modules/distribution/product/target')
-        target_path.mkdir(parents=True)
-        logger.info('Target directory created.')
-
-        #copy the pack to target directory
-        copy_file(os_type, destination, target_path)
-        logger.info('Product distribution copied to ' + str(target_path))
-
-        #run integration tests
-        integration_tests_path = Path(workspace_dir + "/" + product_id + "/" + 'modules/integration/tests-integration')
+        # run integration tests
+        integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/integration/tests-integration')
         subprocess.call(['mvn', 'clean', 'install'], cwd=integration_tests_path)
         logger.info('Running integration tests done.')
-        
     except Exception as e:
-        print(e)
+        logger.error("Error occurred while running the do_run.py script", exc_info=True)
+    except BaseException as e:
+        logger.error("Error occurred while doing the configuration", exc_info=True)
+
 
 if __name__ == "__main__":
     main()
