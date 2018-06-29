@@ -140,26 +140,27 @@ def modify_datasources():
         artifarc_root = artifact_tree.getroot()
         data_sources = artifarc_root.find('datasources')
         for item in data_sources.findall('datasource'):
-            table_name = None
+            database_name = None
             for child in item:
                 if child.tag == 'name':
-                    table_name = child.text
+                    database_name = child.text
                 # special checking for namespace object content:media
-                if child.tag == 'definition' and table_name:
+                if child.tag == 'definition' and database_name:
                     configuration = child.find('configuration')
                     url = configuration.find('url')
                     user = configuration.find('username')
                     passwd = configuration.find('password')
                     drive_class_name = configuration.find('driverClassName')
                     if ORACLE_DB_ENGINE != database_config['db_engine'].upper():
-                        url.text = url.text.replace(url.text, database_config['url'] + table_name)
+                        url.text = url.text.replace(url.text, database_config['url'] + database_name)
+                        user.text = user.text.replace(user.text, database_config['user'])
                     else:
                         url.text = url.text.replace(url.text, database_config['url'] + DEFAULT_ORACLE_SID)
-                    user.text = user.text.replace(user.text, database_config['user'])
+                        user.text = user.text.replace(user.text, database_name)
                     passwd.text = passwd.text.replace(passwd.text, database_config['password'])
                     drive_class_name.text = drive_class_name.text.replace(drive_class_name.text,
                                                                           database_config['driver_class_name'])
-                    database_names.append(table_name)
+                    database_names.append(database_name)
         artifact_tree.write(file_path)
 
 
