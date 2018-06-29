@@ -25,7 +25,7 @@ import pymysql
 import sqlparse
 from pathlib import Path
 import requests
-import Configure_Product as cp
+import configure_product as cp
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
     PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB
 
@@ -341,13 +341,13 @@ def main():
         product_file_name = product_name + ".zip"
         dist_downl_url = get_product_dist_arifact_path(product_dist_download_api) + get_product_dist_rel_path(
             product_dist_download_api) + product_file_name
-
-        destination = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_file_name)
-        if not Path.exists(destination):
-            Path(destination).mkdir(parents=True, exist_ok=True)
-
+        #product download path and file name constructing
+        prodct_download_dir = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
+        if not Path.exists(Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)):
+            Path(prodct_download_dir).mkdir(parents=True, exist_ok=True)
+        prodct_file_path = prodct_download_dir / product_file_name
         # download the last released pack from Jenkins
-        download_file(dist_downl_url, str(destination))
+        download_file(dist_downl_url, str(prodct_file_path))
         logger.info('downloading the pack from Jenkins done.')
 
         # populate databases
