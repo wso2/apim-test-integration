@@ -21,7 +21,7 @@ DIR=$2
 FILE1=${DIR}/infrastructure.properties
 FILE2=${DIR}/testplan-props.properties
 FILE3=do-run.py
-FILE4=configure_product.py
+FILE4=Configure_Product.py
 FILE5=const.py
 
 PROP_KEY=sshKeyFileLocation    #pem file
