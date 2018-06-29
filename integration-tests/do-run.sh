@@ -126,19 +126,19 @@ FILE1=${WORKSPACE_DIR}/infrastructure.properties
 FILE2=${WORKSPACE_DIR}/testplan-props.properties
 
 #### User Variables
-GIT_LOCATION=$(grep -i 'gitURL' ${FILE2}  | cut -f2 -d'=')
-GIT_BRANCH=$(grep -i 'gitBranch' ${FILE2}  | cut -f2 -d'=')
+GIT_LOCATION=$(grep -i 'gitURL' ${FILE2} ${FILE1}  | cut -f2 -d'=')
+GIT_BRANCH=$(grep -i 'gitBranch' ${FILE2} ${FILE1}  | cut -f2 -d'=')
 
-USERNAME=$(grep -i 'DatabaseUser' ${FILE1}  | cut -f2 -d'=')
-DB_HOST=$(grep -i 'DatabaseHost' ${FILE1}  | cut -f2 -d'=')
-DB_PORT=$(grep -i 'DatabasePort' ${FILE1}  | cut -f2 -d'=')
+USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
+DB_HOST=$(grep -i 'DatabaseHost' ${FILE1} ${FILE2} | cut -f2 -d'=')
+DB_PORT=$(grep -i 'DatabasePort' ${FILE1} ${FILE2} | cut -f2 -d'=')
 #DB_ENGINE=$(echo $config_database_..)
-DB_VERSION=$(grep -i 'DBEngineVersion' ${FILE2}  | cut -f2 -d'=')
-DB_TYPE=$(grep -i 'DBEngine' ${FILE2}  | cut -f2 -d'=')
+DB_VERSION=$(grep -i 'DBEngineVersion' ${FILE2} ${FILE1} | cut -f2 -d'=')
+DB_TYPE=$(grep -i 'DBEngine' ${FILE2} ${FILE1} | cut -f2 -d'=')
 
 ## MySQL connection details
-MYSQL_USERNAME=$(grep -i 'DatabaseUser' ${FILE1}  | cut -f2 -d'=')
-MYSQL_PASSWORD=$(grep -i 'DatabasePassword' ${FILE1}  | cut -f2 -d'=')
+MYSQL_USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
+MYSQL_PASSWORD=$(grep -i 'DatabasePassword' ${FILE1} ${FILE2} | cut -f2 -d'=')
 
 ## databases
 CARBON_DB="WSO2_CARBON_DB"
