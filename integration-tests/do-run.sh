@@ -25,7 +25,7 @@ var=$(cat /etc/os-release | sed -e 1b -e '$!d' | awk '{print $1;}')
     done
 
     if [ ${os_type} == "CentOS" ]; then
-    sudo yum update && \
+    sudo yum update -y && \
     sudo yum install -y git man zip vim wget tar xmlstarlet
     elif [ ${os_type} == "Ubuntu" ]; then
     sudo apt-get update && \
