@@ -158,9 +158,9 @@ git_product_clone(){
 
 ####Read from properties file
 
-WORKSPACE_DIR=$(grep -i 'REMOTE_WORKSPACE_DIR_UNIX' ${FILE2} ${FILE1}  | cut -f2 -d'=')
 FILE1=${WORKSPACE_DIR}/infrastructure.properties
 FILE2=${WORKSPACE_DIR}/testplan-props.properties
+WORKSPACE_DIR=$(grep -i 'REMOTE_WORKSPACE_DIR_UNIX' ${FILE2} ${FILE1}  | cut -f2 -d'=')
 
 #### User Variables
 GIT_LOCATION=$(grep -i 'gitURL' ${FILE2} ${FILE1}  | cut -f2 -d'=')
