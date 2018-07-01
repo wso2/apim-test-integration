@@ -147,10 +147,14 @@ setup_oracle_databases(){
 git_product_clone(){
     echo "Cloning product repo"
     cd ${productPath}
-    sudo git clone ${GIT_LOCATION}
+    #TODO: FIX the GIT_LOCATION var
+    #sudo git clone ${GIT_LOCATION}
+    sudo git clone https://github.com/wso2/product-apim.git
     sleep 10
     cd product-apim
-	sudo git checkout ${GIT_BRANCH}
+        #TODO: Fix GIT_BRANCH
+	#sudo git checkout ${GIT_BRANCH}
+        sudo git checkout 2.x
 	git status
 }
 
@@ -158,9 +162,11 @@ git_product_clone(){
 
 ####Read from properties file
 
+### TODO: Write a data validation logic to make sure all the needed inputs are available in data-bucket location.
+
+WORKSPACE_DIR=$(grep -i 'REMOTE_WORKSPACE_DIR_UNIX' ${FILE2} ${FILE1}  | cut -f2 -d'=')
 FILE1=${WORKSPACE_DIR}/infrastructure.properties
 FILE2=${WORKSPACE_DIR}/testplan-props.properties
-WORKSPACE_DIR=$(grep -i 'REMOTE_WORKSPACE_DIR_UNIX' ${FILE2} ${FILE1}  | cut -f2 -d'=')
 
 #### User Variables
 GIT_LOCATION=$(grep -i 'gitURL' ${FILE2} ${FILE1}  | cut -f2 -d'=')
