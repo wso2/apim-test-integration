@@ -273,17 +273,19 @@ unzip -qq ${PRODUCT_HOME}.zip
         if [ "${DB_TYPE}" = "mysql" ]; then
         echo "Creating MYSQL schemas"
         setup_mysql_databases
+	echo "============= Database created success ==============================="
         elif [ "${DB_TYPE}" = "mssql" ]; then
         echo "Creating MSSQL schemas"
         setup_mssql_databases
+	echo "============= Database created success ==============================="
         elif [ "${DB_TYPE}" = "oracle" ];then
         echo "Creating ORACLE schemas"
         setup_oracle_databases
+	echo "============= Database created success ==============================="
         else
-        echo "No database engine selected"
+        echo "No database engine selected, please check the db-engine in properties file"
         fi
 
-echo "============= Database created success ==============================="
 
 #### Calling config-production python
 python3 Configure_Product.py ${PRODUCT_HOME}.zip product-apim
