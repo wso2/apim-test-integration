@@ -164,6 +164,7 @@ git_product_clone(){
 
 file1=infrastructure.properties
 file2=testplan-props.properties
+### TODO: Write a data validation logic to make sure all the needed inputs are available in data-bucket location.
 
 paste ${file1} ${file2} | while IFS="$(printf '\t')" read -r f1 f2
 do
