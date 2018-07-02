@@ -164,7 +164,7 @@ def modify_datasources():
         artifact_tree.write(file_path)
 
 
-def configure_product(product, id, db_config):
+def configure_product(product, id, db_config, ws):
     try:
         global product_name
         global product_id
@@ -180,7 +180,7 @@ def configure_product(product, id, db_config):
         product_name = product
         product_id = id
         database_config = db_config
-        workspace = os.getcwd()
+        workspace = ws
         datasource_paths = DATASOURCE_PATHS
         lib_path = LIB_PATH
         product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
@@ -222,15 +222,18 @@ if __name__ == "__main__":
     #                      "sql_driver_location": "/<path>s/mysql-connector-java-<version>.jar",
     #                      "url": "jdbc:mysql://<ip>:3306/",
     #                      "user": "<user>"}
+    # workspace = /home/TG/<Product_Name>
     #
 
     # After we integrate Configure_Product.py script with do_run.py script we can remove this main method
     parser = argparse.ArgumentParser()
-    parser.add_argument('--product_name', metavar='path', required=True,
+    parser.add_argument('--product_name', metavar='name', required=True,
                         help='Name of the product')
-    parser.add_argument('--product_id', metavar='path', required=True,
+    parser.add_argument('--product_id', metavar='id', required=True,
                         help='Id of the product')
-    parser.add_argument('--db_config', metavar='path', required=True,
+    parser.add_argument('--db_config', metavar='config', required=True,
                         help='name of the product')
+    parser.add_argument('--workspace', metavar='ws', required=True,
+                        help='workspace of the job')
     args = parser.parse_args()
-    configure_product(product=args.product_id, id=args.product_id, db_config=args.db_config)
+    configure_product(product=args.product_name, id=args.product_id, db_config=args.db_config, ws=args.workspace)
