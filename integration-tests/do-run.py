@@ -183,7 +183,7 @@ def run_mysql_commands(query):
     conn.close()
 
 def create_ora_schema_script(database):
-    q = "CREATE USER {1} IDENTIFIED BY {2}; GRANT CONNECT, RESOURCE, DBA TO {1}; GRANT UNLIMITED TABLESPACE TO {1};".format(database, database_config["password"])
+    q = "CREATE USER {0} IDENTIFIED BY {1}; GRANT CONNECT, RESOURCE, DBA TO {0}; GRANT UNLIMITED TABLESPACE TO {0};".format(database, database_config["password"])
     return q
 
 def run_oracle_commands(database):
@@ -289,7 +289,7 @@ def setup_databases(script_path, db_names):
                 logger.info(run_oracle_commands(database))
                 # run db script
                 scriptPath = script_path / 'oracle.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath))))
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
         elif database == DB_AM_DB:
             if db_engine.upper() == 'MSSQL':
                 # create database
@@ -308,7 +308,7 @@ def setup_databases(script_path, db_names):
                 logger.info(run_oracle_commands(database))
                 # run db script
                 scriptPath = script_path / 'apimgt/oracle.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath))))
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
         elif database == DB_STAT_DB:
             if db_engine.upper() == 'MSSQL':
                 # create database
@@ -338,7 +338,7 @@ def setup_databases(script_path, db_names):
                 logger.info(run_oracle_commands(database))
                 # run db script
                 scriptPath = script_path / 'mb-store/oracle.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath))))
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
 
 def main():
     try:
