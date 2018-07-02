@@ -53,14 +53,15 @@ parse_yaml() {
 
 #### To download distribution built from jenkin
 get_jenkins_build() {
-	echo "Get distribution build from jenkins"
-	jenkins_url="https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/"
-	distribution_url=$(curl -s -G $jenkins_url/api/xml -d xpath=\(/mavenModuleSetBuild//relativePath\)[3])
-	distribution_pack=$(echo $distribution_url | sed -n 's:.*<relativePath>\(.*\)</relativePath>.*:\1:p')
-	echo "Distribution Pack: "$distribution_pack
-	downloadable_url=$jenkins_url"artifact/"$distribution_pack
-	echo "Downloadable URL: "$downloadable_url
-	sudo wget $downloadable_url
+    echo "Get distribution build from jenkins"
+    jenkins_url="https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/"
+    distribution_url=$(curl -s -G $jenkins_url/api/xml -d xpath=\(/mavenModuleSetBuild//relativePath\)[3])
+    distribution_pack=$(echo $distribution_url | sed -n 's:.*<relativePath>\(.*\)</relativePath>.*:\1:p')
+    echo "Distribution Pack: "$distribution_pack
+    downloadable_url=$jenkins_url"artifact/"$distribution_pack
+    echo "Downloadable URL: "$downloadable_url
+    sudo wget -q $downloadable_url
+    echo "Distribution downloading....."
 
 }
 
@@ -124,6 +125,7 @@ setup_oracle_databases(){
     url="(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=pasinduoracletest.c8jlhntiji2j.us-east-1.rds.amazonaws.com)(PORT=1521))(CONNECT_DATA=(SID=ORCL)))"
 
     echo ">> Setting up Oracle user create script ..."
+    echo "drop user $CARBON_DB cascade;"$'\n'"drop user $AM_DB cascade;"$'\n'"drop user $STATS_DB cascade;"$'\n'"drop user $MB_DB cascade;"$'\n'"drop user $METRICS_DB cascade;" >> oracle.sql
     echo "CREATE USER $CARBON_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $CARBON_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $CARBON_DB;" >> oracle.sql
     echo "CREATE USER $AM_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $AM_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $AM_DB;" >> oracle.sql
     echo "CREATE USER $STATS_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $STATS_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $STATS_DB;" >> oracle.sql
@@ -175,7 +177,6 @@ GIT_BRANCH=$(grep -i 'gitBranch' ${FILE2} ${FILE1}  | cut -f2 -d'=')
 USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
 DB_HOST=$(grep -i 'DatabaseHost' ${FILE1} ${FILE2} | cut -f2 -d'=')
 DB_PORT=$(grep -i 'DatabasePort' ${FILE1} ${FILE2} | cut -f2 -d'=')
-#DB_ENGINE=$(echo $config_database_..)
 DB_VERSION=$(grep -i 'DBEngineVersion' ${FILE2} ${FILE1} | cut -f2 -d'=')
 DB_TYPE=$(grep -i 'DBEngine' ${FILE2} ${FILE1} | cut -f2 -d'=')
 
@@ -187,11 +188,9 @@ ORACLE_SID=ORCL
 
 ## databases
 CARBON_DB="WSO2_CARBON_DB"
-#UM_DB="WSO2UM_DB"
 AM_DB="WSO2AM_DB"
 STATS_DB="WSO2AM_STATS_DB"
 MB_DB="WSO2_MB_STORE_DB"
-#GOV_REG_DB="WSO2REG_DB"
 METRICS_DB="WSO2METRICS_DB"
 
 ## database users
@@ -278,17 +277,20 @@ unzip -qq ${PRODUCT_HOME}.zip
 
 #### Create the schemas based on the selected RDBMS
 
-        if [ ${DB_TYPE} = "mysql" ]; then
+        if [ "${DB_TYPE}" = "mysql" ]; then
         echo "Creating MYSQL schemas"
         setup_mysql_databases
-        elif [ ${DB_TYPE} = "mssql" ]; then
+	echo "============= Database created success ==============================="
+        elif [ "${DB_TYPE}" = "mssql" ]; then
         echo "Creating MSSQL schemas"
         setup_mssql_databases
-        elif [ ${DB_TYPE} = "oracle" ];then
+	echo "============= Database created success ==============================="
+        elif [ "${DB_TYPE}" = "oracle" ];then
         echo "Creating ORACLE schemas"
         setup_oracle_databases
+	echo "============= Database created success ==============================="
         else
-        echo "No database engine selected"
+        echo "No database engine selected, please check the db-engine in properties file"
         fi
 
 echo "============= Database created success ==============================="
