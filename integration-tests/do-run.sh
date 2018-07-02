@@ -70,18 +70,18 @@ get_jenkins_build() {
 setup_mysql_databases() {
     echo "MySQL setting up" >> ${WORKSPACE_DIR}/java.txt
     echo ">> Creating databases..."
-    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $CARBON_DB; DROP DATABASE IF
+    mysql -h $DB_HOST -P $DB_PORT -u$DB_USERNAME -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS $CARBON_DB; DROP DATABASE IF
     EXISTS $AM_DB; DROP DATABASE IF EXISTS $STATS_DB; DROP DATABASE IF EXISTS $METRICS_DB; DROP DATABASE IF EXISTS $MB_DB;
     CREATE DATABASE $CARBON_DB; CREATE DATABASE $AM_DB; CREATE DATABASE $STATS_DB; CREATE DATABASE $METRICS_DB; CREATE DATABASE $MB_DB;"
     echo ">> Databases created!"
 
     echo ">> Creating users..."
-    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP USER '$MYSQL_DB_USER'";
-    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "CREATE USER '$MYSQL_DB_USER'@'%' IDENTIFIED BY '$MYSQL_DB_USER_PWD';"
+    mysql -h $DB_HOST -P $DB_PORT -u$DB_USERNAME -p$DB_PASSWORD -e "DROP USER '$MYSQL_DB_USER'";
+    mysql -h $DB_HOST -P $DB_PORT -u$DB_USERNAME -p$DB_PASSWORD -e "CREATE USER '$MYSQL_DB_USER'@'%' IDENTIFIED BY '$MYSQL_DB_USER_PWD';"
     echo ">> Users created!"
 
     echo ">> Grant access for users..."
-    mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "GRANT ALL PRIVILEGES ON $CARBON_DB.* TO '$MYSQL_DB_USER'@'%';
+    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "GRANT ALL PRIVILEGES ON $CARBON_DB.* TO '$MYSQL_DB_USER'@'%';
     GRANT ALL PRIVILEGES ON $AM_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $STATS_DB.* TO
     '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $METRICS_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $MB_DB.* TO '$MYSQL_DB_USER'@'%';"
     echo ">> Access granted!"
@@ -89,11 +89,11 @@ setup_mysql_databases() {
     echo ">> Creating tables..."
     if [ ${DB_VERSION} ==  "5.7" ]
     then
-        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql;
+        mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql;
         USE $STATS_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql5.7.sql;
         USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql; USE $MB_DB; SOURCE $DB_SCRIPT_HOME/mb-store/mysql-mb.sql;"
     else
-        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql;
+        mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql;
         USE $STATS_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql.sql;
         USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql; USE $MB_DB; SOURCE $DB_SCRIPT_HOME/mb-store/mysql-mb.sql;"
     fi
@@ -122,8 +122,6 @@ setup_mssql_databases(){
 
 #### To populate ORACLE schema and tables
 setup_oracle_databases(){
-    url="(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=pasinduoracletest.c8jlhntiji2j.us-east-1.rds.amazonaws.com)(PORT=1521))(CONNECT_DATA=(SID=ORCL)))"
-
     echo ">> Setting up Oracle user create script ..."
     echo "drop user $CARBON_DB cascade;"$'\n'"drop user $AM_DB cascade;"$'\n'"drop user $STATS_DB cascade;"$'\n'"drop user $MB_DB cascade;"$'\n'"drop user $METRICS_DB cascade;" >> oracle.sql
     echo "CREATE USER $CARBON_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $CARBON_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $CARBON_DB;" >> oracle.sql
@@ -133,7 +131,7 @@ setup_oracle_databases(){
     echo "CREATE USER $METRICS_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $METRICS_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $METRICS_DB;" >> oracle.sql
 
     echo ">> Setting up Oracle schemas ..."
-    echo exit | sqlplus ${DB_USERNAME}/${DB_PASSWORD}@//${DB_HOST}:${DB_PORT}/$ORACLE_SID @oracle.sql
+    echo exit | sqlplus ${DB_USERNAME}/${DB_PASSWORD}@//${DB_HOST}:${DB_PORT}/${ORACLE_SID} @oracle.sql
 
     echo ">> Setting up Oracle tables ..."
     echo exit | sqlplus $CARBON_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/oracle.sql
@@ -145,7 +143,7 @@ setup_oracle_databases(){
 }
 
 
-####
+#### To clone the product repo
 git_product_clone(){
     echo "Cloning product repo"
     cd ${productPath}
@@ -164,28 +162,45 @@ git_product_clone(){
 
 ####Read from properties file
 
-### TODO: Write a data validation logic to make sure all the needed inputs are available in data-bucket location.
+file1=infrastructure.properties
+file2=testplan-props.properties
 
-WORKSPACE_DIR=$(grep -i 'REMOTE_WORKSPACE_DIR_UNIX' ${FILE2} ${FILE1}  | cut -f2 -d'=')
-FILE1=${WORKSPACE_DIR}/infrastructure.properties
-FILE2=${WORKSPACE_DIR}/testplan-props.properties
+paste ${file1} ${file2} | while IFS="$(printf '\t')" read -r f1 f2
+do
+  printf '%s\n' "$f1" >> resultfile.properties
+  printf '%s\n' "$f2" >> resultfile.properties
+done
 
-#### User Variables
-GIT_LOCATION=$(grep -i 'gitURL' ${FILE2} ${FILE1}  | cut -f2 -d'=')
-GIT_BRANCH=$(grep -i 'gitBranch' ${FILE2} ${FILE1}  | cut -f2 -d'=')
+file3=resultfile.properties
 
-USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
-DB_HOST=$(grep -i 'DatabaseHost' ${FILE1} ${FILE2} | cut -f2 -d'=')
-DB_PORT=$(grep -i 'DatabasePort' ${FILE1} ${FILE2} | cut -f2 -d'=')
-DB_VERSION=$(grep -i 'DBEngineVersion' ${FILE2} ${FILE1} | cut -f2 -d'=')
-DB_TYPE=$(grep -i 'DBEngine' ${FILE2} ${FILE1} | cut -f2 -d'=')
+  while IFS='=' read -r key value
+  do
+     if [ "${key}" = "REMOTE_WORKSPACE_DIR_UNIX" ]; then
+        WORKSPACE_DIR=$(echo ${value})
+        elif [ "${key}" = "PRODUCT_GIT_URL" ]; then
+        GIT_LOCATION=$(echo ${value})
+        elif [ "${key}" = "PRODUCT_GIT_BRANCH" ]; then
+        GIT_BRANCH=$(echo ${value})
+        elif [ "${key}" = "DatabaseHost" ]; then
+        DB_HOST=$(echo ${value})
+        elif [ "${key}" = "DatabasePort" ]; then
+        DB_PORT=$(echo ${value})
+        elif [ "${key}" = "DBVersion" ]; then
+        DB_VERSION=$(echo ${value})
+        elif [ "${key}" = "DBEngine" ]; then
+        DB_TYPE=$(echo ${value})
+        elif [ "${key}" = "DatabaseUser" ]; then
+        DB_USERNAME=$(echo ${value})
+        elif [ "${key}" = "DatabasePassword" ]; then
+        DB_PASSWORD=$(echo ${value})
+        #elif [ "${key}" = "OracleSID" ]; then
+        #ORACLE_SID=$(echo ${value})
 
-## MySQL connection details
-DB_USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
-DB_PASSWORD=$(grep -i 'DatabasePassword' ${FILE1} ${FILE2} | cut -f2 -d'=')
-#ORACLE_SID=$(grep -i 'OracleSID' ${FILE1} ${FILE2} | cut -f2 -d'=')
+     fi
+  done <"$file3"
+
+#TODO : We need to comment out ORACLE_SID once it is updated to properties file.
 ORACLE_SID=ORCL
-
 ## databases
 CARBON_DB="WSO2_CARBON_DB"
 AM_DB="WSO2AM_DB"
