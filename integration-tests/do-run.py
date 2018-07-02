@@ -65,10 +65,10 @@ def read_proprty_files():
     global product_id
     global database_config
 
-    cwd = os.getcwd()
+    workspace = os.getcwd()
     property_file_paths = []
-    test_plan_prop_path = Path(cwd + "/" + TEST_PLAN_PROPERTY_FILE_NAME)
-    infra_prop_path = Path(cwd + "/" + INFRA_PROPERTY_FILE_NAME)
+    test_plan_prop_path = Path(workspace + "/" + TEST_PLAN_PROPERTY_FILE_NAME)
+    infra_prop_path = Path(workspace + "/" + INFRA_PROPERTY_FILE_NAME)
 
     if Path.exists(test_plan_prop_path) and Path.exists(infra_prop_path):
         property_file_paths.append(test_plan_prop_path)
@@ -202,7 +202,7 @@ def run_oracle_script(script, database):
     connectString = "{0}/{1}@//{2}/{3}".format(database, database_config["password"], 
         db_host, "ORCL")
     session = Popen(['sqlplus', '-S', connectString], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    session.stdin.write(bytes(query,'utf-8'))
+    session.stdin.write(bytes(script,'utf-8'))
     return session.communicate()
 
 def run_sqlserver_script_file(db_name, script_path):
@@ -289,8 +289,7 @@ def setup_databases(script_path, db_names):
                 logger.info(run_oracle_commands(database))
                 # run db script
                 scriptPath = script_path / 'oracle.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)))
-                
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath))))
         elif database == DB_AM_DB:
             if db_engine.upper() == 'MSSQL':
                 # create database
@@ -309,7 +308,7 @@ def setup_databases(script_path, db_names):
                 logger.info(run_oracle_commands(database))
                 # run db script
                 scriptPath = script_path / 'apimgt/oracle.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)))
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath))))
         elif database == DB_STAT_DB:
             if db_engine.upper() == 'MSSQL':
                 # create database
@@ -339,15 +338,13 @@ def setup_databases(script_path, db_names):
                 logger.info(run_oracle_commands(database))
                 # run db script
                 scriptPath = script_path / 'mb-store/oracle.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)))
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath))))
 
 def main():
     try:
-        global workspace
         global logger
         logger = function_logger(logging.DEBUG, logging.DEBUG)
         read_proprty_files()
-        workspace = os.getcwd()
         db_meta_data = get_db_meta_data(db_engine.upper())
         if db_meta_data:
             database_config["driver_class_name"] = db_meta_data["driverClassName"]
