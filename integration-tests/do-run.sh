@@ -62,9 +62,7 @@ get_jenkins_build() {
     echo "Downloadable URL: "$downloadable_url
     sudo wget -q $downloadable_url
     echo "Distribution downloading....."
-
 }
-
 
 #### To populate MySQL schema and tables
 setup_mysql_databases() {
@@ -190,9 +188,9 @@ file3=resultfile.properties
         DB_VERSION=$(echo ${value})
         elif [ "${key}" = "DBEngine" ]; then
         DB_TYPE=$(echo ${value})
-        elif [ "${key}" = "DatabaseUser" ]; then
+        elif [ "${key}" = "DBUsername" ]; then
         DB_USERNAME=$(echo ${value})
-        elif [ "${key}" = "DatabasePassword" ]; then
+        elif [ "${key}" = "DBPassword" ]; then
         DB_PASSWORD=$(echo ${value})
         #elif [ "${key}" = "OracleSID" ]; then
         #ORACLE_SID=$(echo ${value})
