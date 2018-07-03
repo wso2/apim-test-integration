@@ -140,27 +140,31 @@ def modify_datasources():
         artifarc_root = artifact_tree.getroot()
         data_sources = artifarc_root.find('datasources')
         for item in data_sources.findall('datasource'):
-            table_name = None
+            database_name = None
             for child in item:
                 if child.tag == 'name':
-                    table_name = child.text
+                    database_name = child.text
                 # special checking for namespace object content:media
-                if child.tag == 'definition' and table_name:
+                if child.tag == 'definition' and database_name:
                     configuration = child.find('configuration')
                     url = configuration.find('url')
                     user = configuration.find('username')
                     passwd = configuration.find('password')
                     drive_class_name = configuration.find('driverClassName')
-                    url.text = url.text.replace(url.text, database_config['url'] + table_name)
-                    user.text = user.text.replace(user.text, database_config['user'])
+                    if ORACLE_DB_ENGINE != database_config['db_engine'].upper():
+                        url.text = url.text.replace(url.text, database_config['url'] + database_name)
+                        user.text = user.text.replace(user.text, database_config['user'])
+                    else:
+                        url.text = url.text.replace(url.text, database_config['url'] + DEFAULT_ORACLE_SID)
+                        user.text = user.text.replace(user.text, database_name)
                     passwd.text = passwd.text.replace(passwd.text, database_config['password'])
                     drive_class_name.text = drive_class_name.text.replace(drive_class_name.text,
                                                                           database_config['driver_class_name'])
-                    database_names.append(table_name)
+                    database_names.append(database_name)
         artifact_tree.write(file_path)
 
 
-def configure_product(product, id, db_config):
+def configure_product(product, id, db_config, ws):
     try:
         global product_name
         global product_id
@@ -176,7 +180,7 @@ def configure_product(product, id, db_config):
         product_name = product
         product_id = id
         database_config = db_config
-        workspace = os.getcwd()
+        workspace = ws
         datasource_paths = DATASOURCE_PATHS
         lib_path = LIB_PATH
         product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
@@ -218,15 +222,18 @@ if __name__ == "__main__":
     #                      "sql_driver_location": "/<path>s/mysql-connector-java-<version>.jar",
     #                      "url": "jdbc:mysql://<ip>:3306/",
     #                      "user": "<user>"}
+    # workspace = /home/TG/<Product_Name>
     #
 
     # After we integrate Configure_Product.py script with do_run.py script we can remove this main method
     parser = argparse.ArgumentParser()
-    parser.add_argument('--product_name', metavar='path', required=True,
+    parser.add_argument('--product_name', metavar='name', required=True,
                         help='Name of the product')
-    parser.add_argument('--product_id', metavar='path', required=True,
+    parser.add_argument('--product_id', metavar='id', required=True,
                         help='Id of the product')
-    parser.add_argument('--db_config', metavar='path', required=True,
+    parser.add_argument('--db_config', metavar='config', required=True,
                         help='name of the product')
+    parser.add_argument('--workspace', metavar='ws', required=True,
+                        help='workspace of the job')
     args = parser.parse_args()
-    configure_product(product=args.product_id, id=args.product_id, db_config=args.db_config)
+    configure_product(product=args.product_name, id=args.product_id, db_config=args.db_config, ws=args.workspace)

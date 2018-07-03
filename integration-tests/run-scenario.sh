@@ -34,6 +34,29 @@ key_pem=`grep -w "$PROP_KEY" ${FILE1} ${FILE2} | cut -d'=' -f2`
 #user=`cat ${FILE2} | grep -w "$PROP_USER" ${FILE1} ${FILE2} | cut -d'=' -f2`
 user=centos
 host=`grep -w "$PROP_HOST" ${FILE1} ${FILE2} | cut -d'=' -f2`
+CONNECT_RETRY_COUNT=2
+
+wait_for_port() {
+host=$1
+port=$2
+x=0;
+retry_count=$CONNECT_RETRY_COUNT;
+echo "Wait port: ${1}:${2}" 
+while ! nc -z $host $port; do
+  sleep 2 # wait for 2 second before check again
+  echo -n "."
+  if [ $x = $retry_count ]; then
+    echo "port never opened."
+    exit 1
+  fi
+x=$((x+1))
+done
+
+}
+
+wait_for_port ${host} 22 
+
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p ${REM_DIR}
 
 scp -o StrictHostKeyChecking=no -i ${key_pem} do-run.sh ${user}@${host}:${REM_DIR}
 

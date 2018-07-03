@@ -18,7 +18,7 @@ set -e
 set -o xtrace
 
 #### Find the OS to run the script on particular OS
-var=$(cat /etc/os-release | sed -e 1b -e '$!d' | awk '{print $1;}')
+    var=$(cat /etc/os-release | sed -e 1b -e '$!d' | awk '{print $1;}')
 
     for f in $var; do
         os_type=${f#*\"}
@@ -53,14 +53,15 @@ parse_yaml() {
 
 #### To download distribution built from jenkin
 get_jenkins_build() {
-	echo "Get distribution build from jenkins"
-	jenkins_url="https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/"
-	distribution_url=$(curl -s -G $jenkins_url/api/xml -d xpath=\(/mavenModuleSetBuild//relativePath\)[3])
-	distribution_pack=$(echo $distribution_url | sed -n 's:.*<relativePath>\(.*\)</relativePath>.*:\1:p')
-	echo "Distribution Pack: "$distribution_pack
-	downloadable_url=$jenkins_url"artifact/"$distribution_pack
-	echo "Downloadable URL: "$downloadable_url
-	sudo wget $downloadable_url
+    echo "Get distribution build from jenkins"
+    jenkins_url="https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/"
+    distribution_url=$(curl -s -G $jenkins_url/api/xml -d xpath=\(/mavenModuleSetBuild//relativePath\)[3])
+    distribution_pack=$(echo $distribution_url | sed -n 's:.*<relativePath>\(.*\)</relativePath>.*:\1:p')
+    echo "Distribution Pack: "$distribution_pack
+    downloadable_url=$jenkins_url"artifact/"$distribution_pack
+    echo "Downloadable URL: "$downloadable_url
+    sudo wget -q $downloadable_url
+    echo "Distribution downloading....."
 
 }
 
@@ -69,18 +70,18 @@ get_jenkins_build() {
 setup_mysql_databases() {
     echo "MySQL setting up" >> ${WORKSPACE_DIR}/java.txt
     echo ">> Creating databases..."
-    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $CARBON_DB; DROP DATABASE IF
+    mysql -h $DB_HOST -P $DB_PORT -u$DB_USERNAME -p$DB_PASSWORD -e "DROP DATABASE IF EXISTS $CARBON_DB; DROP DATABASE IF
     EXISTS $AM_DB; DROP DATABASE IF EXISTS $STATS_DB; DROP DATABASE IF EXISTS $METRICS_DB; DROP DATABASE IF EXISTS $MB_DB;
     CREATE DATABASE $CARBON_DB; CREATE DATABASE $AM_DB; CREATE DATABASE $STATS_DB; CREATE DATABASE $METRICS_DB; CREATE DATABASE $MB_DB;"
     echo ">> Databases created!"
 
     echo ">> Creating users..."
-    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP USER '$MYSQL_DB_USER'";
-    mysql -h $DB_HOST -P $DB_PORT -u$MYSQL_USERNAME -p$MYSQL_PASSWORD -e "CREATE USER '$MYSQL_DB_USER'@'%' IDENTIFIED BY '$MYSQL_DB_USER_PWD';"
+    mysql -h $DB_HOST -P $DB_PORT -u$DB_USERNAME -p$DB_PASSWORD -e "DROP USER '$MYSQL_DB_USER'";
+    mysql -h $DB_HOST -P $DB_PORT -u$DB_USERNAME -p$DB_PASSWORD -e "CREATE USER '$MYSQL_DB_USER'@'%' IDENTIFIED BY '$MYSQL_DB_USER_PWD';"
     echo ">> Users created!"
 
     echo ">> Grant access for users..."
-    mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "GRANT ALL PRIVILEGES ON $CARBON_DB.* TO '$MYSQL_DB_USER'@'%';
+    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "GRANT ALL PRIVILEGES ON $CARBON_DB.* TO '$MYSQL_DB_USER'@'%';
     GRANT ALL PRIVILEGES ON $AM_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $STATS_DB.* TO
     '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $METRICS_DB.* TO '$MYSQL_DB_USER'@'%'; GRANT ALL PRIVILEGES ON $MB_DB.* TO '$MYSQL_DB_USER'@'%';"
     echo ">> Access granted!"
@@ -88,11 +89,11 @@ setup_mysql_databases() {
     echo ">> Creating tables..."
     if [ ${DB_VERSION} ==  "5.7" ]
     then
-        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql;
+        mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql;
         USE $STATS_DB; SOURCE $DB_SCRIPT_HOME/mysql5.7.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql5.7.sql;
         USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql; USE $MB_DB; SOURCE $DB_SCRIPT_HOME/mb-store/mysql-mb.sql;"
     else
-        mysql -h $DB_HOST -P $DB_PORT -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql;
+        mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "USE $CARBON_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql;
         USE $STATS_DB; SOURCE $DB_SCRIPT_HOME/mysql.sql; USE $AM_DB; SOURCE $DB_SCRIPT_HOME/apimgt/mysql.sql;
         USE $METRICS_DB; SOURCE $DB_SCRIPT_HOME/metrics/mysql.sql; USE $MB_DB; SOURCE $DB_SCRIPT_HOME/mb-store/mysql-mb.sql;"
     fi
@@ -102,18 +103,58 @@ setup_mysql_databases() {
 
 #### To populate MSSQL schema and tables
 setup_mssql_databases(){
-    echo "MSSQL"
-    #TODO: add mssql scrip here
+    echo ">> Setting up SQLServer databases ..."
+    echo ">> Creating databases..."
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $CARBON_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $AM_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $STATS_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $MB_DB"
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -Q "CREATE DATABASE $METRICS_DB"
+    echo ">> Databases created!"
+
+    echo ">> Creating tables..."
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $CARBON_DB -i $DB_SCRIPT_HOME/mssql.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $AM_DB -i $DB_SCRIPT_HOME/apimgt/mssql.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $STATS_DB -i $DB_SCRIPT_HOME/mssql.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $MB_DB -i $DB_SCRIPT_HOME/mb-store/mssql-mb.sql
+    sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $METRICS_DB -i $DB_SCRIPT_HOME/metrics/mssql.sql
 }
 
-####
+#### To populate ORACLE schema and tables
+setup_oracle_databases(){
+    echo ">> Setting up Oracle user create script ..."
+    echo "drop user $CARBON_DB cascade;"$'\n'"drop user $AM_DB cascade;"$'\n'"drop user $STATS_DB cascade;"$'\n'"drop user $MB_DB cascade;"$'\n'"drop user $METRICS_DB cascade;" >> oracle.sql
+    echo "CREATE USER $CARBON_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $CARBON_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $CARBON_DB;" >> oracle.sql
+    echo "CREATE USER $AM_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $AM_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $AM_DB;" >> oracle.sql
+    echo "CREATE USER $STATS_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $STATS_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $STATS_DB;" >> oracle.sql
+    echo "CREATE USER $MB_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $MB_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $MB_DB;" >> oracle.sql
+    echo "CREATE USER $METRICS_DB IDENTIFIED BY $DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO $METRICS_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO $METRICS_DB;" >> oracle.sql
+
+    echo ">> Setting up Oracle schemas ..."
+    echo exit | sqlplus ${DB_USERNAME}/${DB_PASSWORD}@//${DB_HOST}:${DB_PORT}/${ORACLE_SID} @oracle.sql
+
+    echo ">> Setting up Oracle tables ..."
+    echo exit | sqlplus $CARBON_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/oracle.sql
+    echo exit | sqlplus $AM_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/apimgt/oracle.sql
+    echo exit | sqlplus $STATS_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/oracle.sql
+    echo exit | sqlplus $MB_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/mb-store/oracle-mb.sql
+    echo exit | sqlplus $METRICS_DB/$DB_PASSWORD@//$DB_HOST/$ORACLE_SID @$DB_SCRIPT_HOME/metrics/oracle.sql
+    echo ">> Tables created ..."
+}
+
+
+#### To clone the product repo
 git_product_clone(){
-echo "Cloning product repo"
+    echo "Cloning product repo"
     cd ${productPath}
-    sudo git clone ${GIT_LOCATION}
+    #TODO: FIX the GIT_LOCATION var
+    #sudo git clone ${GIT_LOCATION}
+    sudo git clone https://github.com/wso2/product-apim.git
     sleep 10
     cd product-apim
-	sudo git checkout ${GIT_BRANCH}
+        #TODO: Fix GIT_BRANCH
+	#sudo git checkout ${GIT_BRANCH}
+        sudo git checkout 2.x
 	git status
 }
 
@@ -121,32 +162,50 @@ echo "Cloning product repo"
 
 ####Read from properties file
 
-WORKSPACE_DIR=/opt/wso2/workspace
-FILE1=${WORKSPACE_DIR}/infrastructure.properties
-FILE2=${WORKSPACE_DIR}/testplan-props.properties
+file1=infrastructure.properties
+file2=testplan-props.properties
 
-#### User Variables
-GIT_LOCATION=$(grep -i 'gitURL' ${FILE2} ${FILE1}  | cut -f2 -d'=')
-GIT_BRANCH=$(grep -i 'gitBranch' ${FILE2} ${FILE1}  | cut -f2 -d'=')
+paste ${file1} ${file2} | while IFS="$(printf '\t')" read -r f1 f2
+do
+  printf '%s\n' "$f1" >> resultfile.properties
+  printf '%s\n' "$f2" >> resultfile.properties
+done
 
-USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
-DB_HOST=$(grep -i 'DatabaseHost' ${FILE1} ${FILE2} | cut -f2 -d'=')
-DB_PORT=$(grep -i 'DatabasePort' ${FILE1} ${FILE2} | cut -f2 -d'=')
-#DB_ENGINE=$(echo $config_database_..)
-DB_VERSION=$(grep -i 'DBEngineVersion' ${FILE2} ${FILE1} | cut -f2 -d'=')
-DB_TYPE=$(grep -i 'DBEngine' ${FILE2} ${FILE1} | cut -f2 -d'=')
+file3=resultfile.properties
 
-## MySQL connection details
-MYSQL_USERNAME=$(grep -i 'DatabaseUser' ${FILE1} ${FILE2} | cut -f2 -d'=')
-MYSQL_PASSWORD=$(grep -i 'DatabasePassword' ${FILE1} ${FILE2} | cut -f2 -d'=')
+  while IFS='=' read -r key value
+  do
+     if [ "${key}" = "REMOTE_WORKSPACE_DIR_UNIX" ]; then
+        WORKSPACE_DIR=$(echo ${value})
+        elif [ "${key}" = "PRODUCT_GIT_URL" ]; then
+        GIT_LOCATION=$(echo ${value})
+        elif [ "${key}" = "PRODUCT_GIT_BRANCH" ]; then
+        GIT_BRANCH=$(echo ${value})
+        elif [ "${key}" = "DatabaseHost" ]; then
+        DB_HOST=$(echo ${value})
+        elif [ "${key}" = "DatabasePort" ]; then
+        DB_PORT=$(echo ${value})
+        elif [ "${key}" = "DBVersion" ]; then
+        DB_VERSION=$(echo ${value})
+        elif [ "${key}" = "DBEngine" ]; then
+        DB_TYPE=$(echo ${value})
+        elif [ "${key}" = "DatabaseUser" ]; then
+        DB_USERNAME=$(echo ${value})
+        elif [ "${key}" = "DatabasePassword" ]; then
+        DB_PASSWORD=$(echo ${value})
+        #elif [ "${key}" = "OracleSID" ]; then
+        #ORACLE_SID=$(echo ${value})
 
+     fi
+  done <"$file3"
+
+#TODO : We need to comment out ORACLE_SID once it is updated to properties file.
+ORACLE_SID=ORCL
 ## databases
 CARBON_DB="WSO2_CARBON_DB"
-#UM_DB="WSO2UM_DB"
 AM_DB="WSO2AM_DB"
 STATS_DB="WSO2AM_STATS_DB"
 MB_DB="WSO2_MB_STORE_DB"
-#GOV_REG_DB="WSO2REG_DB"
 METRICS_DB="WSO2METRICS_DB"
 
 ## database users
@@ -233,14 +292,20 @@ unzip -qq ${PRODUCT_HOME}.zip
 
 #### Create the schemas based on the selected RDBMS
 
-        if [[ ${DB_TYPE}==MySQL ]]; then
-        echo "Creating MYSQL schema"
+        if [ "${DB_TYPE}" = "mysql" ]; then
+        echo "Creating MYSQL schemas"
         setup_mysql_databases
-        elif [[${DB_TYPE}==MSSQL]]; then
-        echo "Creating MSSQL schema"
+	echo "============= Database created success ==============================="
+        elif [ "${DB_TYPE}" = "mssql" ]; then
+        echo "Creating MSSQL schemas"
         setup_mssql_databases
+	echo "============= Database created success ==============================="
+        elif [ "${DB_TYPE}" = "oracle" ];then
+        echo "Creating ORACLE schemas"
+        setup_oracle_databases
+	echo "============= Database created success ==============================="
         else
-        echo "No database created yet"
+        echo "No database engine selected, please check the db-engine in properties file"
         fi
 
 echo "============= Database created success ==============================="
