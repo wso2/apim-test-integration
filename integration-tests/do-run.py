@@ -26,6 +26,7 @@ import sqlparse
 from pathlib import Path
 import requests
 import configure_product as cp
+from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
     PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB
 
@@ -60,14 +61,13 @@ def read_proprty_files():
     global db_username
     global db_password
     global workspace
-    global product_name
     global product_id
     global database_config
 
-    cwd = os.getcwd()
+    workspace = os.getcwd()
     property_file_paths = []
-    test_plan_prop_path = Path(cwd + "/" + TEST_PLAN_PROPERTY_FILE_NAME)
-    infra_prop_path = Path(cwd + "/" + INFRA_PROPERTY_FILE_NAME)
+    test_plan_prop_path = Path(workspace + "/" + TEST_PLAN_PROPERTY_FILE_NAME)
+    infra_prop_path = Path(workspace + "/" + INFRA_PROPERTY_FILE_NAME)
 
     if Path.exists(test_plan_prop_path) and Path.exists(infra_prop_path):
         property_file_paths.append(test_plan_prop_path)
@@ -76,6 +76,8 @@ def read_proprty_files():
         for path in property_file_paths:
             with open(path, 'r') as filehandle:
                 for line in filehandle:
+                    if line.startswith("#"):
+                            continue
                     prop = line.split("=")
                     key = prop[0]
                     val = prop[1]
@@ -84,12 +86,12 @@ def read_proprty_files():
                     elif key == "DBEngineVersion":
                         db_engine_version = val
                     elif key == "gitURL":
-                        git_repo_url = val.strip()
+                        git_repo_url = val.strip().replace('\\', '')
                         product_id = git_repo_url.split("/")[-1].split('.')[0]
                     elif key == "gitBranch":
                         git_branch = val.strip()
                     elif key == "productDistDownloadApi":
-                        product_dist_download_api = val.strip()
+                        product_dist_download_api = val.strip().replace('\\', '')
                     elif key == "sqlDriversLocationUnix" and not sys.platform.startswith('win'):
                         sql_driver_location = val.strip()
                     elif key == "sqlDriversLocationWindows" and sys.platform.startswith('win'):
@@ -98,10 +100,20 @@ def read_proprty_files():
                         db_host = val.strip()
                     elif key == "DatabasePort":
                         db_port = val.strip()
-                    elif key == "DatabaseUsername":
+                    elif key == "DBUsername":
                         db_username = val.strip()
-                    elif key == "DatabasePassword":
+                    elif key == "DBPassword":
                         db_password = val.strip()
+    else:
+        raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
+
+
+def validate_property_radings():
+    if None in (
+    db_engine_version, git_repo_url, product_id, git_branch, product_dist_download_api, sql_driver_location, db_host,
+    db_port, db_username, db_password):
+        return False
+    return True
 
 
 def get_db_meta_data(argument):
@@ -151,17 +163,16 @@ def get_db_hostname(url, db_type):
     """Retreive db hostname from jdbc url
     """
     if db_type == 'ORACLE':
-        # TODO: implementation for oracle db_type
-        hostname = "testurl123"
+        hostname= url.split(':')[3].replace("@", "")
     else:
         hostname = url.split(':')[2].replace("//", "")
     return hostname
 
 
-def run_sqlserver_commands(sql_host, sql_user, sql_pass, sql_query):
+def run_sqlserver_commands(query):
     """Run SQL_SERVER commands using sqlcmd utility.
     """
-    subprocess.call(['sqlcmd', '-S', sql_host, '-U', sql_user, '-P', sql_pass, '-Q', sql_query])
+    subprocess.call(['sqlcmd', '-S', db_host, '-U', database_config['user'], '-P', database_config['password'], '-Q', query])
 
 
 def get_mysql_connection(dbName=None):
@@ -177,19 +188,42 @@ def get_mysql_connection(dbName=None):
 def run_mysql_commands(query):
     """Run mysql commands using mysql client when db name not provided.
     """
-    # subprocess.call(['mysql', '-H', host, '-u', user, '-p', passwrd, '-e', query])
-
     conn = get_mysql_connection()
     conectr = conn.cursor()
     conectr.execute(query)
     conn.close()
 
+def create_ora_schema_script(database):
+    q = "CREATE USER {0} IDENTIFIED BY {1}; GRANT CONNECT, RESOURCE, DBA TO {0}; GRANT UNLIMITED TABLESPACE TO {0};".format(
+        database, database_config["password"])
+    return q
 
-def run_sqlserver_script_file(sql_host, sql_user, sql_pass, db_name, script_path):
+def run_oracle_commands(database):
+    """Run oracle commands using sqlplus client when db name(user) is not provided.
+    """
+    query = create_ora_schema_script(database)
+    connectString = "{0}/{1}@//{2}/{3}".format(database_config["user"], database_config["password"], 
+        db_host, "ORCL")
+    session = Popen(['sqlplus', '-S', connectString], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    session.stdin.write(bytes(query,'utf-8'))
+    return session.communicate()
+
+def run_oracle_script(script, database):
+    """Run oracle commands using sqlplus client when dbname(user) is provided.
+    """
+    connectString = "{0}/{1}@//{2}/{3}".format(database, database_config["password"], 
+        db_host, "ORCL")
+    session = Popen(['sqlplus', '-S', connectString], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    session.stdin.write(bytes(script,'utf-8'))
+    return session.communicate()
+
+
+def run_sqlserver_script_file(db_name, script_path):
     """Run SQL_SERVER script file on a provided database.
     """
-    # sqlcmd -S $DB_HOST -U $DB_USERNAME -P $DB_PASSWORD -d $UM_DB -i $DB_SCRIPTS_PATH/mssql.sql
-    subprocess.call(['sqlcmd', '-S', sql_host, '-U', sql_user, '-P', sql_pass, '-d', db_name, '-i', script_path])
+    subprocess.call(
+        ['sqlcmd', '-S', db_host, '-U', database_config["user"], '-P', database_config["password"], '-d', db_name, '-i',
+         script_path])
 
 
 def run_mysql_script_file(db_name, script_path):
@@ -217,7 +251,6 @@ def copy_file(source, target):
 
 
 def get_product_name(jkns_api_url):
-    # https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/api/
     req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/fileName'
     headers = {'Accept': 'application/xml'}
     response = requests.get(req_url, headers=headers)
@@ -253,15 +286,12 @@ def setup_databases(script_path, db_names):
         if database == DB_CARBON_DB:
             if db_engine.upper() == 'MSSQL':
                 # create database
-                run_sqlserver_commands(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
-                                       database_config['passwd'], 'CREATE DATABASE WSO2_CARBON_DB')
+                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
                 # manipulate script path
                 scriptPath = script_path / 'mssql.sql'
                 # run db scripts
-                run_sqlserver_script_file(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
-                                          database_config['passwd'], database, str(scriptPath))
+                run_sqlserver_script_file(database, str(scriptPath))
             elif db_engine.upper() == 'MYSQL':
-                print('test123')
                 scriptPath = script_path / 'mysql5.7.sql'
                 # create database
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
@@ -269,19 +299,19 @@ def setup_databases(script_path, db_names):
                 run_mysql_script_file(database, str(scriptPath))
 
             elif db_engine.upper() == 'ORACLE':
-                # TODO: oracle implementation
-                testval = 'testValue'
-                pass
+                # create oracle schema
+                logger.info(run_oracle_commands(database))
+                # run db script
+                scriptPath = script_path / 'oracle.sql'
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
         elif database == DB_AM_DB:
             if db_engine.upper() == 'MSSQL':
                 # create database
-                run_sqlserver_commands(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
-                                       database_config['passwd'], 'CREATE DATABASE WSO2AM_DB')
+                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
                 # manipulate script path
                 scriptPath = script_path / 'apimgt/mssql.sql'
                 # run db scripts
-                run_sqlserver_script_file(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
-                                          database_config['passwd'], database, str(scriptPath))
+                run_sqlserver_script_file(database, str(scriptPath))
             elif db_engine.upper() == 'MYSQL':
                 scriptPath = script_path / 'apimgt/mysql5.7.sql'
                 # create database
@@ -289,20 +319,28 @@ def setup_databases(script_path, db_names):
                 # run db script
                 run_mysql_script_file(database, str(scriptPath))
             elif db_engine.upper() == 'ORACLE':
-                pass
+                logger.info(run_oracle_commands(database))
+                # run db script
+                scriptPath = script_path / 'apimgt/oracle.sql'
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
         elif database == DB_STAT_DB:
             if db_engine.upper() == 'MSSQL':
                 # create database
-                run_sqlserver_commands(get_db_hostname(database_config['url'], 'MSSQL'), database_config['user'],
-                                       database_config['passwd'], 'CREATE DATABASE WSO2AM_STATS_DB')
+                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
             elif db_engine.upper() == 'MYSQL':
                 # create database
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
             elif db_engine.upper() == 'ORACLE':
-                pass
+                #create database
+                logger.info(run_oracle_commands(database))
         elif database == DB_MB_DB:
             if db_engine.upper() == 'MSSQL':
-                pass
+                # create database
+                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
+                # manipulate script path
+                scriptPath = script_path / 'mb-store/mssql.sql'
+                # run db scripts
+                run_sqlserver_script_file(database, str(scriptPath))
             elif db_engine.upper() == 'MYSQL':
                 # create database
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
@@ -311,25 +349,48 @@ def setup_databases(script_path, db_names):
                 # run db scripts
                 run_mysql_script_file(database, str(scriptPath))
             elif db_engine.upper() == 'ORACLE':
-                pass
+                logger.info(run_oracle_commands(database))
+                # run db script
+                scriptPath = script_path / 'mb-store/oracle.sql'
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
+
+
+def construct_db_config():
+    db_meta_data = get_db_meta_data(db_engine.upper())
+    if db_meta_data:
+        database_config["driver_class_name"] = db_meta_data["driverClassName"]
+        database_config["password"] = db_password
+        database_config["sql_driver_location"] = sql_driver_location + "/" + db_meta_data["jarName"]
+        database_config["url"] = construct_url(db_meta_data["prefix"])
+        database_config["user"] = db_username
+        database_config["db_engine"] = db_engine
+    else:
+        raise BaseException("Creating process of Database configuration is failed")
+
+
+def run_integration_test():
+    """Run integration tests.
+    """
+    integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/integration')
+    if sys.platform.startswith('win'):
+        subprocess.call(['mvn', 'clean', 'install'], shell=True, cwd=integration_tests_path)
+    else:
+        subprocess.call(['mvn', 'clean', 'install'], cwd=integration_tests_path)
+    logger.info('Integration test Running is completed.')
 
 
 def main():
     try:
-        global workspace
         global logger
+        global product_name
         logger = function_logger(logging.DEBUG, logging.DEBUG)
+        if sys.version_info < (3, 6):
+            raise Exception(
+                "To run do-run.py script you must have Python 3.6 or latest. Current version info: " + sys.version_info)
         read_proprty_files()
-        workspace = os.getcwd()
-        db_meta_data = get_db_meta_data(db_engine.upper())
-        if db_meta_data:
-            database_config["driver_class_name"] = db_meta_data["driverClassName"]
-            database_config["password"] = db_password
-            database_config["sql_driver_location"] = sql_driver_location
-            database_config["url"] = construct_url(db_meta_data["prefix"])
-            database_config["user"] = db_username
-        else:
-            raise BaseException("Creating process of Database configuration is failed")
+        if not validate_property_radings:
+            raise Exception("Property filr reading error. Please verify the property file content and the format")
+        construct_db_config()
 
         # product name retrieve from jenkins api
         product_name = get_product_name(product_dist_download_api)
@@ -341,7 +402,8 @@ def main():
         product_file_name = product_name + ".zip"
         dist_downl_url = get_product_dist_arifact_path(product_dist_download_api) + get_product_dist_rel_path(
             product_dist_download_api) + product_file_name
-        #product download path and file name constructing
+
+        # product download path and file name constructing
         prodct_download_dir = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
         if not Path.exists(Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)):
             Path(prodct_download_dir).mkdir(parents=True, exist_ok=True)
@@ -352,13 +414,13 @@ def main():
 
         # populate databases
         script_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_name + "/" + 'dbscripts')
-        setup_databases(script_path, cp.configure_product(product_name, product_id, database_config, workspace))
+        db_names = cp.configure_product(product_name, product_id, database_config, workspace)
+        if len(db_names) == 0 or db_names is None:
+            raise Exception ("Failed the product configuring")
+        setup_databases(script_path, db_names)
         logger.info('Database setting up is done.')
-
-        # run integration tests
-        integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/integration/tests-integration')
-        subprocess.call(['mvn', 'clean', 'install'], cwd=integration_tests_path)
-        logger.info('Running integration tests done.')
+        logger.info('Starting Integration test running.')
+        run_integration_test()
     except Exception as e:
         logger.error("Error occurred while running the do_run.py script", exc_info=True)
     except BaseException as e:

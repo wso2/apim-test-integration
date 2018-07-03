@@ -34,6 +34,29 @@ key_pem=`grep -w "$PROP_KEY" ${FILE1} ${FILE2} | cut -d'=' -f2`
 #user=`cat ${FILE2} | grep -w "$PROP_USER" ${FILE1} ${FILE2} | cut -d'=' -f2`
 user=centos
 host=`grep -w "$PROP_HOST" ${FILE1} ${FILE2} | cut -d'=' -f2`
+CONNECT_RETRY_COUNT=2
+
+wait_for_port() {
+host=$1
+port=$2
+x=0;
+retry_count=$CONNECT_RETRY_COUNT;
+echo "Wait port: ${1}:${2}" 
+while ! nc -z $host $port; do
+  sleep 2 # wait for 2 second before check again
+  echo -n "."
+  if [ $x = $retry_count ]; then
+    echo "port never opened."
+    exit 1
+  fi
+x=$((x+1))
+done
+
+}
+
+wait_for_port ${host} 22 
+
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p ${REM_DIR}
 
 scp -o StrictHostKeyChecking=no -i ${key_pem} do-run.sh ${user}@${host}:${REM_DIR}
 
@@ -49,8 +72,8 @@ scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE5} ${user}@${host}:${REM_DIR
 echo "=== Files copied success ==="
 
 
-#ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
-ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} python3 ${REM_DIR}/do-run.py
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
+#ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} python3 ${REM_DIR}/do-run.py
 
 ### Get the reports from integration test
 scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports .
