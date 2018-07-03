@@ -62,9 +62,7 @@ get_jenkins_build() {
     echo "Downloadable URL: "$downloadable_url
     sudo wget -q $downloadable_url
     echo "Distribution downloading....."
-
 }
-
 
 #### To populate MySQL schema and tables
 setup_mysql_databases() {
@@ -164,6 +162,7 @@ git_product_clone(){
 
 file1=infrastructure.properties
 file2=testplan-props.properties
+### TODO: Write a data validation logic to make sure all the needed inputs are available in data-bucket location.
 
 paste ${file1} ${file2} | while IFS="$(printf '\t')" read -r f1 f2
 do
@@ -189,9 +188,9 @@ file3=resultfile.properties
         DB_VERSION=$(echo ${value})
         elif [ "${key}" = "DBEngine" ]; then
         DB_TYPE=$(echo ${value})
-        elif [ "${key}" = "DatabaseUser" ]; then
+        elif [ "${key}" = "DBUsername" ]; then
         DB_USERNAME=$(echo ${value})
-        elif [ "${key}" = "DatabasePassword" ]; then
+        elif [ "${key}" = "DBPassword" ]; then
         DB_PASSWORD=$(echo ${value})
         #elif [ "${key}" = "OracleSID" ]; then
         #ORACLE_SID=$(echo ${value})

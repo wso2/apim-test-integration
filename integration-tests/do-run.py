@@ -99,9 +99,9 @@ def read_proprty_files():
                         db_host = val.strip()
                     elif key == "DatabasePort":
                         db_port = val.strip()
-                    elif key == "DatabaseUsername":
+                    elif key == "DBUsername":
                         db_username = val.strip()
-                    elif key == "DatabasePassword":
+                    elif key == "DBPassword":
                         db_password = val.strip()
 
 
