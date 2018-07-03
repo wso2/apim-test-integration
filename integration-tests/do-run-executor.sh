@@ -24,7 +24,8 @@ INIT_ENV=env
 PYTHON=$(which python3)
 
 # get the working directory
-WD=$(pwd)
+WD=$2
+cd ${WD}
 
 # create the virtual env
 virtualenv $WD/$INIT_ENV -p $PYTHON
