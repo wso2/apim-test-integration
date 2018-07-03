@@ -373,9 +373,9 @@ def run_integration_test():
     """
     integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/integration')
     if sys.platform.startswith('win'):
-        subprocess.call(['mvn', 'clean', 'install'], shell=True, cwd=integration_tests_path)
+        subprocess.call(['mvn', '--batch-mode', 'clean', 'install'], shell=True, cwd=integration_tests_path)
     else:
-        subprocess.call(['mvn', 'clean', 'install'], cwd=integration_tests_path)
+        subprocess.call(['mvn', '--batch-mode', 'clean', 'install'], cwd=integration_tests_path)
     logger.info('Integration test Running is completed.')
 
 
