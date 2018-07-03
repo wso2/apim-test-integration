@@ -61,7 +61,6 @@ def read_proprty_files():
     global db_username
     global db_password
     global workspace
-    global product_name
     global product_id
     global database_config
 
@@ -77,6 +76,8 @@ def read_proprty_files():
         for path in property_file_paths:
             with open(path, 'r') as filehandle:
                 for line in filehandle:
+                    if line.startswith("#"):
+                            continue
                     prop = line.split("=")
                     key = prop[0]
                     val = prop[1]
@@ -85,12 +86,12 @@ def read_proprty_files():
                     elif key == "DBEngineVersion":
                         db_engine_version = val
                     elif key == "gitURL":
-                        git_repo_url = val.strip()
+                        git_repo_url = val.strip().replace('\\', '')
                         product_id = git_repo_url.split("/")[-1].split('.')[0]
                     elif key == "gitBranch":
                         git_branch = val.strip()
                     elif key == "productDistDownloadApi":
-                        product_dist_download_api = val.strip()
+                        product_dist_download_api = val.strip().replace('\\', '')
                     elif key == "sqlDriversLocationUnix" and not sys.platform.startswith('win'):
                         sql_driver_location = val.strip()
                     elif key == "sqlDriversLocationWindows" and sys.platform.startswith('win'):
@@ -103,6 +104,16 @@ def read_proprty_files():
                         db_username = val.strip()
                     elif key == "DBPassword":
                         db_password = val.strip()
+    else:
+        raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
+
+
+def validate_property_radings():
+    if None in (
+    db_engine_version, git_repo_url, product_id, git_branch, product_dist_download_api, sql_driver_location, db_host,
+    db_port, db_username, db_password):
+        return False
+    return True
 
 
 def get_db_meta_data(argument):
@@ -183,7 +194,8 @@ def run_mysql_commands(query):
     conn.close()
 
 def create_ora_schema_script(database):
-    q = "CREATE USER {0} IDENTIFIED BY {1}; GRANT CONNECT, RESOURCE, DBA TO {0}; GRANT UNLIMITED TABLESPACE TO {0};".format(database, database_config["password"])
+    q = "CREATE USER {0} IDENTIFIED BY {1}; GRANT CONNECT, RESOURCE, DBA TO {0}; GRANT UNLIMITED TABLESPACE TO {0};".format(
+        database, database_config["password"])
     return q
 
 def run_oracle_commands(database):
@@ -205,10 +217,13 @@ def run_oracle_script(script, database):
     session.stdin.write(bytes(script,'utf-8'))
     return session.communicate()
 
+
 def run_sqlserver_script_file(db_name, script_path):
     """Run SQL_SERVER script file on a provided database.
     """
-    subprocess.call(['sqlcmd', '-S', db_host, '-U', database_config["user"], '-P', database_config["password"], '-d', db_name, '-i', script_path])
+    subprocess.call(
+        ['sqlcmd', '-S', db_host, '-U', database_config["user"], '-P', database_config["password"], '-d', db_name, '-i',
+         script_path])
 
 
 def run_mysql_script_file(db_name, script_path):
@@ -236,7 +251,6 @@ def copy_file(source, target):
 
 
 def get_product_name(jkns_api_url):
-    # https://wso2.org/jenkins/job/products/job/product-apim_2.x/lastRelease/api/
     req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/fileName'
     headers = {'Accept': 'application/xml'}
     response = requests.get(req_url, headers=headers)
@@ -340,21 +354,43 @@ def setup_databases(script_path, db_names):
                 scriptPath = script_path / 'mb-store/oracle.sql'
                 logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
 
+
+def construct_db_config():
+    db_meta_data = get_db_meta_data(db_engine.upper())
+    if db_meta_data:
+        database_config["driver_class_name"] = db_meta_data["driverClassName"]
+        database_config["password"] = db_password
+        database_config["sql_driver_location"] = sql_driver_location + "/" + db_meta_data["jarName"]
+        database_config["url"] = construct_url(db_meta_data["prefix"])
+        database_config["user"] = db_username
+        database_config["db_engine"] = db_engine
+    else:
+        raise BaseException("Creating process of Database configuration is failed")
+
+
+def run_integration_test():
+    """Run integration tests.
+    """
+    integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/integration')
+    if sys.platform.startswith('win'):
+        subprocess.call(['mvn', 'clean', 'install'], shell=True, cwd=integration_tests_path)
+    else:
+        subprocess.call(['mvn', 'clean', 'install'], cwd=integration_tests_path)
+    logger.info('Integration test Running is completed.')
+
+
 def main():
     try:
         global logger
+        global product_name
         logger = function_logger(logging.DEBUG, logging.DEBUG)
+        if sys.version_info < (3, 6):
+            raise Exception(
+                "To run do-run.py script you must have Python 3.6 or latest. Current version info: " + sys.version_info)
         read_proprty_files()
-        db_meta_data = get_db_meta_data(db_engine.upper())
-        if db_meta_data:
-            database_config["driver_class_name"] = db_meta_data["driverClassName"]
-            database_config["password"] = db_password
-            database_config["sql_driver_location"] = sql_driver_location
-            database_config["url"] = construct_url(db_meta_data["prefix"])
-            database_config["user"] = db_username
-            database_config["db_engine"] = db_engine
-        else:
-            raise BaseException("Creating process of Database configuration is failed")
+        if not validate_property_radings:
+            raise Exception("Property filr reading error. Please verify the property file content and the format")
+        construct_db_config()
 
         # product name retrieve from jenkins api
         product_name = get_product_name(product_dist_download_api)
@@ -366,7 +402,8 @@ def main():
         product_file_name = product_name + ".zip"
         dist_downl_url = get_product_dist_arifact_path(product_dist_download_api) + get_product_dist_rel_path(
             product_dist_download_api) + product_file_name
-        #product download path and file name constructing
+
+        # product download path and file name constructing
         prodct_download_dir = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
         if not Path.exists(Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)):
             Path(prodct_download_dir).mkdir(parents=True, exist_ok=True)
@@ -377,13 +414,13 @@ def main():
 
         # populate databases
         script_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_name + "/" + 'dbscripts')
-        setup_databases(script_path, cp.configure_product(product_name, product_id, database_config, workspace))
+        db_names = cp.configure_product(product_name, product_id, database_config, workspace)
+        if len(db_names) == 0 or db_names is None:
+            raise Exception ("Failed the product configuring")
+        setup_databases(script_path, db_names)
         logger.info('Database setting up is done.')
-
-        # run integration tests
-        integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/integration/tests-integration')
-        subprocess.call(['mvn', 'clean', 'install'], cwd=integration_tests_path)
-        logger.info('Running integration tests done.')
+        logger.info('Starting Integration test running.')
+        run_integration_test()
     except Exception as e:
         logger.error("Error occurred while running the do_run.py script", exc_info=True)
     except BaseException as e:
