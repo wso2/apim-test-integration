@@ -37,9 +37,9 @@ DB_STAT_DB = 'WSO2AM_STATS_DB'
 DB_MB_DB = 'WSO2_MB_STORE_DB'
 DB_META_DATA = {
     "MYSQL": {"prefix": "jdbc:mysql://", "driverClassName": "com.mysql.jdbc.Driver", "jarName": "mysql.jar"},
-    "MSSQL": {"prefix": "jdbc:jtds:sqlserver://", "driverClassName": "net.sourceforge.jtds.jdbc.Driver",
-              "jarName": "sqkserver-ex.jar"},
-    "ORACLE": {"prefix": "jdbc:oracle:thin:@", "driverClassName": "oracle.jdbc.OracleDriver", "jarName": "ojdbc8.jar"},
+    "SQLSERVER-SE": {"prefix": "jdbc:jtds:sqlserver://", "driverClassName": "net.sourceforge.jtds.jdbc.Driver",
+              "jarName": "sqlserver-ex.jar"},
+    "ORACLE-SE2": {"prefix": "jdbc:oracle:thin:@", "driverClassName": "oracle.jdbc.OracleDriver", "jarName": "ojdbc8.jar"},
     "POSTGRESQL": {"prefix": "jdbc:postgresql://", "driverClassName": "org.postgresql.Driver",
                    "jarName": "postgresql.jar"}
 }
