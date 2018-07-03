@@ -338,7 +338,7 @@ def setup_databases(script_path, db_names):
                 # create database
                 run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
                 # manipulate script path
-                scriptPath = script_path / 'mb-store/mssql.sql'
+                scriptPath = script_path / 'mb-store/mssql-mb.sql'
                 # run db scripts
                 run_sqlserver_script_file(database, str(scriptPath))
             elif db_engine.upper() == 'MYSQL':
@@ -351,7 +351,7 @@ def setup_databases(script_path, db_names):
             elif db_engine.upper() == 'ORACLE-SE2':
                 logger.info(run_oracle_commands(database))
                 # run db script
-                scriptPath = script_path / 'mb-store/oracle.sql'
+                scriptPath = script_path / 'mb-store/oracle-mb.sql'
                 logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
 
 
