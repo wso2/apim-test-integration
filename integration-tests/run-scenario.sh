@@ -36,7 +36,7 @@ key_pem=`grep -w "$PROP_KEY" ${FILE1} ${FILE2} | cut -d'=' -f2`
 #user=`cat ${FILE2} | grep -w "$PROP_USER" ${FILE1} ${FILE2} | cut -d'=' -f2`
 user=centos
 host=`grep -w "$PROP_HOST" ${FILE1} ${FILE2} | cut -d'=' -f2`
-CONNECT_RETRY_COUNT=2
+CONNECT_RETRY_COUNT=20
 
 wait_for_port() {
 host=$1
