@@ -284,7 +284,7 @@ def setup_databases(script_path, db_names):
     """
     for database in db_names:
         if database == DB_CARBON_DB:
-            if db_engine.upper() == 'MSSQL':
+            if db_engine.upper() == 'SQLSERVER-SE':
                 # create database
                 run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
                 # manipulate script path
@@ -298,14 +298,14 @@ def setup_databases(script_path, db_names):
                 # run db script
                 run_mysql_script_file(database, str(scriptPath))
 
-            elif db_engine.upper() == 'ORACLE':
+            elif db_engine.upper() == 'ORACLE-SE2':
                 # create oracle schema
                 logger.info(run_oracle_commands(database))
                 # run db script
                 scriptPath = script_path / 'oracle.sql'
                 logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
         elif database == DB_AM_DB:
-            if db_engine.upper() == 'MSSQL':
+            if db_engine.upper() == 'SQLSERVER-SE':
                 # create database
                 run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
                 # manipulate script path
@@ -318,23 +318,23 @@ def setup_databases(script_path, db_names):
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
                 # run db script
                 run_mysql_script_file(database, str(scriptPath))
-            elif db_engine.upper() == 'ORACLE':
+            elif db_engine.upper() == 'ORACLE-SE2':
                 logger.info(run_oracle_commands(database))
                 # run db script
                 scriptPath = script_path / 'apimgt/oracle.sql'
                 logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
         elif database == DB_STAT_DB:
-            if db_engine.upper() == 'MSSQL':
+            if db_engine.upper() == 'SQLSERVER-SE':
                 # create database
                 run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
             elif db_engine.upper() == 'MYSQL':
                 # create database
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-            elif db_engine.upper() == 'ORACLE':
+            elif db_engine.upper() == 'ORACLE-SE2':
                 #create database
                 logger.info(run_oracle_commands(database))
         elif database == DB_MB_DB:
-            if db_engine.upper() == 'MSSQL':
+            if db_engine.upper() == 'SQLSERVER-SE':
                 # create database
                 run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
                 # manipulate script path
@@ -348,7 +348,7 @@ def setup_databases(script_path, db_names):
                 scriptPath = script_path / 'mb-store/mysql-mb.sql'
                 # run db scripts
                 run_mysql_script_file(database, str(scriptPath))
-            elif db_engine.upper() == 'ORACLE':
+            elif db_engine.upper() == 'ORACLE-SE2':
                 logger.info(run_oracle_commands(database))
                 # run db script
                 scriptPath = script_path / 'mb-store/oracle.sql'
