@@ -17,11 +17,6 @@ REM  limitations under the License.
 
 
 rem prerequisite: Before run this script pip and virtualenv packages have to be installed on the running environment
-rem virtuel env location
-rem INIT_ENV="env"
-
-rem Set python interpreter you want for your environment
-rem set "PYTHON="call where python
 
 rem get the working directory
 set WD=%1
@@ -31,10 +26,10 @@ rem create the virtual env
 virtualenv env
 
 rem activate the environment
-call \env\Scripts\activate.bat
+call env\Scripts\activate.bat
 
 rem install packages to the virtual environment
-\env\bin\pip install -r requirements.txt
+env\Scripts\pip.exe install -r requirements.txt
 
 rem run the do-run.py script
 python do-run.py
