@@ -211,29 +211,3 @@ def configure_product(product, id, db_config, ws):
         logger.error("Error occurred while accessing files", exc_info=True)
     except Exception as e:
         logger.error("Error occurred while configuring the product", exc_info=True)
-
-
-if __name__ == "__main__":
-    # sample input parameters
-    # product_name = "<Product zip file name>"
-    # product_id = "<cloned dir name>"
-    # database_config = {"driver_class_name": "com.mysql.jdbc.Driver",
-    #                      "password": "<pwd>",
-    #                      "sql_driver_location": "/<path>s/mysql-connector-java-<version>.jar",
-    #                      "url": "jdbc:mysql://<ip>:3306/",
-    #                      "user": "<user>"}
-    # workspace = /home/TG/<Product_Name>
-    #
-
-    # After we integrate Configure_Product.py script with do_run.py script we can remove this main method
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--product_name', metavar='name', required=True,
-                        help='Name of the product')
-    parser.add_argument('--product_id', metavar='id', required=True,
-                        help='Id of the product')
-    parser.add_argument('--db_config', metavar='config', required=True,
-                        help='name of the product')
-    parser.add_argument('--workspace', metavar='ws', required=True,
-                        help='workspace of the job')
-    args = parser.parse_args()
-    configure_product(product=args.product_name, id=args.product_id, db_config=args.db_config, ws=args.workspace)

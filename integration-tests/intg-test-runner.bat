@@ -15,7 +15,6 @@ REM  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 REM  See the License for the specific language governing permissions and
 REM  limitations under the License.
 
-
 rem prerequisite: Before run this script pip and virtualenv packages have to be installed on the running environment
 
 rem get the working directory
@@ -31,5 +30,5 @@ call env\Scripts\activate.bat
 rem install packages to the virtual environment
 env\Scripts\pip.exe install -r requirements.txt
 
-rem run the do-run.py script
-python do-run.py
+rem run the run-intg-test.py script
+python run-intg-test.py
