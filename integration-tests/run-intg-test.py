@@ -388,7 +388,7 @@ def main():
         logger = function_logger(logging.DEBUG, logging.DEBUG)
         if sys.version_info < (3, 6):
             raise Exception(
-                "To run do-run.py script you must have Python 3.6 or latest. Current version info: " + sys.version_info)
+                "To run run-intg-test.py script you must have Python 3.6 or latest. Current version info: " + sys.version_info)
         read_proprty_files()
         if not validate_property_radings:
             raise Exception("Property filr reading error. Please verify the property file content and the format")

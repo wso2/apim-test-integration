@@ -36,5 +36,5 @@ source $WD/env/bin/activate
 # install packages to the virtual environment
 env/bin/pip install -r requirements.txt
 
-# run the do-run.py script
-python do-run.py
+# run the run-intg-test.py script
+python run-intg-test.py

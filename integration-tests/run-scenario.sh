@@ -20,11 +20,11 @@ set -o xtrace
 DIR=$2
 FILE1=${DIR}/infrastructure.properties
 FILE2=${DIR}/testplan-props.properties
-FILE3=do-run.py
+FILE3=run-intg-test.py
 FILE4=configure_product.py
 FILE5=const.py
 FILE6=requirements.txt
-FILE7=do-run-executor.sh
+FILE7=intg-test-runner.sh
 
 PROP_KEY=sshKeyFileLocation    #pem file
 PROP_USER=user              #OS name e.g. centos
@@ -77,11 +77,7 @@ scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE6} ${user}@${host}:${REM_DIR
 scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE7} ${user}@${host}:${REM_DIR}
 echo "=== Files copied success ==="
 
-
-#ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
-#ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} python3 ${REM_DIR}/do-run.py
-ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run-executor.sh --wd ${REM_DIR}
-
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/intg-test-runner.sh --wd ${REM_DIR}
 
 ### Get the reports from integration test
 scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports .
