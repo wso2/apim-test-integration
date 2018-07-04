@@ -365,7 +365,9 @@ def construct_db_config():
         database_config["user"] = db_username
         database_config["db_engine"] = db_engine
     else:
-        raise BaseException("Creating process of Database configuration is failed")
+        raise BaseException(
+            "DB config parsing is failed. DB engine name in the property file doesn't match with the constant: " + str(
+                db_engine.upper()))
 
 
 def run_integration_test():
@@ -415,7 +417,7 @@ def main():
         # populate databases
         script_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_name + "/" + 'dbscripts')
         db_names = cp.configure_product(product_name, product_id, database_config, workspace)
-        if len(db_names) == 0 or db_names is None:
+        if db_names is None or len(db_names) == 0:
             raise Exception ("Failed the product configuring")
         setup_databases(script_path, db_names)
         logger.info('Database setting up is done.')
