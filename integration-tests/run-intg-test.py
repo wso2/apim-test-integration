@@ -28,7 +28,7 @@ import requests
 import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
-    PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB
+    PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB, DB_METRICS_DB
 
 git_repo_url = None
 git_branch = None
@@ -193,10 +193,12 @@ def run_mysql_commands(query):
     conectr.execute(query)
     conn.close()
 
+
 def create_ora_schema_script(database):
     q = "CREATE USER {0} IDENTIFIED BY {1}; GRANT CONNECT, RESOURCE, DBA TO {0}; GRANT UNLIMITED TABLESPACE TO {0};".format(
         database, database_config["password"])
     return q
+
 
 def run_oracle_commands(database):
     """Run oracle commands using sqlplus client when db name(user) is not provided.
@@ -207,6 +209,7 @@ def run_oracle_commands(database):
     session = Popen(['sqlplus', '-S', connectString], stdin=PIPE, stdout=PIPE, stderr=PIPE)
     session.stdin.write(bytes(query,'utf-8'))
     return session.communicate()
+
 
 def run_oracle_script(script, database):
     """Run oracle commands using sqlplus client when dbname(user) is provided.
@@ -353,6 +356,25 @@ def setup_databases(script_path, db_names):
                 # run db script
                 scriptPath = script_path / 'mb-store/oracle-mb.sql'
                 logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
+        elif database == DB_METRICS_DB:
+            if db_engine.upper() == 'SQLSERVER-SE':
+                # create database
+                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
+                # manipulate script path
+                scriptPath = script_path / 'metrics/mssql.sql'
+                # run db scripts
+                run_sqlserver_script_file(database, str(scriptPath))
+            elif db_engine.upper() == 'MYSQL':
+                scriptPath = script_path / 'metrics/mysql.sql'
+                # create database
+                run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
+                # run db script
+                run_mysql_script_file(database, str(scriptPath))
+            elif db_engine.upper() == 'ORACLE-SE2':
+                logger.info(run_oracle_commands(database))
+                # run db script
+                scriptPath = script_path / 'metrics/oracle.sql'
+                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
 
 
 def construct_db_config():
@@ -390,8 +412,10 @@ def main():
             raise Exception(
                 "To run run-intg-test.py script you must have Python 3.6 or latest. Current version info: " + sys.version_info)
         read_proprty_files()
-        if not validate_property_radings:
-            raise Exception("Property filr reading error. Please verify the property file content and the format")
+        if not validate_property_radings():
+            raise Exception(
+                "Property file doesn't have mandatory key-value pair. Please verify the content of the property file "
+                "and the format")
         construct_db_config()
 
         # product name retrieve from jenkins api

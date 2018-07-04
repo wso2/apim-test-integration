@@ -29,12 +29,13 @@ PRODUCT_STORAGE_DIR_NAME = "storage"
 TEST_PLAN_PROPERTY_FILE_NAME = "testplan-props.properties"
 INFRA_PROPERTY_FILE_NAME = "infrastructure.properties"
 LOG_FILE_NAME = "integration.log"
-DB_CARBON_DB = 'WSO2_CARBON_DB'
-DB_AM_DB = 'WSO2AM_DB'
 ORACLE_DB_ENGINE = "ORACLE"
 DEFAULT_ORACLE_SID = "orcl"
+DB_CARBON_DB = 'WSO2_CARBON_DB'
+DB_AM_DB = 'WSO2AM_DB'
 DB_STAT_DB = 'WSO2AM_STATS_DB'
 DB_MB_DB = 'WSO2_MB_STORE_DB'
+DB_METRICS_DB = 'WSO2_METRICS_DB'
 DB_META_DATA = {
     "MYSQL": {"prefix": "jdbc:mysql://", "driverClassName": "com.mysql.jdbc.Driver", "jarName": "mysql.jar"},
     "SQLSERVER-SE": {"prefix": "jdbc:jtds:sqlserver://", "driverClassName": "net.sourceforge.jtds.jdbc.Driver",
