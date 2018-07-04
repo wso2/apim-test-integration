@@ -77,7 +77,7 @@ def read_proprty_files():
             with open(path, 'r') as filehandle:
                 for line in filehandle:
                     if line.startswith("#"):
-                            continue
+                        continue
                     prop = line.split("=")
                     key = prop[0]
                     val = prop[1]
@@ -110,8 +110,9 @@ def read_proprty_files():
 
 def validate_property_radings():
     if None in (
-    db_engine_version, git_repo_url, product_id, git_branch, product_dist_download_api, sql_driver_location, db_host,
-    db_port, db_username, db_password):
+            db_engine_version, git_repo_url, product_id, git_branch, product_dist_download_api, sql_driver_location,
+            db_host,
+            db_port, db_username, db_password):
         return False
     return True
 
@@ -163,7 +164,7 @@ def get_db_hostname(url, db_type):
     """Retreive db hostname from jdbc url
     """
     if db_type == 'ORACLE':
-        hostname= url.split(':')[3].replace("@", "")
+        hostname = url.split(':')[3].replace("@", "")
     else:
         hostname = url.split(':')[2].replace("//", "")
     return hostname
@@ -172,13 +173,14 @@ def get_db_hostname(url, db_type):
 def run_sqlserver_commands(query):
     """Run SQL_SERVER commands using sqlcmd utility.
     """
-    subprocess.call(['sqlcmd', '-S', db_host, '-U', database_config['user'], '-P', database_config['password'], '-Q', query])
+    subprocess.call(
+        ['sqlcmd', '-S', db_host, '-U', database_config['user'], '-P', database_config['password'], '-Q', query])
 
 
-def get_mysql_connection(dbName=None):
-    if dbName is not None:
+def get_mysql_connection(db_name=None):
+    if db_name is not None:
         conn = pymysql.connect(host=get_db_hostname(database_config['url'], 'MYSQL'), user=database_config['user'],
-                               passwd=database_config['password'], db=dbName)
+                               passwd=database_config['password'], db=db_name)
     else:
         conn = pymysql.connect(host=get_db_hostname(database_config['url'], 'MYSQL'), user=database_config['user'],
                                passwd=database_config['password'])
@@ -204,20 +206,20 @@ def run_oracle_commands(database):
     """Run oracle commands using sqlplus client when db name(user) is not provided.
     """
     query = create_ora_schema_script(database)
-    connectString = "{0}/{1}@//{2}/{3}".format(database_config["user"], database_config["password"], 
-        db_host, "ORCL")
-    session = Popen(['sqlplus', '-S', connectString], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    session.stdin.write(bytes(query,'utf-8'))
+    connect_string = "{0}/{1}@//{2}/{3}".format(database_config["user"], database_config["password"],
+                                                db_host, "ORCL")
+    session = Popen(['sqlplus', '-S', connect_string], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    session.stdin.write(bytes(query, 'utf-8'))
     return session.communicate()
 
 
 def run_oracle_script(script, database):
     """Run oracle commands using sqlplus client when dbname(user) is provided.
     """
-    connectString = "{0}/{1}@//{2}/{3}".format(database, database_config["password"], 
-        db_host, "ORCL")
-    session = Popen(['sqlplus', '-S', connectString], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    session.stdin.write(bytes(script,'utf-8'))
+    connect_string = "{0}/{1}@//{2}/{3}".format(database, database_config["password"],
+                                                db_host, "ORCL")
+    session = Popen(['sqlplus', '-S', connect_string], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    session.stdin.write(bytes(script, 'utf-8'))
     return session.communicate()
 
 
@@ -233,14 +235,14 @@ def run_mysql_script_file(db_name, script_path):
     """Run MYSQL db script file on a provided database.
     """
     conn = get_mysql_connection(db_name)
-    conectr = conn.cursor()
+    connector = conn.cursor()
 
     sql = open(script_path).read()
     sql_parts = sqlparse.split(sql)
     for sql_part in sql_parts:
         if sql_part.strip() == '':
             continue
-        conectr.execute(sql_part)
+        connector.execute(sql_part)
     conn.close()
 
 
@@ -254,6 +256,7 @@ def copy_file(source, target):
 
 
 def get_product_name(jkns_api_url):
+    global product_name
     req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/fileName'
     headers = {'Accept': 'application/xml'}
     response = requests.get(req_url, headers=headers)
@@ -278,8 +281,8 @@ def get_product_dist_rel_path(jkns_api_url):
 
 
 def get_product_dist_arifact_path(jkns_api_url):
-    artfct_path = jkns_api_url.split('/api')[0] + '/artifact/'
-    return artfct_path
+    artifact_path = jkns_api_url.split('/api')[0] + '/artifact/'
+    return artifact_path
 
 
 def setup_databases(script_path, db_names):
@@ -334,7 +337,7 @@ def setup_databases(script_path, db_names):
                 # create database
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
             elif db_engine.upper() == 'ORACLE-SE2':
-                #create database
+                # create database
                 logger.info(run_oracle_commands(database))
         elif database == DB_MB_DB:
             if db_engine.upper() == 'SQLSERVER-SE':
@@ -433,16 +436,16 @@ def main():
         prodct_download_dir = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
         if not Path.exists(Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)):
             Path(prodct_download_dir).mkdir(parents=True, exist_ok=True)
-        prodct_file_path = prodct_download_dir / product_file_name
+        product_file_path = prodct_download_dir / product_file_name
         # download the last released pack from Jenkins
-        download_file(dist_downl_url, str(prodct_file_path))
+        download_file(dist_downl_url, str(product_file_path))
         logger.info('downloading the pack from Jenkins done.')
 
         # populate databases
         script_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_name + "/" + 'dbscripts')
         db_names = cp.configure_product(product_name, product_id, database_config, workspace)
-        if db_names is None or len(db_names) == 0:
-            raise Exception ("Failed the product configuring")
+        if db_names is None or not db_names:
+            raise Exception("Failed the product configuring")
         setup_databases(script_path, db_names)
         logger.info('Database setting up is done.')
         logger.info('Starting Integration test running.')
