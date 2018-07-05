@@ -28,7 +28,8 @@ import requests
 import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
-    PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB, DB_METRICS_DB, DEFAULT_DB_USERNAME
+    PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB, DB_METRICS_DB, DEFAULT_DB_USERNAME, \
+    LOG_FILE_PATH
 
 git_repo_url = None
 git_branch = None
@@ -196,7 +197,7 @@ def run_mysql_commands(query):
 
 
 def create_ora_schema_script(database):
-    q = "CREATE USER {0} IDENTIFIED BY {1}; GRANT CONNECT, RESOURCE, DBA TO {0}; GRANT UNLIMITED TABLESPACE TO {0};".format(
+    q = "CREATE USER {0} IDENTIFIED BY {1}; GRANT CONNECT, RESOURCE, DBA TO {0};".format(
         database, database_config["password"])
     return q
 
@@ -409,6 +410,12 @@ def run_integration_test():
     logger.info('Integration test Running is completed.')
 
 
+def add_log_files():
+    log_file_path = Path(workspace + "/" + LOG_FILE_PATH)
+    if not Path.exists(log_file_path):
+        Path(log_file_path).mkdir(parents=True, exist_ok=True)
+
+
 def main():
     try:
         global logger
@@ -437,7 +444,7 @@ def main():
 
         # product download path and file name constructing
         prodct_download_dir = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
-        if not Path.exists(Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)):
+        if not Path.exists(prodct_download_dir):
             Path(prodct_download_dir).mkdir(parents=True, exist_ok=True)
         product_file_path = prodct_download_dir / product_file_name
         # download the last released pack from Jenkins
