@@ -151,12 +151,16 @@ def modify_datasources():
                     user = configuration.find('username')
                     passwd = configuration.find('password')
                     drive_class_name = configuration.find('driverClassName')
-                    if ORACLE_DB_ENGINE != database_config['db_engine'].upper():
-                        url.text = url.text.replace(url.text, database_config['url'] + database_name)
+                    if MYSQL_DB_ENGINE == database_config['db_engine'].upper():
+                        url.text = url.text.replace(url.text, database_config[
+                            'url'] + database_name + "?autoReconnect=true&amp;useSSL=false")
                         user.text = user.text.replace(user.text, database_config['user'])
-                    else:
+                    if ORACLE_DB_ENGINE == database_config['db_engine'].upper():
                         url.text = url.text.replace(url.text, database_config['url'] + DEFAULT_ORACLE_SID)
                         user.text = user.text.replace(user.text, database_name)
+                    else:
+                        url.text = url.text.replace(url.text, database_config['url'] + database_name)
+                        user.text = user.text.replace(user.text, database_config['user'])
                     passwd.text = passwd.text.replace(passwd.text, database_config['password'])
                     drive_class_name.text = drive_class_name.text.replace(drive_class_name.text,
                                                                           database_config['driver_class_name'])
