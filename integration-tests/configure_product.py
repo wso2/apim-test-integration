@@ -118,7 +118,7 @@ def modify_pom_files():
             if artifact_id is not None and artifact_id.text == SURFACE_PLUGIN_ARTIFACT_ID:
                 configuration = plugin.find('d:configuration', NS)
                 system_properties = configuration.find('d:systemProperties', NS)
-                for neighbor in system_properties.iter(NS['d'] + CARBON_NAME):
+                for neighbor in system_properties.iter('{' + NS['d'] + '}' + CARBON_NAME):
                     neighbor.text = modify_distribution_name(neighbor)
                 for prop in system_properties:
                     name = prop.find('d:name', NS)
