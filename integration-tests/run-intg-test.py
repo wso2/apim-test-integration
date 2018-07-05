@@ -28,7 +28,7 @@ import requests
 import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
-    PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB, DB_METRICS_DB
+    PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB, DB_METRICS_DB, DEFAULT_DB_USERNAME
 
 git_repo_url = None
 git_branch = None
@@ -111,8 +111,7 @@ def read_proprty_files():
 def validate_property_radings():
     if None in (
             db_engine_version, git_repo_url, product_id, git_branch, product_dist_download_api, sql_driver_location,
-            db_host,
-            db_port, db_username, db_password):
+            db_host, db_port, db_password):
         return False
     return True
 
@@ -387,8 +386,12 @@ def construct_db_config():
         database_config["password"] = db_password
         database_config["sql_driver_location"] = sql_driver_location + "/" + db_meta_data["jarName"]
         database_config["url"] = construct_url(db_meta_data["prefix"])
-        database_config["user"] = db_username
         database_config["db_engine"] = db_engine
+        if db_username is None:
+            database_config["user"] = DEFAULT_DB_USERNAME
+        else:
+            database_config["user"] = db_username
+
     else:
         raise BaseException(
             "DB config parsing is failed. DB engine name in the property file doesn't match with the constant: " + str(
