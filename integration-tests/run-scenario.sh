@@ -30,7 +30,7 @@ FILE8=intg-test-runner.bat
 PROP_KEY=sshKeyFileLocation      #pem file
 PROP_OS=OS                       #OS name e.g. centos
 PROP_HOST=WSO2PublicIP           #host IP
-PROP_INSTANCE_ID=WSO2InstanceId  #instance ID
+PROP_INSTANCE_ID=WSO2InstanceId  #Physical ID (Resource ID) of WSO2 EC2 Instance
 
 #----------------------------------------------------------------------
 # getting data from databuckets
@@ -45,11 +45,11 @@ host=`grep -w "$PROP_HOST" ${FILE1} ${FILE2} | cut -d'=' -f2`
 CONNECT_RETRY_COUNT=20
 
 #=== FUNCTION ==================================================================
-# NAME: request_password
+# NAME: request_ec2_password
 # DESCRIPTION: Request password of Windows instance from AWS using the key file. 
-# PARAMETER 1: ID of the Windows instance
+# PARAMETER 1: Physical-ID of the EC2 instance
 #===============================================================================
-request_password() {
+request_ec2_password() {
   instance_id=$1
   echo "Retrieving password for Windows instance from AWS for instance id ${instance_id}" 
   x=1;
@@ -70,7 +70,7 @@ request_password() {
       exit
     fi
  
-    sleep 2 # wait for 2 second before check again
+    sleep 10 # wait for 10 second before check again
     x=$((x+1))
   done 
 }
@@ -132,7 +132,7 @@ if [ "${os}" = "Windows" ]; then
   echo "Waiting 4 minutes till Windows instance is configured. "
   sleep 4m #wait 4 minutes till Windows instance is configured and able to receive password using key file.
   
-  request_password $instance_id
+  request_ec2_password $instance_id
 
   sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE1} ${user}@${host}:${REM_DIR}
   sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE2} ${user}@${host}:${REM_DIR}
