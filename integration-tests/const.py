@@ -36,6 +36,7 @@ DB_AM_DB = 'WSO2AM_DB'
 DB_STAT_DB = 'WSO2AM_STATS_DB'
 DB_MB_DB = 'WSO2_MB_STORE_DB'
 DB_METRICS_DB = 'WSO2_METRICS_DB'
+DEFAULT_DB_USERNAME = "wso2carbon"
 DB_META_DATA = {
     "MYSQL": {"prefix": "jdbc:mysql://", "driverClassName": "com.mysql.jdbc.Driver", "jarName": "mysql.jar"},
     "SQLSERVER-SE": {"prefix": "jdbc:jtds:sqlserver://", "driverClassName": "net.sourceforge.jtds.jdbc.Driver",
