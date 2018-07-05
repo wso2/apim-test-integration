@@ -39,11 +39,13 @@ DB_MB_DB = 'WSO2_MB_STORE_DB'
 DB_METRICS_DB = 'WSO2_METRICS_DB'
 DEFAULT_DB_USERNAME = "wso2carbon"
 LOG_STORAGE = "logs"
-LOG_FILE_PATHS = ["modules/integration/tests-integration/tests-backend/target/surefire-reports",
+LOG_FILE_PATHS = ["modules/integration/tests-integration/tests-backend/target/surefire-reports/emailable-report.html",
+                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/index.html",
+                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/TEST-TestSuite.xml",
+                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/testng.css",
+                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/testng-results.xml",
+                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/TestSuite.txt",
                   "modules/integration/tests-integration/tests-backend/target/logs/automation.log"]
-REPORT_ELEMENT = "<reporting><plugins><plugin><groupId>org.apache.maven.plugins</groupId>" \
-                         "<artifactId>maven-surefire-report-plugin</artifactId><version>2.22.0</version>" \
-                         "</plugin></plugins></reporting>"
 DB_META_DATA = {
     "MYSQL": {"prefix": "jdbc:mysql://", "driverClassName": "com.mysql.jdbc.Driver", "jarName": "mysql.jar"},
     "SQLSERVER-SE": {"prefix": "jdbc:jtds:sqlserver://",

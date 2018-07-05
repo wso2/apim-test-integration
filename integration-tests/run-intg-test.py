@@ -424,14 +424,17 @@ def run_integration_test():
     logger.info('Integration test Running is completed.')
 
 
-def add_log_files():
+def save_log_files():
     log_storage = Path(workspace + "/" + LOG_STORAGE)
     if not Path.exists(log_storage):
         Path(log_storage).mkdir(parents=True, exist_ok=True)
 
     for file in LOG_FILE_PATHS:
         absolute_file_path = Path(workspace + "/" + product_id + "/" + file)
-        copy_file(absolute_file_path, log_storage)
+        if Path.exists(absolute_file_path):
+            copy_file(absolute_file_path, log_storage)
+        else:
+            log.error("File doesn't contain in the given location: " + absolute_file_path)
 
 
 def main():
@@ -478,6 +481,7 @@ def main():
         logger.info('Database setting up is done.')
         logger.info('Starting Integration test running.')
         run_integration_test()
+        save_log_files()
     except Exception as e:
         logger.error("Error occurred while running the do_run.py script", exc_info=True)
     except BaseException as e:
