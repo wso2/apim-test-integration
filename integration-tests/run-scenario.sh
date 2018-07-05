@@ -57,11 +57,11 @@ request_password() {
 
   while [ "$password" == "" ] ; do
     #Request password from AWS
-    passwordJson=$(aws ec2 get-password-data --instance-id "${instance_id}" --priv-launch-key /home/pasindu/TestGrid/keys/testgrid-key.pem)
+    responseJson=$(aws ec2 get-password-data --instance-id "${instance_id}" --priv-launch-key ${key_pem})
 
     #Validate JSON
-    if [ $(echo $passwordJson | python -c "import sys,json;json.loads(sys.stdin.read());print 'Valid'") == "Valid" ]; then
-      password=$(python3 -c "import sys, json;print(($passwordJson)['PasswordData'])")
+    if [ $(echo $responseJson | python -c "import sys,json;json.loads(sys.stdin.read());print 'Valid'") == "Valid" ]; then
+      password=$(python3 -c "import sys, json;print(($responseJson)['PasswordData'])")
       echo "Password received!"
     fi
 
@@ -133,7 +133,6 @@ if [ "${os}" = "Windows" ]; then
   sleep 4m #wait 4 minutes till Windows instance is configured and able to receive password using key file.
   
   request_password $instance_id
-  REM_DIR="c:/testgrid/workspace"
 
   sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE1} ${user}@${host}:${REM_DIR}
   sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE2} ${user}@${host}:${REM_DIR}
