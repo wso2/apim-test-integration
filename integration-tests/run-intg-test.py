@@ -196,21 +196,35 @@ def run_mysql_commands(query):
     conn.close()
 
 
-def create_ora_schema_script(database):
-    q = "CREATE USER {0} IDENTIFIED BY {1}; GRANT CONNECT, RESOURCE, DBA TO {0};".format(
+def get_ora_user_carete_query(database):
+    query = "CREATE USER {0} IDENTIFIED BY {1};".format(
         database, database_config["password"])
-    return q
+    return query
 
 
-def run_oracle_commands(database):
+def get_ora_grant_query(database):
+    query = "GRANT CONNECT, RESOURCE, DBA TO {0};".format(
+        database)
+    return query
+
+
+def execute_oracle_command(query):
     """Run oracle commands using sqlplus client when db name(user) is not provided.
     """
-    query = create_ora_schema_script(database)
     connect_string = "{0}/{1}@//{2}/{3}".format(database_config["user"], database_config["password"],
                                                 db_host, "ORCL")
     session = Popen(['sqlplus', '-S', connect_string], stdin=PIPE, stdout=PIPE, stderr=PIPE)
     session.stdin.write(bytes(query, 'utf-8'))
     return session.communicate()
+
+
+def create_oracle_user(database):
+    """This method is able to create the user and grant permission to the created user in oracle
+    """
+    user_creating_query = get_ora_user_carete_query(database)
+    logger.info(execute_oracle_command(user_creating_query))
+    permission_granting_query = get_ora_grant_query(database)
+    return execute_oracle_command(permission_granting_query)
 
 
 def run_oracle_script(script, database):
@@ -306,7 +320,7 @@ def setup_databases(script_path, db_names):
 
             elif db_engine.upper() == 'ORACLE-SE2':
                 # create oracle schema
-                logger.info(run_oracle_commands(database))
+                logger.info(create_oracle_user(database))
                 # run db script
                 scriptPath = script_path / 'oracle.sql'
                 logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
@@ -325,7 +339,7 @@ def setup_databases(script_path, db_names):
                 # run db script
                 run_mysql_script_file(database, str(scriptPath))
             elif db_engine.upper() == 'ORACLE-SE2':
-                logger.info(run_oracle_commands(database))
+                logger.info(create_oracle_user(database))
                 # run db script
                 scriptPath = script_path / 'apimgt/oracle.sql'
                 logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
@@ -338,7 +352,7 @@ def setup_databases(script_path, db_names):
                 run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
             elif db_engine.upper() == 'ORACLE-SE2':
                 # create database
-                logger.info(run_oracle_commands(database))
+                logger.info(create_oracle_user(database))
         elif database == DB_MB_DB:
             if db_engine.upper() == 'SQLSERVER-SE':
                 # create database
@@ -355,7 +369,7 @@ def setup_databases(script_path, db_names):
                 # run db scripts
                 run_mysql_script_file(database, str(scriptPath))
             elif db_engine.upper() == 'ORACLE-SE2':
-                logger.info(run_oracle_commands(database))
+                logger.info(create_oracle_user(database))
                 # run db script
                 scriptPath = script_path / 'mb-store/oracle-mb.sql'
                 logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
@@ -374,7 +388,7 @@ def setup_databases(script_path, db_names):
                 # run db script
                 run_mysql_script_file(database, str(scriptPath))
             elif db_engine.upper() == 'ORACLE-SE2':
-                logger.info(run_oracle_commands(database))
+                logger.info(create_oracle_user(database))
                 # run db script
                 scriptPath = script_path / 'metrics/oracle.sql'
                 logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
