@@ -29,7 +29,7 @@ import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
     PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB, DB_METRICS_DB, DEFAULT_DB_USERNAME, \
-    LOG_FILE_PATH
+    LOG_STORAGE, LOG_FILE_PATHS
 
 git_repo_url = None
 git_branch = None
@@ -411,9 +411,13 @@ def run_integration_test():
 
 
 def add_log_files():
-    log_file_path = Path(workspace + "/" + LOG_FILE_PATH)
-    if not Path.exists(log_file_path):
-        Path(log_file_path).mkdir(parents=True, exist_ok=True)
+    log_storage = Path(workspace + "/" + LOG_STORAGE)
+    if not Path.exists(log_storage):
+        Path(log_storage).mkdir(parents=True, exist_ok=True)
+
+    for file in LOG_FILE_PATHS:
+        absolute_file_path = Path(workspace + "/" + product_id + "/" + file)
+        copy_file(absolute_file_path, log_storage)
 
 
 def main():
