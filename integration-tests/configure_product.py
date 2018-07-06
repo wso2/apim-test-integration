@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 import shutil
 import logging
-from const import ZIP_FILE_EXTENSION, REPORT_ELEMENT, NS, SURFACE_PLUGIN_ARTIFACT_ID, CARBON_NAME, VALUE_TAG, \
+from const import ZIP_FILE_EXTENSION, NS, SURFACE_PLUGIN_ARTIFACT_ID, CARBON_NAME, VALUE_TAG, \
     DEFAULT_ORACLE_SID, DATASOURCE_PATHS, MYSQL_DB_ENGINE, ORACLE_DB_ENGINE, LIB_PATH, PRODUCT_STORAGE_DIR_NAME, \
     DISTRIBUTION_PATH, POM_FILE_PATHS
 
@@ -113,8 +113,6 @@ def modify_pom_files():
         ET.register_namespace('', NS['d'])
         artifact_tree = ET.parse(file_path)
         artifarct_root = artifact_tree.getroot()
-        report_elm = ET.fromstring(REPORT_ELEMENT)
-        artifarct_root.append(report_elm)
         data_sources = artifarct_root.find('d:build', NS)
         plugins = data_sources.find('d:plugins', NS)
         for plugin in plugins.findall('d:plugin', NS):
