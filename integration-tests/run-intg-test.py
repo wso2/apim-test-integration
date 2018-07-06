@@ -434,7 +434,29 @@ def save_log_files():
         if Path.exists(absolute_file_path):
             copy_file(absolute_file_path, log_storage)
         else:
-            log.error("File doesn't contain in the given location: " + absolute_file_path)
+            logger.error("File doesn't contain in the given location: " + absolute_file_path)
+
+
+def clone_repo():
+    """Clone the product repo and checkout to the latest tag of the branch
+    """
+    try:
+        subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
+        logger.info('cloning repo done.')
+        git_path = Path(workspace + "/" + product_id)
+        hash_number = subprocess.Popen(["git", "rev-list", "--tags", "--max-count=1"], stdout=subprocess.PIPE,
+                                       cwd=git_path)
+        string_val_of_hash = hash_number.stdout.read().strip().decode("utf-8")
+        tag_name = subprocess.Popen(["git", "describe", "--tags", string_val_of_hash], stdout=subprocess.PIPE,
+                                    cwd=git_path)
+        string_val_of_tag_name = tag_name.stdout.read().strip().decode("utf-8")
+        tag = "tags/" + string_val_of_tag_name
+        subprocess.call(["git", "fetch", "origin", tag], cwd=git_path)
+        subprocess.call(["git", "checkout", "-B", tag], cwd=git_path)
+        logger.info('checkout to the branch: ' + tag)
+    except Exception as e:
+        logger.error("Error occurred while cloning the product repo and checkout to the latest tag of the branch",
+                     exc_info=True)
 
 
 def main():
@@ -455,9 +477,8 @@ def main():
         # product name retrieve from jenkins api
         product_name = get_product_name(product_dist_download_api)
 
-        # clone the product repo
-        subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
-        logger.info('cloning repo done.')
+        # clone the repository
+        clone_repo()
 
         product_file_name = product_name + ".zip"
         dist_downl_url = get_product_dist_arifact_path(product_dist_download_api) + get_product_dist_rel_path(
@@ -483,7 +504,7 @@ def main():
         run_integration_test()
         save_log_files()
     except Exception as e:
-        logger.error("Error occurred while running the do_run.py script", exc_info=True)
+        logger.error("Error occurred while running the run-intg.py script", exc_info=True)
     except BaseException as e:
         logger.error("Error occurred while doing the configuration", exc_info=True)
 
