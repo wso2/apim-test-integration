@@ -46,12 +46,12 @@ CONNECT_RETRY_COUNT=20
 
 #=== FUNCTION ==================================================================
 # NAME: request_ec2_password
-# DESCRIPTION: Request password of Windows instance from AWS using the key file. 
+# DESCRIPTION: Request password of Windows instance from AWS using the key file.
 # PARAMETER 1: Physical-ID of the EC2 instance
 #===============================================================================
 request_ec2_password() {
   instance_id=$1
-  echo "Retrieving password for Windows instance from AWS for instance id ${instance_id}" 
+  echo "Retrieving password for Windows instance from AWS for instance id ${instance_id}"
   x=1;
   retry_count=$CONNECT_RETRY_COUNT;
 
@@ -63,16 +63,18 @@ request_ec2_password() {
     if [ $(echo $responseJson | python -c "import sys,json;json.loads(sys.stdin.read());print 'Valid'") == "Valid" ]; then
       password=$(python3 -c "import sys, json;print(($responseJson)['PasswordData'])")
       echo "Password received!"
+    else
+      echo "Invalid JSON response: $responseJson"
     fi
 
     if [ "$x" = "$retry_count" ]; then
       echo "Password never received for instance with id ${instance_id}. Hence skipping test execution!"
       exit
     fi
- 
+
     sleep 10 # wait for 10 second before check again
     x=$((x+1))
-  done 
+  done
 }
 
 #=== FUNCTION ==================================================================
@@ -86,7 +88,7 @@ wait_for_port() {
   port=$2
   x=1;
   retry_count=$CONNECT_RETRY_COUNT;
-  echo "Wait port: ${1}:${2}" 
+  echo "Wait port: ${1}:${2}"
   while ! nc -z $host $port; do
     sleep 2 # wait for 2 second before check again
     echo -n "."
@@ -102,13 +104,13 @@ wait_for_port() {
 # select default username and remote directory based on the OS
 #----------------------------------------------------------------------
 case "${os}" in
-   "CentOS") 
+   "CentOS")
     	user=centos
         PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_UNIX ;;
    "Windows")
     	user=Administrator
         PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_WINDOWS ;;
-   "UBUNTU") 
+   "UBUNTU")
         user=ubuntu
         PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_UNIX ;;
 esac
@@ -118,7 +120,7 @@ REM_DIR=`grep -w "$PROP_REMOTE_DIR" ${FILE1} ${FILE2} | cut -d'=' -f2`
 #----------------------------------------------------------------------
 # wait till port 22 is opened for SSH
 #----------------------------------------------------------------------
-wait_for_port ${host} 22 
+wait_for_port ${host} 22
 
 #----------------------------------------------------------------------
 # execute commands based on the OS of the instance
@@ -131,27 +133,27 @@ wait_for_port ${host} 22
 if [ "${os}" = "Windows" ]; then
   echo "Waiting 4 minutes till Windows instance is configured. "
   sleep 4m #wait 4 minutes till Windows instance is configured and able to receive password using key file.
-  
+  set +o xtrace #avoid printing sensitive data in the next commands
   request_ec2_password $instance_id
+  echo "Copying files to ${REM_DIR}.."
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE1} ${user}@${host}:${REM_DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE2} ${user}@${host}:${REM_DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE3} ${user}@${host}:${REM_DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE4} ${user}@${host}:${REM_DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE5} ${user}@${host}:${REM_DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE6} ${user}@${host}:${REM_DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE8} ${user}@${host}:${REM_DIR}
 
-  sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE1} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE2} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE3} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE4} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE5} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE6} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${FILE8} ${user}@${host}:${REM_DIR}
-  
   echo "=== Files copied successfully ==="
   echo "Execution begins.. "
 
   sshpass -p "${password}" ssh -o StrictHostKeyChecking=no ${user}@${host} call "${REM_DIR}/${FILE8}" ${REM_DIR}
   echo "=== End of execution ==="
   echo "Retrieving reports from instance.. "
-  sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
-  sshpass -p "${password}" scp -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
   echo "=== Reports retrieved successfully ==="
-    
+  set -o xtrace
 else
   #for all UNIX instances
   ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p ${REM_DIR}
@@ -173,4 +175,3 @@ else
   echo "=== Reports are copied success ==="
 fi
 ##script ends
-
