@@ -48,7 +48,7 @@ LOG_FILE_PATHS = ["modules/integration/tests-integration/tests-backend/target/su
                   "modules/integration/tests-integration/tests-backend/target/logs/automation.log"]
 DB_META_DATA = {
     "MYSQL": {"prefix": "jdbc:mysql://", "driverClassName": "com.mysql.jdbc.Driver", "jarName": "mysql.jar"},
-    "SQLSERVER-SE": {"prefix": "jdbc:jtds:sqlserver://",
+    "SQLSERVER-SE": {"prefix": "jdbc:sqlserver://",
                      "driverClassName": "com.microsoft.sqlserver.jdbc.SQLServerDriver", "jarName": "sqlserver-ex.jar"},
     "ORACLE-SE2": {"prefix": "jdbc:oracle:thin:@", "driverClassName": "oracle.jdbc.OracleDriver",
                    "jarName": "oracle-se.jar"},
