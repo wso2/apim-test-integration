@@ -151,7 +151,8 @@ def modify_datasources():
                     configuration = child.find('configuration')
                     url = configuration.find('url')
                     user = configuration.find('username')
-                    passwd = configuration.find('password')
+                    password = configuration.find('password')
+                    validation_query = configuration.find('validationQuery')
                     drive_class_name = configuration.find('driverClassName')
                     if MYSQL_DB_ENGINE == database_config['db_engine'].upper():
                         url.text = url.text.replace(url.text, database_config[
@@ -161,10 +162,12 @@ def modify_datasources():
                     elif ORACLE_DB_ENGINE == database_config['db_engine'].upper():
                         url.text = url.text.replace(url.text, database_config['url'] + DEFAULT_ORACLE_SID)
                         user.text = user.text.replace(user.text, database_name)
+                        validation_query.text = validation_query.text.replace(validation_query.text,
+                                                                              "SELECT 1 FROM DUAL")
                     else:
                         url.text = url.text.replace(url.text, database_config['url'] + database_name)
                         user.text = user.text.replace(user.text, database_config['user'])
-                    passwd.text = passwd.text.replace(passwd.text, database_config['password'])
+                    password.text = password.text.replace(password.text, database_config['password'])
                     drive_class_name.text = drive_class_name.text.replace(drive_class_name.text,
                                                                           database_config['driver_class_name'])
                     database_names.append(database_name)
