@@ -115,7 +115,7 @@ case "${os}" in
         PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_UNIX ;;
 esac
 
-REM_DIR=`grep -w "$PROP_REMOTE_DIR" ${FILE1} ${FILE2} | cut -d'=' -f2`
+REM_DIR=`grep -w "$PROP_REMOTE_DIR" ${FILE1} ${FILE2} | cut -d'=' -f2 | sed 's/\\//g'`
 
 #----------------------------------------------------------------------
 # wait till port 22 is opened for SSH
