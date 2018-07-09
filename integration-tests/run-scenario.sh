@@ -115,7 +115,7 @@ case "${os}" in
         PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_UNIX ;;
 esac
 
-REM_DIR=`grep -w "$PROP_REMOTE_DIR" ${FILE1} ${FILE2} | cut -d'=' -f2 | sed 's/\\//g'`
+REM_DIR=`grep -w "$PROP_REMOTE_DIR" ${FILE1} ${FILE2} | cut -d'=' -f2`
 
 #----------------------------------------------------------------------
 # wait till port 22 is opened for SSH
@@ -135,6 +135,7 @@ if [ "${os}" = "Windows" ]; then
   sleep 4m #wait 4 minutes till Windows instance is configured and able to receive password using key file.
   set +o xtrace #avoid printing sensitive data in the next commands
   request_ec2_password $instance_id
+  REM_DIR=$(echo "$REM_DIR" | sed 's/\\//g')
   echo "Copying files to ${REM_DIR}.."
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE1} ${user}@${host}:${REM_DIR}
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE2} ${user}@${host}:${REM_DIR}
