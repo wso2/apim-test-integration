@@ -174,6 +174,16 @@ def modify_datasources():
         artifact_tree.write(file_path)
 
 
+def copy_distribution_to_m2(product_storage, product_name):
+    # todo need to generalize this method
+    home = Path.home()
+    m2_path = home / ".m2/repository/org/wso2/am/wso2am" / product_name
+
+    if sys.platform.startswith('win'):
+        m2_path = winapi_path(m2_path)
+    compress_distribution(m2_path, product_storage)
+
+
 def configure_product(product, id, db_config, ws):
     try:
         global product_name
@@ -214,6 +224,7 @@ def configure_product(product, id, db_config, ws):
             logger.info("datasource paths are not defined in the config file")
         os.remove(str(product_location))
         compress_distribution(configured_product_path, product_storage)
+        copy_distribution_to_m2(product_storage, product_name)
         shutil.rmtree(configured_product_path, onerror=on_rm_error)
         return database_names
     except FileNotFoundError as e:
