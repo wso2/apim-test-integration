@@ -276,7 +276,10 @@ def get_product_name(jkns_api_url):
     response = requests.get(req_url, headers=headers)
     if response.status_code == 200:
         root = ET.fromstring(response.content)
-        product_name = root.text.split('-')[0] + "-" + root.text.split('-')[1]
+        if (root.text.split('-')[2].startswith("rc") or root.text.split('-')[2].startswith("m")):
+            product_name = root.text.split('-')[0] + "-" + root.text.split('-')[1] + "-" + root.text.split('-')[2]
+        else:
+            product_name = root.text.split('-')[0] + "-" + root.text.split('-')[1]
         return product_name
     else:
         logger.infor('Failure on jenkins api call')
