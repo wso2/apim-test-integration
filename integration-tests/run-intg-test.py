@@ -29,13 +29,14 @@ import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
     PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB, DB_METRICS_DB, DEFAULT_DB_USERNAME, \
-    LOG_STORAGE, LOG_FILE_PATHS
+    LOG_STORAGE, LOG_FILE_PATHS, DIST_POM_PATH, NS
 
 git_repo_url = None
 git_branch = None
 os_type = None
 workspace = None
 product_name = None
+product_zip_name = None
 product_id = None
 log_file_name = None
 target_path = None
@@ -269,17 +270,22 @@ def copy_file(source, target):
         shutil.copy(source, target)
 
 
-def get_product_name(jkns_api_url):
+def get_product_name():
     global product_name
-    req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/fileName'
-    headers = {'Accept': 'application/xml'}
-    response = requests.get(req_url, headers=headers)
-    if response.status_code == 200:
-        root = ET.fromstring(response.content)
-        product_name = root.text.split('-')[0] + "-" + root.text.split('-')[1]
-        return product_name
-    else:
-        logger.infor('Failure on jenkins api call')
+    global product_zip_name
+    dist_pom_path = Path(workspace + "/" + product_id + "/" + DIST_POM_PATH[product_id])
+    if sys.platform.startswith('win'):
+        dist_pom_path = cp.winapi_path(dist_pom_path)
+    ET.register_namespace('', NS['d'])
+    artifact_tree = ET.parse(dist_pom_path)
+    artifact_root = artifact_tree.getroot()
+    parent = artifact_root.find('d:parent', NS)
+    artifact_id = artifact_root.find('d:artifactId', NS)
+    version = parent.find('d:version', NS)
+    product_name = artifact_id.text + "-" + version.text
+    product_zip_name = product_name + ".zip"
+    return product_name
+
 
 
 def get_product_dist_rel_path(jkns_api_url):
@@ -294,7 +300,7 @@ def get_product_dist_rel_path(jkns_api_url):
         logger.info('Failure on jenkins api call')
 
 
-def get_product_dist_arifact_path(jkns_api_url):
+def get_product_dist_artifact_path(jkns_api_url):
     artifact_path = jkns_api_url.split('/api')[0] + '/artifact/'
     return artifact_path
 
@@ -424,6 +430,17 @@ def run_integration_test():
     logger.info('Integration test Running is completed.')
 
 
+def build_import_export_module():
+    """Build the apim import export module.
+    """
+    integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/api-import-export')
+    if sys.platform.startswith('win'):
+        subprocess.call(['mvn', '--batch-mode', 'clean', 'install'], shell=True, cwd=integration_tests_path)
+    else:
+        subprocess.call(['mvn', '--batch-mode', 'clean', 'install'], cwd=integration_tests_path)
+    logger.info('Integration test Running is completed.')
+
+
 def save_log_files():
     log_storage = Path(workspace + "/" + LOG_STORAGE)
     if not Path.exists(log_storage):
@@ -474,21 +491,21 @@ def main():
                 "and the format")
         construct_db_config()
 
-        # product name retrieve from jenkins api
-        product_name = get_product_name(product_dist_download_api)
-
         # clone the repository
         clone_repo()
 
-        product_file_name = product_name + ".zip"
-        dist_downl_url = get_product_dist_arifact_path(product_dist_download_api) + get_product_dist_rel_path(
-            product_dist_download_api) + product_file_name
+        # product name retrieve from product pom files
+        product_name = get_product_name()
+
+        # construct the distribution downloading url
+        dist_downl_url = get_product_dist_artifact_path(product_dist_download_api) + get_product_dist_rel_path(
+            product_dist_download_api) + product_zip_name
 
         # product download path and file name constructing
-        prodct_download_dir = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
-        if not Path.exists(prodct_download_dir):
-            Path(prodct_download_dir).mkdir(parents=True, exist_ok=True)
-        product_file_path = prodct_download_dir / product_file_name
+        product_download_dir = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
+        if not Path.exists(product_download_dir):
+            Path(product_download_dir).mkdir(parents=True, exist_ok=True)
+        product_file_path = product_download_dir / product_zip_name
         # download the last released pack from Jenkins
         download_file(dist_downl_url, str(product_file_path))
         logger.info('downloading the pack from Jenkins done.')
@@ -501,6 +518,7 @@ def main():
         setup_databases(script_path, db_names)
         logger.info('Database setting up is done.')
         logger.info('Starting Integration test running.')
+        build_import_export_module()
         run_integration_test()
         save_log_files()
     except Exception as e:

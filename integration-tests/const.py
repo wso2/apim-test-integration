@@ -23,6 +23,8 @@ POM_FILE_PATHS = ["modules/integration/tests-integration/tests-backend/pom.xml",
                   "modules/integration/tests-ui-integration/pom.xml",
                   "modules/integration/tests-integration/tests-jmeter/pom.xml",
                   "modules/integration/tests-platform/pom.xml"]
+DIST_POM_PATH = {"product-is": "modules/distribution/pom.xml", "product-apim": "modules/distribution/product/pom.xml",
+                 "product-ei": "distribution/pom.xml"}
 LIB_PATH = "repository/components/lib"
 DISTRIBUTION_PATH = "modules/distribution/product/target"
 PRODUCT_STORAGE_DIR_NAME = "storage"
