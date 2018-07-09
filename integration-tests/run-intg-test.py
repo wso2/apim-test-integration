@@ -287,7 +287,6 @@ def get_product_name():
     return product_name
 
 
-
 def get_product_dist_rel_path(jkns_api_url):
     req_url = jkns_api_url + 'xml?xpath=/*/artifact[1]/relativePath'
     headers = {'Accept': 'application/xml'}
