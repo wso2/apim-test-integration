@@ -434,7 +434,7 @@ def save_log_files():
         if Path.exists(absolute_file_path):
             copy_file(absolute_file_path, log_storage)
         else:
-            logger.error("File doesn't contain in the given location: " + absolute_file_path)
+            logger.error("File doesn't contain in the given location: " + str(absolute_file_path))
 
 
 def clone_repo():
@@ -452,7 +452,7 @@ def clone_repo():
         string_val_of_tag_name = tag_name.stdout.read().strip().decode("utf-8")
         tag = "tags/" + string_val_of_tag_name
         subprocess.call(["git", "fetch", "origin", tag], cwd=git_path)
-        subprocess.call(["git", "checkout", "-B", tag], cwd=git_path)
+        subprocess.call(["git", "checkout", "-B", tag, string_val_of_tag_name], cwd=git_path)
         logger.info('checkout to the branch: ' + tag)
     except Exception as e:
         logger.error("Error occurred while cloning the product repo and checkout to the latest tag of the branch",
