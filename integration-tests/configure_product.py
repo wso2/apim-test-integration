@@ -196,14 +196,15 @@ def configure_product(product, id, db_config, ws):
         product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
         distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH)
         product_home_path = Path(product_storage / product_name)
-        pom_file_paths = POM_FILE_PATHS
         zip_name = product_name + ZIP_FILE_EXTENSION
         product_location = Path(product_storage / zip_name)
         configured_product_path = Path(distribution_storage / product_name)
-        if pom_file_paths is not None:
-            modify_pom_files()
-        else:
-            logger.info("pom file paths are not defined in the config file")
+        # Since we checkout to the latest released tag of the product repo, we don't need to modify pom files.
+        # pom_file_paths = POM_FILE_PATHS
+        # if pom_file_paths is not None:
+        #    modify_pom_files()
+        # else:
+        #    logger.info("pom file paths are not defined in the config file")
         logger.info(product_location)
         extract_product(product_location)
         copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / lib_path))
