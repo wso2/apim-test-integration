@@ -84,6 +84,8 @@ def extract_product(path):
 
 
 def compress_distribution(distribution_path, root_dir):
+    if type(distribution_path) == str:
+        distribution_path = Path(distribution_path)
     if not Path.exists(distribution_path):
         Path(distribution_path).mkdir(parents=True, exist_ok=True)
 
@@ -178,12 +180,17 @@ def copy_distribution_to_m2(storage, name):
     # todo need to generalize this method
     home = Path.home()
     version = name.split("-")[1]
-    m2_path = home / ".m2/repository/org/wso2/am/wso2am" / version / name
-
+    linux_m2_path = home / ".m2/repository/org/wso2/am/wso2am" / version / name
+    windows_m2_path = Path(
+        "/Documents and Settings/Administrator/.m2/repository/org/wso2/am/wso2am" + "/" + version + "/" + name)
     if sys.platform.startswith('win'):
-        m2_path = winapi_path(m2_path)
-    compress_distribution(m2_path, storage)
-    shutil.rmtree(m2_path, onerror=on_rm_error)
+        windows_m2_path = winapi_path(windows_m2_path)
+        storage = winapi_path(storage)
+        compress_distribution(windows_m2_path, storage)
+        shutil.rmtree(windows_m2_path, onerror=on_rm_error)
+    else:
+        compress_distribution(linux_m2_path, storage)
+        shutil.rmtree(linux_m2_path, onerror=on_rm_error)
 
 
 def configure_product(product, id, db_config, ws):
