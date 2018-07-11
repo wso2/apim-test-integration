@@ -25,7 +25,7 @@ import shutil
 import logging
 from const import ZIP_FILE_EXTENSION, NS, SURFACE_PLUGIN_ARTIFACT_ID, CARBON_NAME, VALUE_TAG, \
     DEFAULT_ORACLE_SID, DATASOURCE_PATHS, MYSQL_DB_ENGINE, ORACLE_DB_ENGINE, LIB_PATH, PRODUCT_STORAGE_DIR_NAME, \
-    DISTRIBUTION_PATH, POM_FILE_PATHS
+    DISTRIBUTION_PATH, POM_FILE_PATHS, MSSQL_DB_ENGINE
 
 datasource_paths = None
 database_url = None
@@ -158,16 +158,20 @@ def modify_datasources():
                     drive_class_name = configuration.find('driverClassName')
                     if MYSQL_DB_ENGINE == database_config['db_engine'].upper():
                         url.text = url.text.replace(url.text, database_config[
-                            'url'] + database_name + "?autoReconnect=true&useSSL=false&requireSSL=false&"
+                            'url'] + "/" + database_name + "?autoReconnect=true&useSSL=false&requireSSL=false&"
                                                      "verifyServerCertificate=false")
                         user.text = user.text.replace(user.text, database_config['user'])
                     elif ORACLE_DB_ENGINE == database_config['db_engine'].upper():
-                        url.text = url.text.replace(url.text, database_config['url'] + DEFAULT_ORACLE_SID)
+                        url.text = url.text.replace(url.text, database_config['url'] + "/" + DEFAULT_ORACLE_SID)
                         user.text = user.text.replace(user.text, database_name)
                         validation_query.text = validation_query.text.replace(validation_query.text,
                                                                               "SELECT 1 FROM DUAL")
+                    elif MSSQL_DB_ENGINE == database_config['db_engine'].upper():
+                        url.text = url.text.replace(url.text,
+                                                    database_config['url'] + ";" + "databaseName=" + database_name)
+                        user.text = user.text.replace(user.text, database_config['user'])
                     else:
-                        url.text = url.text.replace(url.text, database_config['url'] + database_name)
+                        url.text = url.text.replace(url.text, database_config['url'] + "/" + database_name)
                         user.text = user.text.replace(user.text, database_config['user'])
                     password.text = password.text.replace(password.text, database_config['password'])
                     drive_class_name.text = drive_class_name.text.replace(drive_class_name.text,
