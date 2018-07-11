@@ -125,7 +125,7 @@ def get_db_meta_data(argument):
 
 
 def construct_url(prefix):
-    url = prefix + db_host + ":" + db_port + "/"
+    url = prefix + db_host + ":" + db_port
     return url
 
 
