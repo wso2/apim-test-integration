@@ -48,6 +48,7 @@ db_host = None
 db_port = None
 db_username = None
 db_password = None
+tag_name = None
 database_config = {}
 
 
@@ -457,22 +458,30 @@ def clone_repo():
     """Clone the product repo and checkout to the latest tag of the branch
     """
     try:
+        global tag_name
         subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
         logger.info('cloning repo done.')
         git_path = Path(workspace + "/" + product_id)
         hash_number = subprocess.Popen(["git", "rev-list", "--tags", "--max-count=1"], stdout=subprocess.PIPE,
                                        cwd=git_path)
         string_val_of_hash = hash_number.stdout.read().strip().decode("utf-8")
-        tag_name = subprocess.Popen(["git", "describe", "--tags", string_val_of_hash], stdout=subprocess.PIPE,
-                                    cwd=git_path)
-        string_val_of_tag_name = tag_name.stdout.read().strip().decode("utf-8")
-        tag = "tags/" + string_val_of_tag_name
+        binary_val_of_tag_name = subprocess.Popen(["git", "describe", "--tags", string_val_of_hash],
+                                                  stdout=subprocess.PIPE, cwd=git_path)
+        tag_name = binary_val_of_tag_name.stdout.read().strip().decode("utf-8")
+        tag = "tags/" + tag_name
         subprocess.call(["git", "fetch", "origin", tag], cwd=git_path)
-        subprocess.call(["git", "checkout", "-B", tag, string_val_of_tag_name], cwd=git_path)
+        subprocess.call(["git", "checkout", "-B", tag, tag_name], cwd=git_path)
         logger.info('checkout to the branch: ' + tag)
     except Exception as e:
         logger.error("Error occurred while cloning the product repo and checkout to the latest tag of the branch",
                      exc_info=True)
+
+
+def create_output_property_fle():
+    output_property_file = open("output.properties", "w+")
+    git_url = git_repo_url + "/tree/" + git_branch
+    output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
+    output_property_file.write("GIT_REVISION=%s\r\n" % tag_name)
 
 
 def main():
@@ -520,6 +529,7 @@ def main():
         build_import_export_module()
         run_integration_test()
         save_log_files()
+        create_output_property_fle()
     except Exception as e:
         logger.error("Error occurred while running the run-intg.py script", exc_info=True)
     except BaseException as e:
