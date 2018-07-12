@@ -25,7 +25,7 @@ import shutil
 import logging
 from const import ZIP_FILE_EXTENSION, NS, SURFACE_PLUGIN_ARTIFACT_ID, CARBON_NAME, VALUE_TAG, \
     DEFAULT_ORACLE_SID, DATASOURCE_PATHS, MYSQL_DB_ENGINE, ORACLE_DB_ENGINE, LIB_PATH, PRODUCT_STORAGE_DIR_NAME, \
-    DISTRIBUTION_PATH, POM_FILE_PATHS, MSSQL_DB_ENGINE
+    DISTRIBUTION_PATH, MSSQL_DB_ENGINE
 
 datasource_paths = None
 database_url = None
@@ -42,7 +42,6 @@ lib_path = None
 sql_driver_location = None
 product_id = None
 database_names = []
-pom_file_paths = None
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -106,6 +105,11 @@ def modify_distribution_name(element):
     return '/'.join(temp)
 
 
+# Since we have added a method to clone a given git branch and checkout to the latest released tag it is not required to
+# modify pom files. Hence in the current implementation this method is not using.
+# However, in order to execute this method you can define pom file paths in const.py as a constant
+# and import it to configure_product.py. Thereafter assign it to global variable called pom_file_paths in the
+# configure_product method and call the modify_pom_files method.
 def modify_pom_files():
     for pom in pom_file_paths:
         file_path = Path(workspace + "/" + product_id + "/" + pom)
@@ -208,16 +212,15 @@ def configure_product(product, id, db_config, ws):
         global product_home_path
         global product_storage
         global lib_path
-        global pom_file_paths
 
         product_name = product
         product_id = id
         database_config = db_config
         workspace = ws
-        datasource_paths = DATASOURCE_PATHS
+        datasource_paths = DATASOURCE_PATHS[product_id]
         lib_path = LIB_PATH
         product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
-        distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH)
+        distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
         product_home_path = Path(product_storage / product_name)
         zip_name = product_name + ZIP_FILE_EXTENSION
         product_location = Path(product_storage / zip_name)

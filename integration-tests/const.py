@@ -17,16 +17,16 @@ ZIP_FILE_EXTENSION = ".zip"
 CARBON_NAME = "carbon.zip"
 VALUE_TAG = "{http://maven.apache.org/POM/4.0.0}value"
 SURFACE_PLUGIN_ARTIFACT_ID = "maven-surefire-plugin"
-DATASOURCE_PATHS = ["repository/conf/datasources/master-datasources.xml",
-                    "repository/conf/datasources/metrics-datasources.xml"]
-POM_FILE_PATHS = ["modules/integration/tests-integration/tests-backend/pom.xml",
-                  "modules/integration/tests-ui-integration/pom.xml",
-                  "modules/integration/tests-integration/tests-jmeter/pom.xml",
-                  "modules/integration/tests-platform/pom.xml"]
+DATASOURCE_PATHS = {"product-apim": ["repository/conf/datasources/master-datasources.xml",
+                                     "repository/conf/datasources/metrics-datasources.xml"],
+                    "product-is": [],
+                    "product-ei": []}
 DIST_POM_PATH = {"product-is": "modules/distribution/pom.xml", "product-apim": "modules/distribution/product/pom.xml",
                  "product-ei": "distribution/pom.xml"}
 LIB_PATH = "repository/components/lib"
-DISTRIBUTION_PATH = "modules/distribution/product/target"
+DISTRIBUTION_PATH = {"product-apim": "modules/distribution/product/target",
+                     "product-is": "modules/distribution/target",
+                     "product-ei": "modules/distribution/target"}
 PRODUCT_STORAGE_DIR_NAME = "storage"
 TEST_PLAN_PROPERTY_FILE_NAME = "testplan-props.properties"
 INFRA_PROPERTY_FILE_NAME = "infrastructure.properties"
@@ -42,13 +42,16 @@ DB_MB_DB = 'WSO2_MB_STORE_DB'
 DB_METRICS_DB = 'WSO2_METRICS_DB'
 DEFAULT_DB_USERNAME = "wso2carbon"
 LOG_STORAGE = "logs"
-LOG_FILE_PATHS = ["modules/integration/tests-integration/tests-backend/target/surefire-reports/emailable-report.html",
-                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/index.html",
-                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/TEST-TestSuite.xml",
-                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/testng.css",
-                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/testng-results.xml",
-                  "modules/integration/tests-integration/tests-backend/target/surefire-reports/TestSuite.txt",
-                  "modules/integration/tests-integration/tests-backend/target/logs/automation.log"]
+LOG_FILE_PATHS = {"product-apim": [
+    "modules/integration/tests-integration/tests-backend/target/surefire-reports/emailable-report.html",
+    "modules/integration/tests-integration/tests-backend/target/surefire-reports/index.html",
+    "modules/integration/tests-integration/tests-backend/target/surefire-reports/TEST-TestSuite.xml",
+    "modules/integration/tests-integration/tests-backend/target/surefire-reports/testng.css",
+    "modules/integration/tests-integration/tests-backend/target/surefire-reports/testng-results.xml",
+    "modules/integration/tests-integration/tests-backend/target/surefire-reports/TestSuite.txt",
+    "modules/integration/tests-integration/tests-backend/target/logs/automation.log"],
+    "product-is": [],
+    "product-ei": []}
 DB_META_DATA = {
     "MYSQL": {"prefix": "jdbc:mysql://", "driverClassName": "com.mysql.jdbc.Driver", "jarName": "mysql.jar"},
     "SQLSERVER-SE": {"prefix": "jdbc:sqlserver://",

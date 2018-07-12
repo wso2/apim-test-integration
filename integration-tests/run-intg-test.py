@@ -424,9 +424,13 @@ def run_integration_test():
     """
     integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/integration')
     if sys.platform.startswith('win'):
-        subprocess.call(['mvn', '--batch-mode', 'clean', 'install'], shell=True, cwd=integration_tests_path)
+        subprocess.call(['mvn', 'clean', 'install', '-B',
+                         '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
+                        shell=True, cwd=integration_tests_path)
     else:
-        subprocess.call(['mvn', '--batch-mode', 'clean', 'install'], cwd=integration_tests_path)
+        subprocess.call(['mvn', 'clean', 'install', '-B',
+                         '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
+                        cwd=integration_tests_path)
     logger.info('Integration test Running is completed.')
 
 
@@ -435,9 +439,13 @@ def build_import_export_module():
     """
     integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/api-import-export')
     if sys.platform.startswith('win'):
-        subprocess.call(['mvn', '--batch-mode', 'clean', 'install'], shell=True, cwd=integration_tests_path)
+        subprocess.call(['mvn', 'clean', 'install', '-B',
+                         '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
+                        shell=True, cwd=integration_tests_path)
     else:
-        subprocess.call(['mvn', '--batch-mode', 'clean', 'install'], cwd=integration_tests_path)
+        subprocess.call(['mvn', 'clean', 'install', '-B',
+                         '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
+                        cwd=integration_tests_path)
     logger.info('Integration test Running is completed.')
 
 
@@ -445,13 +453,14 @@ def save_log_files():
     log_storage = Path(workspace + "/" + LOG_STORAGE)
     if not Path.exists(log_storage):
         Path(log_storage).mkdir(parents=True, exist_ok=True)
-
-    for file in LOG_FILE_PATHS:
-        absolute_file_path = Path(workspace + "/" + product_id + "/" + file)
-        if Path.exists(absolute_file_path):
-            copy_file(absolute_file_path, log_storage)
-        else:
-            logger.error("File doesn't contain in the given location: " + str(absolute_file_path))
+    log_file_paths = LOG_FILE_PATHS[product_id]
+    if log_file_paths:
+        for file in log_file_paths:
+            absolute_file_path = Path(workspace + "/" + product_id + "/" + file)
+            if Path.exists(absolute_file_path):
+                copy_file(absolute_file_path, log_storage)
+            else:
+                logger.error("File doesn't contain in the given location: " + str(absolute_file_path))
 
 
 def clone_repo():
@@ -462,10 +471,7 @@ def clone_repo():
         subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
         logger.info('cloning repo done.')
         git_path = Path(workspace + "/" + product_id)
-        hash_number = subprocess.Popen(["git", "rev-list", "--tags", "--max-count=1"], stdout=subprocess.PIPE,
-                                       cwd=git_path)
-        string_val_of_hash = hash_number.stdout.read().strip().decode("utf-8")
-        binary_val_of_tag_name = subprocess.Popen(["git", "describe", "--tags", string_val_of_hash],
+        binary_val_of_tag_name = subprocess.Popen(["git", "describe", "--abbrev=0", "--tags"],
                                                   stdout=subprocess.PIPE, cwd=git_path)
         tag_name = binary_val_of_tag_name.stdout.read().strip().decode("utf-8")
         tag = "tags/" + tag_name
@@ -482,6 +488,7 @@ def create_output_property_fle():
     git_url = git_repo_url + "/tree/" + git_branch
     output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
     output_property_file.write("GIT_REVISION=%s\r\n" % tag_name)
+    output_property_file.close()
 
 
 def main():
