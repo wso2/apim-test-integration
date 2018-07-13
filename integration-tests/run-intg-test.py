@@ -112,11 +112,31 @@ def read_proprty_files():
 
 
 def validate_property_radings():
-    if None in (
-            db_engine_version, git_repo_url, product_id, git_branch, product_dist_download_api, sql_driver_location,
-            db_host, db_port, db_password):
+    missing_values = ""
+    if db_engine is None:
+        missing_values += " -DBEngine- "
+    if git_repo_url is None:
+        missing_values += " -gitURL- "
+    if product_id is None:
+        missing_values += " -product-id- "
+    if git_branch is None:
+        missing_values += " -gitBranch- "
+    if product_dist_download_api is None:
+        missing_values += " -productDistDownloadApi- "
+    if sql_driver_location is None:
+        missing_values += " -sqlDriversLocatio<OS_Type>- "
+    if db_host is None:
+        missing_values += " -DatabaseHost- "
+    if db_port is None:
+        missing_values += " -DatabasePort- "
+    if db_password is None:
+        missing_values += " -DBPassword- "
+
+    if missing_values != "":
+        logger.error('Invalid property file is found. Missing values: %s ', missing_values)
         return False
-    return True
+    else:
+        return True
 
 
 def get_db_meta_data(argument):
