@@ -49,6 +49,7 @@ db_port = None
 db_username = None
 db_password = None
 tag_name = None
+build_type = None
 database_config = {}
 
 
@@ -66,6 +67,7 @@ def read_proprty_files():
     global workspace
     global product_id
     global database_config
+    global build_type
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -107,6 +109,8 @@ def read_proprty_files():
                         db_username = val.strip()
                     elif key == "DBPassword":
                         db_password = val.strip()
+                    elif key == "buidType":
+                        build_type = val.strip()
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
 
@@ -131,6 +135,8 @@ def validate_property_radings():
         missing_values += " -DatabasePort- "
     if db_password is None:
         missing_values += " -DBPassword- "
+    if build_type is None:
+        missing_values += " -buildType- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -511,6 +517,14 @@ def create_output_property_fle():
     output_property_file.close()
 
 
+def replace_testng_file(source, destination):
+    logger.info('replacing testng files')
+    if sys.platform.startswith('win'):
+        source = cp.winapi_path(source)
+        destination = cp.winapi_path(destination)
+    shutil.copy(source, destination)
+
+
 def main():
     try:
         global logger
@@ -528,6 +542,16 @@ def main():
 
         # clone the repository
         clone_repo()
+
+        if build_type == "TEST":
+            testng_source = Path(workspace + "/" + "testng.xml")
+            testng_destination = Path(workspace + "/" + product_id + "/" +
+                                      'modules/integration/tests-integration/tests-backend/src/test/resources/testng.xml')
+            testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
+            testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" +
+                                                 'modules/integration/tests-integration/tests-backend/src/test/resources/testng-server-mgt.xml')
+            replace_testng_file(testng_source, testng_destination)
+            replace_testng_file(testng_server_mgt_source, testng_server_mgt_destination)
 
         # product name retrieve from product pom files
         product_name = get_product_name()
