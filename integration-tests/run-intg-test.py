@@ -51,6 +51,7 @@ db_password = None
 tag_name = None
 build_type = None
 database_config = {}
+run_on_branch = None
 
 
 def read_proprty_files():
@@ -68,6 +69,7 @@ def read_proprty_files():
     global product_id
     global database_config
     global build_type
+    global run_on_branch
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -111,6 +113,8 @@ def read_proprty_files():
                         db_password = val.strip()
                     elif key == "buidType":
                         build_type = val.strip()
+                    elif key == "runOnBranch":
+                        run_on_branch = val.strip()
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
 
@@ -137,6 +141,8 @@ def validate_property_radings():
         missing_values += " -DBPassword- "
     if build_type is None:
         missing_values += " -buildType- "
+    if run_on_branch is None:
+        missing_values += " -runOnBranch- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -489,7 +495,7 @@ def save_log_files():
                 logger.error("File doesn't contain in the given location: " + str(absolute_file_path))
 
 
-def clone_repo():
+def clone_repo_checkout_tag():
     """Clone the product repo and checkout to the latest tag of the branch
     """
     try:
@@ -507,7 +513,18 @@ def clone_repo():
     except Exception as e:
         logger.error("Error occurred while cloning the product repo and checkout to the latest tag of the branch",
                      exc_info=True)
+def clone_repo_checkout_branch():
+    try:
+        subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
+    except Exception as e:
+        logger.error("Error occurred while cheking out the branch", exc_info=True)
 
+def checkout_branch():
+    try:
+        git_path = Path(workspace + "/" + product_id)
+        subprocess.call(['git', 'checkout', '-f', git_branch], cwd=git_path)
+    except Exception as e:
+        logger.error("Error occurred while cheking out the branch", exc_info=True)
 
 def create_output_property_fle():
     output_property_file = open("output.properties", "w+")
@@ -541,7 +558,7 @@ def main():
         construct_db_config()
 
         # clone the repository
-        clone_repo()
+        clone_repo_checkout_tag()
 
         if build_type == "TEST":
             testng_source = Path(workspace + "/" + "testng.xml")
@@ -576,6 +593,12 @@ def main():
             raise Exception("Failed the product configuring")
         setup_databases(script_path, db_names)
         logger.info('Database setting up is done.')
+        # check if tests to be run on the provided branch
+        if (run_on_branch):
+            # git checkout branch
+            checkout_branch()
+            # updating the carbon.zip location
+            cp.modify_pom_files(product_id, workspace, product_name)
         logger.info('Starting Integration test running.')
         build_import_export_module()
         run_integration_test()
