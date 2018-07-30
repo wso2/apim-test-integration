@@ -25,7 +25,7 @@ import shutil
 import logging
 from const import ZIP_FILE_EXTENSION, NS, SURFACE_PLUGIN_ARTIFACT_ID, CARBON_NAME, VALUE_TAG, \
     DEFAULT_ORACLE_SID, DATASOURCE_PATHS, MYSQL_DB_ENGINE, ORACLE_DB_ENGINE, LIB_PATH, PRODUCT_STORAGE_DIR_NAME, \
-    DISTRIBUTION_PATH, MSSQL_DB_ENGINE
+    DISTRIBUTION_PATH, MSSQL_DB_ENGINE, POM_FILE_PATHS
 
 datasource_paths = None
 database_url = None
@@ -110,8 +110,14 @@ def modify_distribution_name(element):
 # However, in order to execute this method you can define pom file paths in const.py as a constant
 # and import it to configure_product.py. Thereafter assign it to global variable called pom_file_paths in the
 # configure_product method and call the modify_pom_files method.
-def modify_pom_files():
-    for pom in pom_file_paths:
+def modify_pom_files(id, wp, product):
+    global product_id
+    global workspace
+    global product_name
+    product_id = id
+    workspace = wp
+    product_name = product
+    for pom in POM_FILE_PATHS:
         file_path = Path(workspace + "/" + product_id + "/" + pom)
         if sys.platform.startswith('win'):
             file_path = winapi_path(file_path)

@@ -23,6 +23,7 @@ DATASOURCE_PATHS = {"product-apim": ["repository/conf/datasources/master-datasou
                     "product-ei": []}
 DIST_POM_PATH = {"product-is": "modules/distribution/pom.xml", "product-apim": "modules/distribution/product/pom.xml",
                  "product-ei": "distribution/pom.xml"}
+POM_FILE_PATHS = {"modules/integration/tests-integration/tests-backend/pom.xml"}
 LIB_PATH = "repository/components/lib"
 DISTRIBUTION_PATH = {"product-apim": "modules/distribution/product/target",
                      "product-is": "modules/distribution/target",
