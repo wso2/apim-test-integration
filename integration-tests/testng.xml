@@ -96,7 +96,7 @@
             <class name="org.wso2.am.integration.tests.resources.APIResourceModificationTestCase"/>
             <class name="org.wso2.am.integration.tests.other.DAOTestCase"/>
             <class name="org.wso2.am.integration.tests.version.DefaultVersionAPITestCase"/>
-            <class name="org.wso2.am.integration.tests.login.EmailUserNameLoginTestCase"/>
+            <!--<class name="org.wso2.am.integration.tests.login.EmailUserNameLoginTestCase"/>**-->
             <class name="org.wso2.am.integration.tests.other.DigestAuthenticationTestCase"/>
             <!--<class name="org.wso2.am.integration.tests.other.ErrorMessageTypeTestCase"/>-->
             <class name="org.wso2.am.integration.tests.jwt.JWTTestCase"/>
@@ -118,7 +118,7 @@
             <class name="org.wso2.am.integration.tests.other.LocationHeaderTestCase"/>
             <class name="org.wso2.am.integration.tests.other.RelativeUrlLocationHeaderTestCase"/>
             <class name="org.wso2.am.integration.tests.hostobject.HostObjectTestCase"/>
-            <!-- <class name="org.wso2.am.integration.tests.other.APIMANAGER4081PaginationCountTestCase"/>** -->
+            <class name="org.wso2.am.integration.tests.other.APIMANAGER4081PaginationCountTestCase"/>
             <class name="org.wso2.am.integration.tests.rest.SearchPaginatedAPIsWithMultipleStatusTestCase"/>
             <!-- <class name="org.wso2.am.integration.tests.jwt.EmailUserNameJWTAssertionTestCase"/>
             <class name="org.wso2.am.integration.tests.otherDefaultVersionWithScopesTesCase"/>
@@ -188,7 +188,7 @@
             <!-- <class name="org.wso2.am.integration.tests.application.AuthApplicationUpdateTestCase"/>** -->
             <!-- <class name="org.wso2.am.integration.tests.application.GrantTypeTokenGenerateTestCase"/>** -->
             <!-- <class name="org.wso2.am.integration.tests.application.APIMANAGER3706ApplicationUpdateTestCase"/>** -->
-            <class name="org.wso2.am.integration.tests.api.sdk.SDKGenerationTestCase"/>
+            <!--<class name="org.wso2.am.integration.tests.api.sdk.SDKGenerationTestCase"/>**-->
             <!-- <class name="org.wso2.am.integration.tests.application.CAPIMGT12CallBackURLOverwriteTestCase"/>** -->
             <!-- <class name="org.wso2.am.integration.tests.other.StoreChangePasswordTestCase"/>** -->
             <!--<class name="org.wso2.am.integration.tests.other.APIMANAGER5417PrototypedAPIsInMonetizedTestCase"/>-->
