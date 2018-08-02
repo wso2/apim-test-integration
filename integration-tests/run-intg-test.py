@@ -539,7 +539,7 @@ def replace_testng_file(source, destination):
     if sys.platform.startswith('win'):
         source = cp.winapi_path(source)
         destination = cp.winapi_path(destination)
-    shutil.copy(source, destination)
+    shutil.move(source, destination)
 
 
 def main():

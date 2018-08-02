@@ -25,8 +25,8 @@
     <test name="apim-integration-tests-api-common" preserve-order="true" parallel="false">
         <classes>
             <!-- <class name="org.wso2.am.integration.tests.other.AdvancedWebAppDeploymentConfig"/>** -->
-            <class name="org.wso2.am.integration.tests.api.lifecycle.AddEditRemoveRESTResourceTestCase"/>
-            <class name="org.wso2.am.integration.tests.api.lifecycle.PluggableVersioningStrategyTestCase"/>
+             <!-- <class name="org.wso2.am.integration.tests.api.lifecycle.AddEditRemoveRESTResourceTestCase"/> ** -->
+             <!-- <class name="org.wso2.am.integration.tests.api.lifecycle.PluggableVersioningStrategyTestCase"/> ** -->
             <class name="org.wso2.am.integration.tests.api.lifecycle.ChangeAPIEndPointURLTestCase"/>
         </classes>
     </test>
