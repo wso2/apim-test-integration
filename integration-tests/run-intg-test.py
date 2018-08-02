@@ -594,11 +594,6 @@ def main():
         setup_databases(script_path, db_names)
         logger.info('Database setting up is done.')
         # check if tests to be run on the provided branch
-        if (run_on_branch):
-            # git checkout branch
-            checkout_branch()
-            # updating the carbon.zip location
-            cp.modify_pom_files(product_id, workspace, product_name)
         logger.info('Starting Integration test running.')
         build_import_export_module()
         run_integration_test()
