@@ -14,7 +14,6 @@
 
 
 # importing required modules
-import argparse as argparse
 from xml.etree import ElementTree as ET
 from zipfile import ZipFile
 import os
