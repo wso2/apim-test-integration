@@ -30,7 +30,7 @@ from xml.dom import minidom
 import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
-    PRODUCT_STORAGE_DIR_NAME, DB_CARBON_DB, DB_AM_DB, DB_STAT_DB, DB_MB_DB, DB_METRICS_DB, DEFAULT_DB_USERNAME, \
+    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, \
     LOG_STORAGE, LOG_FILE_PATHS, DIST_POM_PATH, NS
 
 git_repo_url = None
@@ -308,7 +308,7 @@ def copy_file(source, target):
 
 
 def get_product_name():
-    """Get the product name by reading root pom.
+    """Get the product name by reading distribution pom.
     """
     global product_name
     global product_zip_name
@@ -326,99 +326,54 @@ def get_product_name():
     return product_name
 
 
-def setup_databases(script_path, db_names):
+def setup_databases(db_names):
     """Create required databases.
     """
-    for database in db_names:
-        if database == DB_CARBON_DB:
-            if db_engine.upper() == 'SQLSERVER-SE':
-                # create database
-                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
-                # manipulate script path
-                scriptPath = script_path / 'mssql.sql'
-                # run db scripts
-                run_sqlserver_script_file(database, str(scriptPath))
-            elif db_engine.upper() == 'MYSQL':
-                scriptPath = script_path / 'mysql5.7.sql'
-                # create database
-                run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-                # run db script
-                run_mysql_script_file(database, str(scriptPath))
-
-            elif db_engine.upper() == 'ORACLE-SE2':
-                # create oracle schema
-                logger.info(create_oracle_user(database))
-                # run db script
-                scriptPath = script_path / 'oracle.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
-        elif database == DB_AM_DB:
-            if db_engine.upper() == 'SQLSERVER-SE':
-                # create database
-                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
-                # manipulate script path
-                scriptPath = script_path / 'apimgt/mssql.sql'
-                # run db scripts
-                run_sqlserver_script_file(database, str(scriptPath))
-            elif db_engine.upper() == 'MYSQL':
-                scriptPath = script_path / 'apimgt/mysql5.7.sql'
-                # create database
-                run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-                # run db script
-                run_mysql_script_file(database, str(scriptPath))
-            elif db_engine.upper() == 'ORACLE-SE2':
-                logger.info(create_oracle_user(database))
-                # run db script
-                scriptPath = script_path / 'apimgt/oracle.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
-        elif database == DB_STAT_DB:
-            if db_engine.upper() == 'SQLSERVER-SE':
-                # create database
-                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
-            elif db_engine.upper() == 'MYSQL':
-                # create database
-                run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-            elif db_engine.upper() == 'ORACLE-SE2':
-                # create database
-                logger.info(create_oracle_user(database))
-        elif database == DB_MB_DB:
-            if db_engine.upper() == 'SQLSERVER-SE':
-                # create database
-                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
-                # manipulate script path
-                scriptPath = script_path / 'mb-store/mssql-mb.sql'
-                # run db scripts
-                run_sqlserver_script_file(database, str(scriptPath))
-            elif db_engine.upper() == 'MYSQL':
-                # create database
-                run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-                # manipulate script path
-                scriptPath = script_path / 'mb-store/mysql-mb.sql'
-                # run db scripts
-                run_mysql_script_file(database, str(scriptPath))
-            elif db_engine.upper() == 'ORACLE-SE2':
-                logger.info(create_oracle_user(database))
-                # run db script
-                scriptPath = script_path / 'mb-store/oracle-mb.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
-        elif database == DB_METRICS_DB:
-            if db_engine.upper() == 'SQLSERVER-SE':
-                # create database
-                run_sqlserver_commands('CREATE DATABASE {0}'.format(database))
-                # manipulate script path
-                scriptPath = script_path / 'metrics/mssql.sql'
-                # run db scripts
-                run_sqlserver_script_file(database, str(scriptPath))
-            elif db_engine.upper() == 'MYSQL':
-                scriptPath = script_path / 'metrics/mysql.sql'
-                # create database
-                run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(database))
-                # run db script
-                run_mysql_script_file(database, str(scriptPath))
-            elif db_engine.upper() == 'ORACLE-SE2':
-                logger.info(create_oracle_user(database))
-                # run db script
-                scriptPath = script_path / 'metrics/oracle.sql'
-                logger.info(run_oracle_script('@{0}'.format(str(scriptPath)), database))
+    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_name + "/" + 'dbscripts')
+    engine = db_engine.upper()
+    db_meta_data = get_db_meta_data(engine)
+    if db_meta_data:
+        databases = db_meta_data["DB_SETUP"][product_id]
+        if databases:
+            for db_name in db_names:
+                db_scripts = databases[db_name]
+                if len(db_scripts) == 0:
+                    if engine == 'SQLSERVER-SE':
+                        # create database for MsSQL
+                        run_sqlserver_commands('CREATE DATABASE {0}'.format(db_name))
+                    elif engine == 'MYSQL':
+                        # create database for MySQL
+                        run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(db_name))
+                    elif engine == 'ORACLE-SE2':
+                        # create database for Oracle
+                        create_oracle_user(db_name)
+                else:
+                    if engine == 'SQLSERVER-SE':
+                        # create database for MsSQL
+                        run_sqlserver_commands('CREATE DATABASE {0}'.format(db_name))
+                        for db_script in db_scripts:
+                            path = base_path / db_script
+                            # run db scripts
+                            run_sqlserver_script_file(db_name, str(path))
+                    elif engine == 'MYSQL':
+                        # create database for MySQL
+                        run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(db_name))
+                        # run db scripts
+                        for db_script in db_scripts:
+                            path = base_path / db_script
+                            run_mysql_script_file(db_name, str(path))
+                    elif engine == 'ORACLE-SE2':
+                        # create oracle schema
+                        create_oracle_user(db_name)
+                        # run db script
+                        for db_script in db_scripts:
+                            path = base_path / db_script
+                            run_oracle_script('@{0}'.format(str(path)), db_name)
+            logger.info('Database setting up is done.')
+        else:
+            raise Exception("Database setup configuration is not defined in the constant file")
+    else:
+        raise Exception("Database meta data is not defined in the constant file")
 
 
 def construct_db_config():
@@ -446,6 +401,7 @@ def construct_db_config():
 def run_integration_test():
     """Run integration tests.
     """
+    logger.info('Starting Integration test running.')
     integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/integration')
     if sys.platform.startswith('win'):
         subprocess.call(['mvn', 'clean', 'install', '-B',
@@ -623,14 +579,13 @@ def main():
             raise Exception(
                 "Property file doesn't have mandatory key-value pair. Please verify the content of the property file "
                 "and the format")
-        construct_db_config()
 
+        construct_db_config()
         # clone the repository
         clone_repo()
 
         if test_mode == "DEBUG":
             checkout_to_tag(get_latest_tag_name(product_id))
-            # product name retrieve from product pom files
             product_name = get_product_name()
             get_latest_released_dist()
             testng_source = Path(workspace + "/" + "testng.xml")
@@ -645,28 +600,22 @@ def main():
             replace_file(testng_server_mgt_source, testng_server_mgt_destination)
         elif test_mode == "RELEASE":
             checkout_to_tag(get_latest_tag_name(product_id))
-            # product name retrieve from product pom files
             product_name = get_product_name()
             get_latest_released_dist()
         elif test_mode == "SNAPSHOT":
-            # product name retrieve from product pom files
             product_name = get_product_name()
             get_latest_stable_dist()
         elif test_mode == "WUM":
             # todo after identify specific steps that are related to WUM, add them to here
-            # product name retrieve from product pom files
             product_name = get_product_name()
             logger.info("WUM specific steps are empty")
 
-        # populate databases
-        script_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_name + "/" + 'dbscripts')
         db_names = cp.configure_product(product_name, product_id, database_config, workspace)
         if db_names is None or not db_names:
             raise Exception("Failed the product configuring")
-        setup_databases(script_path, db_names)
-        logger.info('Database setting up is done.')
-        logger.info('Starting Integration test running.')
-        build_import_export_module()
+        setup_databases(db_names)
+        if product_id == "product-apim":
+            build_import_export_module()
         run_integration_test()
         save_log_files()
         create_output_property_fle()
