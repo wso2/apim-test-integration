@@ -23,6 +23,7 @@ import os
 import shutil
 import pymysql
 import sqlparse
+import stat
 import re
 from pathlib import Path
 import urllib.request as urllib2
@@ -30,15 +31,14 @@ from xml.dom import minidom
 import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
-    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, \
-    LOG_STORAGE, LOG_FILE_PATHS, DIST_POM_PATH, NS
+    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, LOG_STORAGE, LOG_FILE_PATHS, DIST_POM_PATH, NS, ZIP_FILE_EXTENSION
 
 git_repo_url = None
 git_branch = None
 os_type = None
 workspace = None
-product_name = None
-product_zip_name = None
+dist_name = None
+dist_zip_name = None
 product_id = None
 log_file_name = None
 target_path = None
@@ -53,6 +53,7 @@ db_username = None
 db_password = None
 tag_name = None
 test_mode = None
+product_version = None
 database_config = {}
 
 
@@ -121,7 +122,7 @@ def read_proprty_files():
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
 
 
-def validate_property_radings():
+def validate_property_readings():
     missing_values = ""
     if db_engine is None:
         missing_values += " -DBEngine- "
@@ -307,11 +308,12 @@ def copy_file(source, target):
         shutil.copy(source, target)
 
 
-def get_product_name():
+def get_dist_name():
     """Get the product name by reading distribution pom.
     """
-    global product_name
-    global product_zip_name
+    global dist_name
+    global dist_zip_name
+    global product_version
     dist_pom_path = Path(workspace + "/" + product_id + "/" + DIST_POM_PATH[product_id])
     if sys.platform.startswith('win'):
         dist_pom_path = cp.winapi_path(dist_pom_path)
@@ -319,17 +321,17 @@ def get_product_name():
     artifact_tree = ET.parse(dist_pom_path)
     artifact_root = artifact_tree.getroot()
     parent = artifact_root.find('d:parent', NS)
-    artifact_id = artifact_root.find('d:artifactId', NS)
-    version = parent.find('d:version', NS)
-    product_name = artifact_id.text + "-" + version.text
-    product_zip_name = product_name + ".zip"
-    return product_name
+    artifact_id = artifact_root.find('d:artifactId', NS).text
+    product_version = parent.find('d:version', NS).text
+    dist_name = artifact_id + "-" + product_version
+    dist_zip_name = dist_name + ZIP_FILE_EXTENSION
+    return dist_name
 
 
 def setup_databases(db_names):
     """Create required databases.
     """
-    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_name + "/" + 'dbscripts')
+    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + dist_name + "/" + 'dbscripts')
     engine = db_engine.upper()
     db_meta_data = get_db_meta_data(engine)
     if db_meta_data:
@@ -398,35 +400,19 @@ def construct_db_config():
                 db_engine.upper()))
 
 
-def run_integration_test():
-    """Run integration tests.
+def build_module(module_path):
+    """Build a given module.
     """
-    logger.info('Starting Integration test running.')
-    integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/integration')
+    logger.info('Start building a module. Module: ' + str(module_path))
     if sys.platform.startswith('win'):
         subprocess.call(['mvn', 'clean', 'install', '-B',
                          '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
-                        shell=True, cwd=integration_tests_path)
+                        shell=True, cwd=module_path)
     else:
         subprocess.call(['mvn', 'clean', 'install', '-B',
                          '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
-                        cwd=integration_tests_path)
-    logger.info('Integration test Running is completed.')
-
-
-def build_import_export_module():
-    """Build the apim import export module.
-    """
-    integration_tests_path = Path(workspace + "/" + product_id + "/" + 'modules/api-import-export')
-    if sys.platform.startswith('win'):
-        subprocess.call(['mvn', 'clean', 'install', '-B',
-                         '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
-                        shell=True, cwd=integration_tests_path)
-    else:
-        subprocess.call(['mvn', 'clean', 'install', '-B',
-                         '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
-                        cwd=integration_tests_path)
-    logger.info('Integration test Running is completed.')
+                        cwd=module_path)
+    logger.info('Module build is completed. Module: ' + str(module_path))
 
 
 def save_log_files():
@@ -479,13 +465,13 @@ def get_latest_tag_name(product):
 
 
 def get_product_file_path():
-    """Get the latest tag name from git location
+    """Get the absolute path of the distribution which is located in the storage directory
     """
     # product download path and file name constructing
     product_download_dir = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
     if not Path.exists(product_download_dir):
         Path(product_download_dir).mkdir(parents=True, exist_ok=True)
-    return product_download_dir / product_zip_name
+    return product_download_dir / dist_zip_name
 
 
 def get_relative_path_of_dist_storage(xml_path):
@@ -497,7 +483,7 @@ def get_relative_path_of_dist_storage(xml_path):
     for artifact in artifact_elements:
         file_name_elements = artifact.getElementsByTagName("fileName")
         for file_name in file_name_elements:
-            if file_name.firstChild.nodeValue == product_zip_name:
+            if file_name.firstChild.nodeValue == dist_zip_name:
                 parent_node = file_name.parentNode
                 return parent_node.getElementsByTagName("relativePath")[0].firstChild.nodeValue
     return None
@@ -525,7 +511,7 @@ def get_latest_stable_artifacts_api():
     for main_artifact in main_artifact_elements:
         canonical_name_elements = main_artifact.getElementsByTagName("canonicalName")
         for canonical_name in canonical_name_elements:
-            if canonical_name.firstChild.nodeValue == product_name + ".pom":
+            if canonical_name.firstChild.nodeValue == dist_name + ".pom":
                 parent_node = main_artifact.parentNode
                 return parent_node.getElementsByTagName("url")[0].firstChild.nodeValue
     return None
@@ -569,24 +555,24 @@ def replace_file(source, destination):
 def main():
     try:
         global logger
-        global product_name
+        global dist_name
         logger = function_logger(logging.DEBUG, logging.DEBUG)
         if sys.version_info < (3, 6):
             raise Exception(
                 "To run run-intg-test.py script you must have Python 3.6 or latest. Current version info: " + sys.version_info)
         read_proprty_files()
-        if not validate_property_radings():
+        if not validate_property_readings():
             raise Exception(
                 "Property file doesn't have mandatory key-value pair. Please verify the content of the property file "
                 "and the format")
-
+        # construct database configuration
         construct_db_config()
         # clone the repository
         clone_repo()
 
         if test_mode == "DEBUG":
             checkout_to_tag(get_latest_tag_name(product_id))
-            product_name = get_product_name()
+            dist_name = get_dist_name()
             get_latest_released_dist()
             testng_source = Path(workspace + "/" + "testng.xml")
             testng_destination = Path(workspace + "/" + product_id + "/" +
@@ -600,23 +586,25 @@ def main():
             replace_file(testng_server_mgt_source, testng_server_mgt_destination)
         elif test_mode == "RELEASE":
             checkout_to_tag(get_latest_tag_name(product_id))
-            product_name = get_product_name()
+            dist_name = get_dist_name()
             get_latest_released_dist()
         elif test_mode == "SNAPSHOT":
-            product_name = get_product_name()
+            dist_name = get_dist_name()
             get_latest_stable_dist()
         elif test_mode == "WUM":
             # todo after identify specific steps that are related to WUM, add them to here
-            product_name = get_product_name()
+            dist_name = get_dist_name()
             logger.info("WUM specific steps are empty")
 
-        db_names = cp.configure_product(product_name, product_id, database_config, workspace)
+        db_names = cp.configure_product(dist_name, product_id, database_config, workspace, product_version)
         if db_names is None or not db_names:
             raise Exception("Failed the product configuring")
         setup_databases(db_names)
         if product_id == "product-apim":
-            build_import_export_module()
-        run_integration_test()
+            module_path = Path(workspace + "/" + product_id + "/" + 'modules/api-import-export')
+            build_module(module_path)
+        intg_module_path = Path(workspace + "/" + product_id + "/" + 'modules/integration')
+        build_module(intg_module_path)
         save_log_files()
         create_output_property_fle()
     except Exception as e:

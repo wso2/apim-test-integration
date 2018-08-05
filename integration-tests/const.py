@@ -21,6 +21,8 @@ DATASOURCE_PATHS = {"product-apim": ["repository/conf/datasources/master-datasou
                                      "repository/conf/datasources/metrics-datasources.xml"],
                     "product-is": [],
                     "product-ei": []}
+M2_PATH = {"product-is": "is/wso2is", "product-apim": "am/wso2am",
+           "product-ei": "ei/wso2ei"}
 DIST_POM_PATH = {"product-is": "modules/distribution/pom.xml", "product-apim": "modules/distribution/product/pom.xml",
                  "product-ei": "distribution/pom.xml"}
 LIB_PATH = "repository/components/lib"

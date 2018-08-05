@@ -24,20 +24,19 @@ import shutil
 import logging
 from const import ZIP_FILE_EXTENSION, NS, SURFACE_PLUGIN_ARTIFACT_ID, CARBON_NAME, VALUE_TAG, \
     DEFAULT_ORACLE_SID, DATASOURCE_PATHS, MYSQL_DB_ENGINE, ORACLE_DB_ENGINE, LIB_PATH, PRODUCT_STORAGE_DIR_NAME, \
-    DISTRIBUTION_PATH, MSSQL_DB_ENGINE
+    DISTRIBUTION_PATH, MSSQL_DB_ENGINE, M2_PATH
 
 datasource_paths = None
 database_url = None
 database_user = None
 database_pwd = None
 database_drive_class_name = None
-product_name = None
-product_home_path = None
-distribution_storage = None
+dist_name = None
+storage_dist_abs_path = None
+target_dir_abs_path = None
 database_config = None
-product_storage = None
+storage_dir_abs_path = None
 workspace = None
-lib_path = None
 sql_driver_location = None
 product_id = None
 database_names = []
@@ -69,19 +68,24 @@ def on_rm_error(func, path, exc_info):
 
 
 def extract_product(path):
+    """Extract the zip file(product zip) which is located in the given @path.
+    """
     if Path.exists(path):
-        logger.info("Extracting the product  into " + str(product_storage))
+        logger.info("Extracting the product  into " + str(storage_dir_abs_path))
         if sys.platform.startswith('win'):
             with ZipFileLongPaths(path, "r") as zip_ref:
-                zip_ref.extractall(product_storage)
+                zip_ref.extractall(storage_dir_abs_path)
         else:
             with ZipFile(str(path), "r") as zip_ref:
-                zip_ref.extractall(product_storage)
+                zip_ref.extractall(storage_dir_abs_path)
     else:
         raise FileNotFoundError("File is not found to extract, file path: " + str(path))
 
 
 def compress_distribution(distribution_path, root_dir):
+    """Compress the distribution directory to a given location.
+    """
+    logger.info("Compressing files. From: " + str(root_dir) + " to: " + str(distribution_path))
     if type(distribution_path) == str:
         distribution_path = Path(distribution_path)
     if not Path.exists(distribution_path):
@@ -91,6 +95,8 @@ def compress_distribution(distribution_path, root_dir):
 
 
 def copy_jar_file(source, destination):
+    """Copy jar files from source to destination.
+    """
     logger.info('sql driver is coping to the product lib folder')
     if sys.platform.startswith('win'):
         source = winapi_path(source)
@@ -100,7 +106,7 @@ def copy_jar_file(source, destination):
 
 def modify_distribution_name(element):
     temp = element.text.split("/")
-    temp[-1] = product_name + ZIP_FILE_EXTENSION
+    temp[-1] = dist_name + ZIP_FILE_EXTENSION
     return '/'.join(temp)
 
 
@@ -109,13 +115,7 @@ def modify_distribution_name(element):
 # However, in order to execute this method you can define pom file paths in const.py as a constant
 # and import it to configure_product.py. Thereafter assign it to global variable called pom_file_paths in the
 # configure_product method and call the modify_pom_files method.
-def modify_pom_files(id, wp, product):
-    global product_id
-    global workspace
-    global product_name
-    product_id = id
-    workspace = wp
-    product_name = product
+def modify_pom_files():
     for pom in POM_FILE_PATHS:
         file_path = Path(workspace + "/" + product_id + "/" + pom)
         if sys.platform.startswith('win'):
@@ -144,8 +144,10 @@ def modify_pom_files(id, wp, product):
 
 
 def modify_datasources():
+    """Modify datasources files which are defined in the const.py. DB ulr, uname, pwd, driver class values are modifying.
+    """
     for data_source in datasource_paths:
-        file_path = Path(product_home_path / data_source)
+        file_path = Path(storage_dist_abs_path / data_source)
         if sys.platform.startswith('win'):
             file_path = winapi_path(file_path)
         logger.info("Modifying datasource: " + str(file_path))
@@ -189,13 +191,13 @@ def modify_datasources():
         artifact_tree.write(file_path)
 
 
-def copy_distribution_to_m2(storage, name):
-    # todo need to generalize this method
+def add_distribution_to_m2(storage, name, product_version):
+    """Add the distribution zip into local .m2.
+    """
     home = Path.home()
-    version = name.split("-")[1]
-    linux_m2_path = home / ".m2/repository/org/wso2/am/wso2am" / version / name
-    windows_m2_path = Path(
-        "/Documents and Settings/Administrator/.m2/repository/org/wso2/am/wso2am" + "/" + version + "/" + name)
+    m2_rel_path = ".m2/repository/org/wso2/" + M2_PATH[product_id]
+    linux_m2_path = home / m2_rel_path / product_version / name
+    windows_m2_path = Path("/Documents and Settings/Administrator/" + m2_rel_path + "/" + product_version + "/" + name)
     if sys.platform.startswith('win'):
         windows_m2_path = winapi_path(windows_m2_path)
         storage = winapi_path(storage)
@@ -206,41 +208,40 @@ def copy_distribution_to_m2(storage, name):
         shutil.rmtree(linux_m2_path, onerror=on_rm_error)
 
 
-def configure_product(product, id, db_config, ws):
+def configure_product(name, id, db_config, ws, product_version):
     try:
-        global product_name
+        global dist_name
         global product_id
         global database_config
         global workspace
         global datasource_paths
-        global distribution_storage
-        global product_home_path
-        global product_storage
-        global lib_path
+        global target_dir_abs_path
+        global storage_dist_abs_path
+        global storage_dir_abs_path
 
-        product_name = product
+        dist_name = name
         product_id = id
         database_config = db_config
         workspace = ws
         datasource_paths = DATASOURCE_PATHS[product_id]
-        lib_path = LIB_PATH
-        product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
-        distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
-        product_home_path = Path(product_storage / product_name)
-        zip_name = product_name + ZIP_FILE_EXTENSION
-        product_location = Path(product_storage / zip_name)
-        configured_product_path = Path(distribution_storage / product_name)
-        logger.info(product_location)
-        extract_product(product_location)
-        copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / lib_path))
+        zip_name = dist_name + ZIP_FILE_EXTENSION
+
+        storage_dir_abs_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
+        target_dir_abs_path = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
+        storage_zip_abs_path = Path(storage_dir_abs_path / zip_name)
+        storage_dist_abs_path = Path(storage_dir_abs_path / dist_name)
+        configured_dist_storing_loc = Path(target_dir_abs_path / dist_name)
+
+        extract_product(storage_zip_abs_path)
+        copy_jar_file(Path(database_config['sql_driver_location']), Path(storage_dist_abs_path / LIB_PATH))
         if datasource_paths is not None:
             modify_datasources()
         else:
             logger.info("datasource paths are not defined in the config file")
-        os.remove(str(product_location))
-        compress_distribution(configured_product_path, product_storage)
-        copy_distribution_to_m2(product_storage, product_name)
-        shutil.rmtree(configured_product_path, onerror=on_rm_error)
+        os.remove(str(storage_zip_abs_path))
+        compress_distribution(configured_dist_storing_loc, storage_dir_abs_path)
+        add_distribution_to_m2(storage_dir_abs_path, dist_name, product_version)
+        shutil.rmtree(configured_dist_storing_loc, onerror=on_rm_error)
         return database_names
     except FileNotFoundError as e:
         logger.error("Error occurred while finding files", exc_info=True)
