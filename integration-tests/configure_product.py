@@ -168,7 +168,7 @@ def modify_datasources():
                     if MYSQL_DB_ENGINE == database_config['db_engine'].upper():
                         url.text = url.text.replace(url.text, database_config[
                             'url'] + "/" + database_name + "?autoReconnect=true&useSSL=false&requireSSL=false&"
-                                                     "verifyServerCertificate=false")
+                                                           "verifyServerCertificate=false")
                         user.text = user.text.replace(user.text, database_config['user'])
                     elif ORACLE_DB_ENGINE == database_config['db_engine'].upper():
                         url.text = url.text.replace(url.text, database_config['url'] + "/" + DEFAULT_ORACLE_SID)
@@ -232,6 +232,7 @@ def configure_product(product, id, db_config, ws):
         configured_product_path = Path(distribution_storage / product_name)
         logger.info(product_location)
         extract_product(product_location)
+
         copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / lib_path))
         if datasource_paths is not None:
             modify_datasources()

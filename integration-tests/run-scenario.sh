@@ -17,6 +17,74 @@
 set -e
 set -o xtrace
 
+build_type(){
+
+#Defining Test Modes
+TEST_MODE_1="WUM"
+TEST_MODE_2="RELEASE"
+
+#WUM product pack directory to check if its already exist
+PRODUCT_FILE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}"
+PRODUCT_FILE_UPDATE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}/${VERSION}/${WUM_CHANNEL}/"
+
+if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
+
+            echo 'Getting WUM Binary....'
+            wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.0/wum-3.0.0-linux-x64.tar.gz
+            echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.0-linux-x64.tar.gz
+            export PATH=$PATH:/usr/local/wum/bin
+
+            echo 'Initializing WUM....'
+            wum init -u ${USER_NAME} -p ${PASSWORD}
+
+
+      if [ -d "$PRODUCT_FILE_DIR" ]; then
+            if [ -d "$PRODUCT_FILE_UPDATE_DIR" ]; then
+
+                 echo 'WUM DESCRIBE...'
+                 wum describe ${PRODUCT_CODE}-${VERSION} ${WUM_CHANNEL}
+
+                 echo 'Product Path...'
+                 wum_path=$(wum describe ${PRODUCT_CODE}-${VERSION} full | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+                 echo $wum_path
+
+             else
+
+                 echo 'Updating the WUM Product....'
+                 wum update ${PRODUCT_CODE}-${VERSION}
+
+                 echo 'WUM DESCRIBE......'
+                 wum describe ${PRODUCT_CODE}-${VERSION} ${WUM_CHANNEL}
+
+                 echo 'Product Path'
+                 wum_path=$(wum describe ${PRODUCT_CODE}-${VERSION} full | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+                 echo $wum_path
+            fi
+     else
+       echo 'Adding WUM Product...'
+       wum add -y ${PRODUCT_CODE}-${VERSION}
+
+       echo 'Updating the WUM Product...'
+       wum update ${PRODUCT_CODE}-${VERSION}
+
+       echo 'WUM DESCRIBE...'
+       wum describe ${PRODUCT_CODE}-${VERSION} ${WUM_CHANNEL}
+
+       echo 'Product Path...'
+       wum_path=$(wum describe ${PRODUCT_CODE}-${VERSION} full | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+       echo $wum_path
+
+      fi
+
+else
+    echo "Error while setting up WUM"
+fi
+
+
+}
+
+build_type
+
 DIR=$2
 FILE1=${DIR}/infrastructure.properties
 FILE2=${DIR}/testplan-props.properties
@@ -28,6 +96,7 @@ FILE7=intg-test-runner.sh
 FILE8=intg-test-runner.bat
 FILE9=testng.xml
 FILE10=testng-server-mgt.xml
+FILE11=$wum_path
 
 PROP_KEY=sshKeyFileLocation      #pem file
 PROP_OS=OS                       #OS name e.g. centos
@@ -102,6 +171,7 @@ wait_for_port() {
   done
 }
 
+
 #----------------------------------------------------------------------
 # select default username and remote directory based on the OS
 #----------------------------------------------------------------------
@@ -149,6 +219,8 @@ if [ "${os}" = "Windows" ]; then
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE9} ${user}@${host}:${REM_DIR}
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE10} ${user}@${host}:${REM_DIR}
 
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE11} ${user}@${host}:${REM_DIR}
+
   echo "=== Files copied successfully ==="
   echo "Execution begins.. "
 
@@ -172,6 +244,9 @@ else
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE7} ${user}@${host}:${REM_DIR}
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE9} ${user}@${host}:${REM_DIR}
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE10} ${user}@${host}:${REM_DIR}
+
+  ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p "${REM_DIR}/storage"
+  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}/storage
 
   echo "=== Files copied successfully ==="
 
