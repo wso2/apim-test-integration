@@ -79,12 +79,12 @@ request_ec2_password() {
   done
 }
 
-#=== FUNCTION ==================================================================
-# NAME: wait_for_port
-# DESCRIPTION: Check if the port is opened till the time-out occurs
-# PARAMETER 1: Host name
-# PARAMETER 2: Port number
-#===============================================================================
+wait_for_port() {
+host=$1
+port=$2
+x=0;
+retry_count=$CONNECT_RETRY_COUNT;
+echo "Wait port: ${1}:${2}" 
 wait_for_port() {
   host=$1
   port=$2
@@ -117,70 +117,28 @@ case "${os}" in
         PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_UNIX ;;
 esac
 
-REM_DIR=`grep -w "$PROP_REMOTE_DIR" ${FILE1} ${FILE2} | cut -d'=' -f2`
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p ${REM_DIR}
 
-#----------------------------------------------------------------------
-# wait till port 22 is opened for SSH
-#----------------------------------------------------------------------
-wait_for_port ${host} 22
+scp -o StrictHostKeyChecking=no -i ${key_pem} do-run.sh ${user}@${host}:${REM_DIR}
 
-#----------------------------------------------------------------------
-# execute commands based on the OS of the instance
-# Steps followed;
-# 1. SSH and make the directory.
-# 2. Copy necessary files to the instance.
-# 3. Execute scripts at the instance.
-# 4. Retrieve reports from the instance.
-#----------------------------------------------------------------------
-if [ "${os}" = "Windows" ]; then
-  echo "Waiting 4 minutes till Windows instance is configured. "
-  sleep 4m #wait 4 minutes till Windows instance is configured and able to receive password using key file.
-  set +o xtrace #avoid printing sensitive data in the next commands
-  request_ec2_password $instance_id
-  REM_DIR=$(echo "$REM_DIR" | sed 's/\\//g')
-  echo "Copying files to ${REM_DIR}.."
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE1} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE2} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE3} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE4} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE5} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE6} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE8} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE9} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE10} ${user}@${host}:${REM_DIR}
+scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE1} ${user}@${host}:${REM_DIR}
 
-  echo "=== Files copied successfully ==="
-  echo "Execution begins.. "
+scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE2} ${user}@${host}:${REM_DIR}
 
-  sshpass -p "${password}" ssh -o StrictHostKeyChecking=no ${user}@${host} "${REM_DIR}/${FILE8}" ${REM_DIR}
-  echo "=== End of execution ==="
-  echo "Retrieving reports from instance.. "
-  sshpass -p "${password}" scp -r -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/output.properties ${DIR}
-  echo "=== Reports retrieved successfully ==="
-  set -o xtrace
-else
-  #for all UNIX instances
-  ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p ${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE1} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE2} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE3} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE4} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE5} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE6} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE7} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE9} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE10} ${user}@${host}:${REM_DIR}
+scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE3} ${user}@${host}:${REM_DIR}
 
-  echo "=== Files copied successfully ==="
+scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE4} ${user}@${host}:${REM_DIR}
 
-  ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/intg-test-runner.sh --wd ${REM_DIR}
+scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE5} ${user}@${host}:${REM_DIR}
+echo "=== Files copied success ==="
 
-  #Get the reports from integration test
-  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
-  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
-  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/output.properties ${DIR}
-  echo "=== Reports are copied success ==="
-fi
+
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
+#ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} python3 ${REM_DIR}/do-run.py
+
+### Get the reports from integration test
+scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports .
+scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log .
+echo "=== Reports are copied success ==="
+
 ##script ends
