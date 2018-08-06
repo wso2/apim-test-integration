@@ -20,21 +20,64 @@ set -o xtrace
 DIR=$2
 FILE1=${DIR}/infrastructure.properties
 FILE2=${DIR}/testplan-props.properties
-FILE3=do-run.py
+FILE3=run-intg-test.py
 FILE4=configure_product.py
 FILE5=const.py
+FILE6=requirements.txt
+FILE7=intg-test-runner.sh
+FILE8=intg-test-runner.bat
+FILE9=testng.xml
+FILE10=testng-server-mgt.xml
 
-PROP_KEY=sshKeyFileLocation    #pem file
-PROP_USER=user              #OS name e.g. centos
-PROP_HOST=WSO2PublicIP      #host IP
-PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_UNIX
+PROP_KEY=sshKeyFileLocation      #pem file
+PROP_OS=OS                       #OS name e.g. centos
+PROP_HOST=WSO2PublicIP           #host IP
+PROP_INSTANCE_ID=WSO2InstanceId  #Physical ID (Resource ID) of WSO2 EC2 Instance
 
-REM_DIR=`grep -w "$PROP_REMOTE_DIR" ${FILE1} ${FILE2} | cut -d'=' -f2`
+#----------------------------------------------------------------------
+# getting data from databuckets
+#----------------------------------------------------------------------
 key_pem=`grep -w "$PROP_KEY" ${FILE1} ${FILE2} | cut -d'=' -f2`
+os=`cat ${FILE2} | grep -w "$PROP_OS" ${FILE1} | cut -d'=' -f2`
 #user=`cat ${FILE2} | grep -w "$PROP_USER" ${FILE1} ${FILE2} | cut -d'=' -f2`
-user=centos
+instance_id=`cat ${FILE2} | grep -w "$PROP_INSTANCE_ID" ${FILE1} ${FILE2} | cut -d'=' -f2`
+user=''
+password=''
 host=`grep -w "$PROP_HOST" ${FILE1} ${FILE2} | cut -d'=' -f2`
-CONNECT_RETRY_COUNT=2
+CONNECT_RETRY_COUNT=20
+
+#=== FUNCTION ==================================================================
+# NAME: request_ec2_password
+# DESCRIPTION: Request password of Windows instance from AWS using the key file.
+# PARAMETER 1: Physical-ID of the EC2 instance
+#===============================================================================
+request_ec2_password() {
+  instance_id=$1
+  echo "Retrieving password for Windows instance from AWS for instance id ${instance_id}"
+  x=1;
+  retry_count=$CONNECT_RETRY_COUNT;
+
+  while [ "$password" == "" ] ; do
+    #Request password from AWS
+    responseJson=$(aws ec2 get-password-data --instance-id "${instance_id}" --priv-launch-key ${key_pem})
+
+    #Validate JSON
+    if [ $(echo $responseJson | python -c "import sys,json;json.loads(sys.stdin.read());print 'Valid'") == "Valid" ]; then
+      password=$(python3 -c "import sys, json;print(($responseJson)['PasswordData'])")
+      echo "Password received!"
+    else
+      echo "Invalid JSON response: $responseJson"
+    fi
+
+    if [ "$x" = "$retry_count" ]; then
+      echo "Password never received for instance with id ${instance_id}. Hence skipping test execution!"
+      exit
+    fi
+
+    sleep 10 # wait for 10 second before check again
+    x=$((x+1))
+  done
+}
 
 wait_for_port() {
 host=$1
@@ -42,19 +85,37 @@ port=$2
 x=0;
 retry_count=$CONNECT_RETRY_COUNT;
 echo "Wait port: ${1}:${2}" 
-while ! nc -z $host $port; do
-  sleep 2 # wait for 2 second before check again
-  echo -n "."
-  if [ $x = $retry_count ]; then
-    echo "port never opened."
-    exit 1
-  fi
-x=$((x+1))
-done
-
+wait_for_port() {
+  host=$1
+  port=$2
+  x=1;
+  retry_count=$CONNECT_RETRY_COUNT;
+  echo "Wait port: ${1}:${2}"
+  while ! nc -z $host $port; do
+    sleep 2 # wait for 2 second before check again
+    echo -n "."
+    if [ $x = $retry_count ]; then
+      echo "port never opened."
+      exit 1
+    fi
+  x=$((x+1))
+  done
 }
 
-wait_for_port ${host} 22 
+#----------------------------------------------------------------------
+# select default username and remote directory based on the OS
+#----------------------------------------------------------------------
+case "${os}" in
+   "CentOS")
+    	user=centos
+        PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_UNIX ;;
+   "Windows")
+    	user=Administrator
+        PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_WINDOWS ;;
+   "UBUNTU")
+        user=ubuntu
+        PROP_REMOTE_DIR=REMOTE_WORKSPACE_DIR_UNIX ;;
+esac
 
 ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p ${REM_DIR}
 
@@ -72,8 +133,8 @@ scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE5} ${user}@${host}:${REM_DIR
 echo "=== Files copied success ==="
 
 
-#ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
-ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} python3 ${REM_DIR}/do-run.py
+ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/do-run.sh
+#ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} python3 ${REM_DIR}/do-run.py
 
 ### Get the reports from integration test
 scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports .

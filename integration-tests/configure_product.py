@@ -14,7 +14,6 @@
 
 
 # importing required modules
-import argparse as argparse
 from xml.etree import ElementTree as ET
 from zipfile import ZipFile
 import os
@@ -23,7 +22,9 @@ import sys
 from pathlib import Path
 import shutil
 import logging
-from const import *
+from const import ZIP_FILE_EXTENSION, NS, SURFACE_PLUGIN_ARTIFACT_ID, CARBON_NAME, VALUE_TAG, \
+    DEFAULT_ORACLE_SID, DATASOURCE_PATHS, MYSQL_DB_ENGINE, ORACLE_DB_ENGINE, LIB_PATH, PRODUCT_STORAGE_DIR_NAME, \
+    DISTRIBUTION_PATH, MSSQL_DB_ENGINE, POM_FILE_PATHS
 
 datasource_paths = None
 database_url = None
@@ -40,7 +41,6 @@ lib_path = None
 sql_driver_location = None
 product_id = None
 database_names = []
-pom_file_paths = None
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -82,6 +82,8 @@ def extract_product(path):
 
 
 def compress_distribution(distribution_path, root_dir):
+    if type(distribution_path) == str:
+        distribution_path = Path(distribution_path)
     if not Path.exists(distribution_path):
         Path(distribution_path).mkdir(parents=True, exist_ok=True)
 
@@ -102,8 +104,19 @@ def modify_distribution_name(element):
     return '/'.join(temp)
 
 
-def modify_pom_files():
-    for pom in pom_file_paths:
+# Since we have added a method to clone a given git branch and checkout to the latest released tag it is not required to
+# modify pom files. Hence in the current implementation this method is not using.
+# However, in order to execute this method you can define pom file paths in const.py as a constant
+# and import it to configure_product.py. Thereafter assign it to global variable called pom_file_paths in the
+# configure_product method and call the modify_pom_files method.
+def modify_pom_files(id, wp, product):
+    global product_id
+    global workspace
+    global product_name
+    product_id = id
+    workspace = wp
+    product_name = product
+    for pom in POM_FILE_PATHS:
         file_path = Path(workspace + "/" + product_id + "/" + pom)
         if sys.platform.startswith('win'):
             file_path = winapi_path(file_path)
@@ -118,7 +131,7 @@ def modify_pom_files():
             if artifact_id is not None and artifact_id.text == SURFACE_PLUGIN_ARTIFACT_ID:
                 configuration = plugin.find('d:configuration', NS)
                 system_properties = configuration.find('d:systemProperties', NS)
-                for neighbor in system_properties.iter(NS['d'] + CARBON_NAME):
+                for neighbor in system_properties.iter('{' + NS['d'] + '}' + CARBON_NAME):
                     neighbor.text = modify_distribution_name(neighbor)
                 for prop in system_properties:
                     name = prop.find('d:name', NS)
@@ -149,19 +162,48 @@ def modify_datasources():
                     configuration = child.find('configuration')
                     url = configuration.find('url')
                     user = configuration.find('username')
-                    passwd = configuration.find('password')
+                    password = configuration.find('password')
+                    validation_query = configuration.find('validationQuery')
                     drive_class_name = configuration.find('driverClassName')
-                    if ORACLE_DB_ENGINE != database_config['db_engine'].upper():
-                        url.text = url.text.replace(url.text, database_config['url'] + database_name)
+                    if MYSQL_DB_ENGINE == database_config['db_engine'].upper():
+                        url.text = url.text.replace(url.text, database_config[
+                            'url'] + "/" + database_name + "?autoReconnect=true&useSSL=false&requireSSL=false&"
+                                                     "verifyServerCertificate=false")
+                        user.text = user.text.replace(user.text, database_config['user'])
+                    elif ORACLE_DB_ENGINE == database_config['db_engine'].upper():
+                        url.text = url.text.replace(url.text, database_config['url'] + "/" + DEFAULT_ORACLE_SID)
+                        user.text = user.text.replace(user.text, database_name)
+                        validation_query.text = validation_query.text.replace(validation_query.text,
+                                                                              "SELECT 1 FROM DUAL")
+                    elif MSSQL_DB_ENGINE == database_config['db_engine'].upper():
+                        url.text = url.text.replace(url.text,
+                                                    database_config['url'] + ";" + "databaseName=" + database_name)
                         user.text = user.text.replace(user.text, database_config['user'])
                     else:
-                        url.text = url.text.replace(url.text, database_config['url'] + DEFAULT_ORACLE_SID)
-                        user.text = user.text.replace(user.text, database_name)
-                    passwd.text = passwd.text.replace(passwd.text, database_config['password'])
+                        url.text = url.text.replace(url.text, database_config['url'] + "/" + database_name)
+                        user.text = user.text.replace(user.text, database_config['user'])
+                    password.text = password.text.replace(password.text, database_config['password'])
                     drive_class_name.text = drive_class_name.text.replace(drive_class_name.text,
                                                                           database_config['driver_class_name'])
                     database_names.append(database_name)
         artifact_tree.write(file_path)
+
+
+def copy_distribution_to_m2(storage, name):
+    # todo need to generalize this method
+    home = Path.home()
+    version = name.split("-")[1]
+    linux_m2_path = home / ".m2/repository/org/wso2/am/wso2am" / version / name
+    windows_m2_path = Path(
+        "/Documents and Settings/Administrator/.m2/repository/org/wso2/am/wso2am" + "/" + version + "/" + name)
+    if sys.platform.startswith('win'):
+        windows_m2_path = winapi_path(windows_m2_path)
+        storage = winapi_path(storage)
+        compress_distribution(windows_m2_path, storage)
+        shutil.rmtree(windows_m2_path, onerror=on_rm_error)
+    else:
+        compress_distribution(linux_m2_path, storage)
+        shutil.rmtree(linux_m2_path, onerror=on_rm_error)
 
 
 def configure_product(product, id, db_config, ws):
@@ -175,25 +217,19 @@ def configure_product(product, id, db_config, ws):
         global product_home_path
         global product_storage
         global lib_path
-        global pom_file_paths
 
         product_name = product
         product_id = id
         database_config = db_config
         workspace = ws
-        datasource_paths = DATASOURCE_PATHS
+        datasource_paths = DATASOURCE_PATHS[product_id]
         lib_path = LIB_PATH
         product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
-        distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH)
+        distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
         product_home_path = Path(product_storage / product_name)
-        pom_file_paths = POM_FILE_PATHS
         zip_name = product_name + ZIP_FILE_EXTENSION
         product_location = Path(product_storage / zip_name)
         configured_product_path = Path(distribution_storage / product_name)
-        if pom_file_paths is not None:
-            modify_pom_files()
-        else:
-            logger.info("pom file paths are not defined in the config file")
         logger.info(product_location)
         extract_product(product_location)
         copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / lib_path))
@@ -203,6 +239,7 @@ def configure_product(product, id, db_config, ws):
             logger.info("datasource paths are not defined in the config file")
         os.remove(str(product_location))
         compress_distribution(configured_product_path, product_storage)
+        copy_distribution_to_m2(product_storage, product_name)
         shutil.rmtree(configured_product_path, onerror=on_rm_error)
         return database_names
     except FileNotFoundError as e:
@@ -211,29 +248,3 @@ def configure_product(product, id, db_config, ws):
         logger.error("Error occurred while accessing files", exc_info=True)
     except Exception as e:
         logger.error("Error occurred while configuring the product", exc_info=True)
-
-
-if __name__ == "__main__":
-    # sample input parameters
-    # product_name = "<Product zip file name>"
-    # product_id = "<cloned dir name>"
-    # database_config = {"driver_class_name": "com.mysql.jdbc.Driver",
-    #                      "password": "<pwd>",
-    #                      "sql_driver_location": "/<path>s/mysql-connector-java-<version>.jar",
-    #                      "url": "jdbc:mysql://<ip>:3306/",
-    #                      "user": "<user>"}
-    # workspace = /home/TG/<Product_Name>
-    #
-
-    # After we integrate Configure_Product.py script with do_run.py script we can remove this main method
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--product_name', metavar='name', required=True,
-                        help='Name of the product')
-    parser.add_argument('--product_id', metavar='id', required=True,
-                        help='Id of the product')
-    parser.add_argument('--db_config', metavar='config', required=True,
-                        help='name of the product')
-    parser.add_argument('--workspace', metavar='ws', required=True,
-                        help='workspace of the job')
-    args = parser.parse_args()
-    configure_product(product=args.product_name, id=args.product_id, db_config=args.db_config, ws=args.workspace)
