@@ -218,19 +218,60 @@ def configure_product(product, id, db_config, ws):
         global product_storage
         global lib_path
 
+        logger.info("inside Config..>>>>")
+
+        logger.info("product_name")
+        logger.info(product_name)
         product_name = product
+
+        logger.info("product_id")
+        logger.info(product_id)
         product_id = id
+
+        logger.info("database_config")
+        logger.info(database_config)
         database_config = db_config
+
+        logger.info("workspace")
+        logger.info(workspace)
         workspace = ws
+
+        logger.info("datasource_paths")
+        logger.info(datasource_paths)
         datasource_paths = DATASOURCE_PATHS[product_id]
+
+        logger.info("lib_path")
+        logger.info(lib_path)
         lib_path = LIB_PATH
+
+        logger.info("product_storage")
+        logger.info(product_storage)
         product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
+
+        logger.info("distribution_storage")
+        logger.info(distribution_storage)
         distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
+
+        logger.infor("product_name")
+        logger.infor(product_name)
+
+        logger.info("product_home_path")
+        logger.info(product_home_path)
         product_home_path = Path(product_storage / product_name)
+
+        logger.info("zip_name")
         zip_name = product_name + ZIP_FILE_EXTENSION
+        logger.info(zip_name)
+
+        logger.info("product_location")
         product_location = Path(product_storage / zip_name)
-        configured_product_path = Path(distribution_storage / product_name)
         logger.info(product_location)
+
+        logger.info("configured_product_path")
+        configured_product_path = Path(distribution_storage / product_name)
+        logger.info(configured_product_path)
+
+
         extract_product(product_location)
 
         copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / lib_path))
