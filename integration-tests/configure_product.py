@@ -68,12 +68,9 @@ def on_rm_error(func, path, exc_info):
     os.unlink(path)
 
 def extract_product(path):
-    logger.info("PATH>>>>>>>>....... " + str(path))
-    logger.info("product_storage>>>>>>>>........... " + str(product_storage))
+    """Extract the zip file(product zip) which is located in the given @path.
+    """
     if Path.exists(path):
-        logger.info("PATH>>>>>>>> " + str(path))
-        logger.info("product_storage>>>>>>>> " + str(product_storage))
-        logger.info("PASS>>>>>>>>>>>")
         logger.info("Extracting the product  into " + str(product_storage))
         if sys.platform.startswith('win'):
             with ZipFileLongPaths(path, "r") as zip_ref:
@@ -281,7 +278,6 @@ def configure_product(product, id, db_config, ws):
         logger.info("configured_product_path")
         configured_product_path = Path(distribution_storage / product_name)
         logger.info(configured_product_path)
-
 
         extract_product(product_location)
 
