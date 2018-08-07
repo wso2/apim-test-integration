@@ -245,8 +245,7 @@ else
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE9} ${user}@${host}:${REM_DIR}
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE10} ${user}@${host}:${REM_DIR}
 
-  ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p "${REM_DIR}/storage"
-  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}/storage
+  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}
 
   echo "=== Files copied successfully ==="
 
