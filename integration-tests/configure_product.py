@@ -68,8 +68,8 @@ def on_rm_error(func, path, exc_info):
     os.unlink(path)
 
 def extract_product(path):
-    logger.info("PATH >>>>>>>" + path)
-    logger.info("product_storage >>>>>>>" + product_storage)
+    logger.info("PATH >>>>>>>" + str(path))
+    logger.info("product_storage >>>>>>>" + str(product_storage))
 
 
     if Path.exists(path):
