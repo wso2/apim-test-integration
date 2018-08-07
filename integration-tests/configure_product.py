@@ -278,7 +278,7 @@ def configure_product(product, id, db_config, ws):
         logger.info(configured_product_path)
 
 
-        extract_product(product_storage)
+        extract_product(product_home_path)
 
         copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / lib_path))
         if datasource_paths is not None:
