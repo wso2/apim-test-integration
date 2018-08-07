@@ -68,6 +68,10 @@ def on_rm_error(func, path, exc_info):
     os.unlink(path)
 
 def extract_product(path):
+    logger.info("PATH >>>>>>>" + path)
+    logger.info("product_storage >>>>>>>" + product_storage)
+
+
     if Path.exists(path):
         logger.info("Extracting the product  into " + str(product_storage))
         if sys.platform.startswith('win'):
