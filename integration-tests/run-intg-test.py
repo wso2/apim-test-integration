@@ -527,10 +527,10 @@ def clone_repo():
     try:
         if test_mode == "WUM":
             logger.info('Test Mode: ' + test_mode)
-            global tag_name
-            logger.info("Product branch" + product_latest_branch)
-            subprocess.call(['git', 'clone', '--origin', 'master', product_latest_branch], cwd=workspace)
-            logger.info('product repository cloning from'+ test_mode + 'is done.')
+            logger.info("Product branch  " + product_latest_branch)
+            logger.info(product_latest_branch)
+            subprocess.call(['git', 'clone', '--origin', 'master', 'https://github.com/RidmiR/product-apim.git'], cwd=workspace)
+            logger.info('product repository cloning from '+ test_mode + ' is done.')
         elif test_mode == "RELEASE":
             subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
             logger.info('product repository cloning is done.')
