@@ -67,7 +67,6 @@ def on_rm_error(func, path, exc_info):
     os.chmod(path, stat.S_IWRITE)
     os.unlink(path)
 
-
 def extract_product(path):
     if Path.exists(path):
         logger.info("Extracting the product  into " + str(product_storage))
@@ -79,7 +78,6 @@ def extract_product(path):
                 zip_ref.extractall(product_storage)
     else:
         raise FileNotFoundError("File is not found to extract, file path: " + str(path))
-
 
 def compress_distribution(distribution_path, root_dir):
     if type(distribution_path) == str:
@@ -280,7 +278,7 @@ def configure_product(product, id, db_config, ws):
         logger.info(configured_product_path)
 
 
-        extract_product(product_location)
+        extract_product(product_storage)
 
         copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / lib_path))
         if datasource_paths is not None:
