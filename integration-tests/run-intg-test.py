@@ -314,7 +314,8 @@ def get_product_name():
 
     if test_mode == "WUM":
         product_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME )
-        product_name = glob.glob(product_path+ "/*.zip")
+        # product_name = glob.glob(product_path+ "/*.zip")
+        product_name="wso2am-2.0.0+1533121192382.full.zip"
     elif test_mode == "RELEASE":
         dist_pom_path = Path(workspace + "/" + product_id + "/" + DIST_POM_PATH[product_id])
         logger.info(product_id)
