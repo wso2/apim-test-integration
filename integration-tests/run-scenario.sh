@@ -48,6 +48,10 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
                  wum_path=$(wum describe ${PRODUCT_CODE}-${VERSION} full | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
                  echo $wum_path
 
+                 echo 'Product File Name..'
+                 wum_file=$(wum describe ${PRODUCT_CODE}-${VERSION} full | grep Filename | grep "[a-zA-Z0-9+.,-]*\$" -o)
+                 echo $wum_file
+
              else
 
                  echo 'Updating the WUM Product....'
@@ -59,6 +63,10 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
                  echo 'Product Path'
                  wum_path=$(wum describe ${PRODUCT_CODE}-${VERSION} full | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
                  echo $wum_path
+
+                 echo 'Product File Name..'
+                 wum_file=$(wum describe ${PRODUCT_CODE}-${VERSION} full | grep Filename | grep "[a-zA-Z0-9+.,-]*\$" -o)
+                 echo $wum_file
             fi
      else
        echo 'Adding WUM Product...'
@@ -73,6 +81,10 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
        echo 'Product Path...'
        wum_path=$(wum describe ${PRODUCT_CODE}-${VERSION} full | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
        echo $wum_path
+
+       echo 'Product File Name..'
+       wum_file=$(wum describe ${PRODUCT_CODE}-${VERSION} full | grep Filename | grep "[a-zA-Z0-9+.,-]*\$" -o)
+       echo $wum_file
 
       fi
 
@@ -96,7 +108,7 @@ FILE7=intg-test-runner.sh
 FILE8=intg-test-runner.bat
 FILE9=testng.xml
 FILE10=testng-server-mgt.xml
-FILE11=$wum_path
+FILE11=$wum_file
 
 PROP_KEY=sshKeyFileLocation      #pem file
 PROP_OS=OS                       #OS name e.g. centos
