@@ -216,6 +216,7 @@ def configure_product(product, id, db_config, ws):
         global product_storage
         global lib_path
         global product_location
+        global name
 
         logger.info("inside Config..>>>>")
 
@@ -225,6 +226,7 @@ def configure_product(product, id, db_config, ws):
         workspace = ws
         datasource_paths = DATASOURCE_PATHS[product_id]
         zip_name = product_name + ZIP_FILE_EXTENSION
+        name = "wso2am-2.0.0"
 
 
         # storage_dir_abs_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
@@ -234,9 +236,12 @@ def configure_product(product, id, db_config, ws):
         # storage_zip_abs_path = Path(storage_dir_abs_path / zip_name)
         product_location = Path(workspace + "/" + zip_name)
         # storage_dist_abs_path = Path(storage_dir_abs_path / dist_name)
-        product_home_path = Path(product_storage + "/" + "wso2am-2.0.0")
+        product_home_path = Path(product_storage / name)
+        logger.info(product_home_path)
         # configured_dist_storing_loc = Path(target_dir_abs_path / dist_name)
-        configured_product_path = Path(distribution_storage + "/" + "wso2am-2.0.0")
+        configured_product_path = Path(distribution_storage / name)
+        logger.info(configured_product_path)
+        
 
         logger.info(product_location)
 
