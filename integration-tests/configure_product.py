@@ -227,29 +227,29 @@ def configure_product(product, id, db_config, ws):
         zip_name = product_name + ZIP_FILE_EXTENSION
 
 
-    # storage_dir_abs_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
-        product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
+        # storage_dir_abs_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
+        product_storage = Path(workspace)
         # target_dir_abs_path = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
         distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
-# storage_zip_abs_path = Path(storage_dir_abs_path / zip_name)
-        product_location = Path(product_storage / zip_name)
+        # storage_zip_abs_path = Path(storage_dir_abs_path / zip_name)
+        product_location = Path(workspace + "/" + zip_name)
         # storage_dist_abs_path = Path(storage_dir_abs_path / dist_name)
-        product_home_path = Path(product_storage / product_name)
+        product_home_path = Path(product_storage + "/" + "wso2am-2.0.0")
         # configured_dist_storing_loc = Path(target_dir_abs_path / dist_name)
-        configured_product_path = Path(distribution_storage / product_name)
+        configured_product_path = Path(distribution_storage + "/" + "wso2am-2.0.0")
 
         logger.info(product_location)
 
         extract_product(product_location)
 
-        copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / lib_path))
+        copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / LIB_PATH))
         if datasource_paths is not None:
             modify_datasources()
         else:
             logger.info("datasource paths are not defined in the config file")
         os.remove(str(product_location))
         compress_distribution(configured_product_path, product_storage)
-        copy_distribution_to_m2(product_storage, product_name)
+        copy_distribution_to_m2(product_storage, "wso2am-2.0.0")
         shutil.rmtree(configured_product_path, onerror=on_rm_error)
         return database_names
     except FileNotFoundError as e:
