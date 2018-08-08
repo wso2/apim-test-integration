@@ -78,7 +78,7 @@ def extract_product(path):
                 zip_ref.extractall(product_storage)
     else:
         raise FileNotFoundError("File is not found to extract, file path: " + str(path))
-    
+
 def compress_distribution(distribution_path, root_dir):
     if type(distribution_path) == str:
         distribution_path = Path(distribution_path)
@@ -224,14 +224,22 @@ def configure_product(product, id, db_config, ws):
         database_config = db_config
         workspace = ws
         datasource_paths = DATASOURCE_PATHS[product_id]
-        lib_path = LIB_PATH
-        product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
-        distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
-        product_home_path = Path(product_storage / product_name)
         zip_name = product_name + ZIP_FILE_EXTENSION
+
+
+    # storage_dir_abs_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
+        product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
+        # target_dir_abs_path = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
+        distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
+# storage_zip_abs_path = Path(storage_dir_abs_path / zip_name)
         product_location = Path(product_storage / zip_name)
+        # storage_dist_abs_path = Path(storage_dir_abs_path / dist_name)
+        product_home_path = Path(product_storage / product_name)
+        # configured_dist_storing_loc = Path(target_dir_abs_path / dist_name)
         configured_product_path = Path(distribution_storage / product_name)
+
         logger.info(product_location)
+
         extract_product(product_location)
 
         copy_jar_file(Path(database_config['sql_driver_location']), Path(product_home_path / lib_path))

@@ -692,7 +692,8 @@ def main():
 
         # populate databases
         script_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_name + "/" + 'dbscripts')
-        db_names = cp.configure_product("wso2am-2.0.0+1533121192382.full", product_id, database_config, workspace)
+
+        db_names = cp.configure_product("wso2am-2.0.0", product_id, database_config, workspace)
         if db_names is None or not db_names:
             raise Exception("Failed the product configuring")
         setup_databases(script_path, db_names)
