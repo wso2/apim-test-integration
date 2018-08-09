@@ -228,21 +228,14 @@ def configure_product(product, id, db_config, ws):
         zip_name = product_name + ZIP_FILE_EXTENSION
         name = "wso2am-2.0.0"
 
-
-        # storage_dir_abs_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
-        product_storage = Path(workspace)
-        # target_dir_abs_path = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
+        product_storage = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
         distribution_storage = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
-        # storage_zip_abs_path = Path(storage_dir_abs_path / zip_name)
-        product_location = Path(workspace + "/" + zip_name)
-        # storage_dist_abs_path = Path(storage_dir_abs_path / dist_name)
-        product_home_path = Path(product_storage / name)
-        logger.info(product_home_path)
-        # configured_dist_storing_loc = Path(target_dir_abs_path / dist_name)
+        product_location = Path(product_storage / zip_name)
+
         configured_product_path = Path(distribution_storage / name)
         logger.info(configured_product_path)
-        
-
+        product_home_path = Path(product_storage / name)
+        logger.info(product_home_path)
         logger.info(product_location)
 
         extract_product(product_location)
