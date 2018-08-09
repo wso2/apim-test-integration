@@ -311,10 +311,14 @@ def copy_file(source, target):
 def get_product_name():
     global product_name
     global product_zip_name
+    global pnames
 
     if test_mode == "WUM":
-        product_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME )
-        # product_name = glob.glob(product_path+ "/*.zip")
+        os.chdir(PRODUCT_STORAGE_DIR_NAME)
+        pnames = glob.glob('*.zip')
+        logger.info("pnames>>>>>>>>>>>>")
+        logger.info(pnames)
+
         product_name="wso2am-2.0.0+1533121192382.full"
     elif test_mode == "RELEASE":
         dist_pom_path = Path(workspace + "/" + product_id + "/" + DIST_POM_PATH[product_id])
@@ -504,6 +508,21 @@ def build_import_export_module():
                          '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
                         cwd=integration_tests_path)
     logger.info('Integration test Running is completed.')
+
+
+def build_module(module_path):
+    """Build a given module.
+    """
+    logger.info('Start building a module. Module: ' + str(module_path))
+    if sys.platform.startswith('win'):
+        subprocess.call(['mvn', 'clean', 'install', '-B',
+                         '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
+                        shell=True, cwd=module_path)
+    else:
+        subprocess.call(['mvn', 'clean', 'install', '-B',
+                         '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'],
+                        cwd=module_path)
+    logger.info('Module build is completed. Module: ' + str(module_path))
 
 
 def save_log_files():
@@ -696,18 +715,18 @@ def main():
         db_names = cp.configure_product("wso2am-2.0.0+1533121192382.full", product_id, database_config, workspace)
         if db_names is None or not db_names:
             raise Exception("Failed the product configuring")
-        setup_databases(script_path, db_names)
-        logger.info('Database setting up is done.')
-        logger.info('Starting Integration test running.')
-        build_import_export_module()
-        run_integration_test()
+        setup_databases(db_names)
+        if product_id == "product-apim":
+            module_path = Path(workspace + "/" + product_id + "/" + 'modules/api-import-export')
+            build_module(module_path)
+        intg_module_path = Path(workspace + "/" + product_id + "/" + 'modules/integration')
+        build_module(intg_module_path)
         save_log_files()
         create_output_property_fle()
     except Exception as e:
         logger.error("Error occurred while running the run-intg.py script", exc_info=True)
     except BaseException as e:
         logger.error("Error occurred while doing the configuration", exc_info=True)
-
 
 
 if __name__ == "__main__":
