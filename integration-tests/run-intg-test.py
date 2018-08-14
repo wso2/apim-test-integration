@@ -468,7 +468,7 @@ def clone_repo():
             logger.info('Test Mode: ' + test_mode)
             logger.info("Product URL  " + product_latest_url)
             logger.info(product_latest_url)
-            subprocess.call(['git', 'clone', '--origin', 'master', 'https://RidmiR:58c1a85@github.com/wso2-support/product-apim.git'], cwd=workspace)
+            subprocess.call(['git', 'clone', '--origin', 'master', product_latest_url], cwd=workspace)
             # subprocess.call(['git', 'clone', '--origin', 'master', product_latest_url], cwd=workspace)
             logger.info('product repository cloning from '+ test_mode + ' is done.')
         elif test_mode == "RELEASE":
