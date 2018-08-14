@@ -581,7 +581,7 @@ def create_output_property_fle():
     output_property_file = open("output.properties", "w+")
 
     if test_mode == "WUM":
-        git_url = "https://RidmiR:58c1a85@github.com/wso2-support/product-apim" + "/tree/" + product_latest_branch
+        git_url = product_latest_url + "/tree/" + product_latest_branch
         logger.info("GIT_URL: " + git_url)
         output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
         output_property_file.close()
