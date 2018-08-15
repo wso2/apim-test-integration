@@ -262,8 +262,6 @@ def configure_product(name, id, db_config, ws, product_version):
         os.remove(str(storage_zip_abs_path))
         compress_distribution(configured_dist_storing_loc, storage_dir_abs_path)
         add_distribution_to_m2(storage_dir_abs_path, product_name, product_version)
-        logger.info("add_distribution_to_m2>>")
-        logger.info(add_distribution_to_m2)
         shutil.rmtree(configured_dist_storing_loc, onerror=on_rm_error)
         return database_names
     except FileNotFoundError as e:

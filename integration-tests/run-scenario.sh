@@ -37,7 +37,6 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    echo 'Initializing WUM....'
    wum init -u ${USER_NAME} -p ${PASSWORD}
 
-
       if [ -d "$PRODUCT_FILE_DIR" ]; then
          if [ -d "$PRODUCT_FILE_UPDATE_DIR" ]; then
 
@@ -77,7 +76,8 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
 
       fi
 else
-    echo "Error while setting up WUM"
+   echo "Error while setting up WUM"
+
 fi
 
 
