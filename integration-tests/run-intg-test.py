@@ -455,7 +455,7 @@ def clone_repo():
     """
     try:
         subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
-        logger.info('product repository cloning is done. Product URL -' + git_repo_url + ', Product Branch - ' + git_branch )
+        logger.info('product repository cloning is done. Product URL - ' + git_repo_url + ', Product Branch - ' + git_branch )
     except Exception as e:
         logger.error("Error occurred while cloning the product repo: ", exc_info=True)
 
@@ -612,7 +612,6 @@ def main():
         elif test_mode == "WUM":
             dist_name = get_dist_name_wum()
             testng_source = Path(workspace + "/" + "testng.xml")
-            logger.info("testng_source>>>"+testng_source)
             testng_destination = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/testng.xml')
             testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
