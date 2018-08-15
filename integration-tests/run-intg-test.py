@@ -33,7 +33,7 @@ from xml.dom import minidom
 import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
-    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, LOG_STORAGE, LOG_FILE_PATHS, DIST_POM_PATH, NS, ZIP_FILE_EXTENSION
+    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, LOG_STORAGE, TESTNG_DIST_XML_PATH, TESTNG_SERVER_MGT_DIST, LOG_FILE_PATHS, DIST_POM_PATH, NS, ZIP_FILE_EXTENSION
 
 git_repo_url = None
 git_branch = None
@@ -56,9 +56,7 @@ db_password = None
 tag_name = None
 test_mode = None
 product_code = None
-product_version = None
-product_latest_url = None
-product_latest_branch = None
+wum_version = None
 database_config = {}
 
 
@@ -77,10 +75,8 @@ def read_proprty_files():
     global workspace
     global product_id
     global database_config
-    global product_version
+    global wum_version
     global test_mode
-    global product_latest_url
-    global product_latest_branch
     global product_code
 
     workspace = os.getcwd()
@@ -127,12 +123,8 @@ def read_proprty_files():
                         db_password = val.strip()
                     elif key == "TEST_MODE":
                         test_mode = val.strip()
-                    elif key == "PRODUCT_VERSION":
-                        product_version = val.strip()
-                    elif key == "PRODUCT_LATEST_URL":
-                        product_latest_url = val.strip()
-                    elif key == "PRODUCT_LATEST_BRANCH":
-                        product_latest_branch = val.strip()
+                    elif key == "WUM_VERSION":
+                        wum_version = val.strip()
                     elif key == "PRODUCT_CODE":
                         product_code = val.strip()
 
@@ -164,14 +156,10 @@ def validate_property_readings():
         missing_values += " -DBPassword- "
     if test_mode is None:
         missing_values += " -TEST_MODE- "
-    if product_latest_url is None:
-        missing_values += " -PRODUCT_LATEST_URL- "
-    if product_latest_branch is None:
-        missing_values += " -PRODUCT_LATEST_BRANCH- "
     if product_code is None:
         missing_values += " -PRODUCT_CODE- "
-    if product_version is None:
-        missing_values += " -PRODUCT_VERSION- "
+    if wum_version is None:
+        missing_values += " -WUM_VERSION- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -339,31 +327,33 @@ def get_dist_name():
     global dist_name
     global dist_zip_name
     global product_version
-
-    if test_mode == "WUM":
-        os.chdir(PRODUCT_STORAGE_DIR_NAME)
-        name = glob.glob('*.zip')[0]
-        dist_name=os.path.splitext(name)[0]
-        logger.info("dist_name: " + dist_name)
-    elif test_mode == "RELEASE":
-        dist_pom_path = Path(workspace + "/" + product_id + "/" + DIST_POM_PATH[product_id])
-        if sys.platform.startswith('win'):
-            dist_pom_path = cp.winapi_path(dist_pom_path)
-            ET.register_namespace('', NS['d'])
-            artifact_tree = ET.parse(dist_pom_path)
-            artifact_root = artifact_tree.getroot()
-            parent = artifact_root.find('d:parent', NS)
-            artifact_id = artifact_root.find('d:artifactId', NS).text
-            product_version = parent.find('d:version', NS).text
-            dist_name = artifact_id + "-" + product_version
-            dist_zip_name = dist_name + ZIP_FILE_EXTENSION
+    dist_pom_path = Path(workspace + "/" + product_id + "/" + DIST_POM_PATH[product_id])
+    if sys.platform.startswith('win'):
+        dist_pom_path = cp.winapi_path(dist_pom_path)
+    ET.register_namespace('', NS['d'])
+    artifact_tree = ET.parse(dist_pom_path)
+    artifact_root = artifact_tree.getroot()
+    parent = artifact_root.find('d:parent', NS)
+    artifact_id = artifact_root.find('d:artifactId', NS).text
+    product_version = parent.find('d:version', NS).text
+    dist_name = artifact_id + "-" + product_version
+    dist_zip_name = dist_name + ZIP_FILE_EXTENSION
     return dist_name
 
+def get_dist_name_wum():
+    global dist_name
+    global product_version
+    os.chdir(PRODUCT_STORAGE_DIR_NAME)
+    name = glob.glob('*.zip')[0]
+    dist_name=os.path.splitext(name)[0]
+    product_version=wum_version
+    logger.info("dist_name: " + dist_name)
+    return dist_name
 
 def setup_databases(db_names):
     """Create required databases.
     """
-    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_code + "-" + product_version + "/" + 'dbscripts')
+    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + dist_name + "/" + 'dbscripts')
     engine = db_engine.upper()
     db_meta_data = get_db_meta_data(engine)
     if db_meta_data:
@@ -465,32 +455,23 @@ def clone_repo():
     """
     try:
         if test_mode == "WUM":
-            logger.info('Test Mode: ' + test_mode)
-            logger.info("Product URL  " + product_latest_url)
-            logger.info(product_latest_url)
-            subprocess.call(['git', 'clone', '--origin', 'master', product_latest_url], cwd=workspace)
-            # subprocess.call(['git', 'clone', '--origin', 'master', product_latest_url], cwd=workspace)
-            logger.info('product repository cloning from '+ test_mode + ' is done.')
+            subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
+            logger.info('product repository cloning is done. Product URL -' + git_repo_url + ', Product Branch - ' + git_branch )
         elif test_mode == "RELEASE":
             subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
             logger.info('product repository cloning is done.')
     except Exception as e:
         logger.error("Error occurred while cloning the product repo: ", exc_info=True)
 
-def checkout_branch(name):
-    git_path = Path(workspace + "/" + name)
-    subprocess.call(["git", "checkout", product_latest_branch], cwd=git_path)
-    logger.info('checkout to the branch: ' + product_latest_branch)
-
 def checkout_to_tag(name):
     """Checkout to the given tag
     """
     try:
-            git_path = Path(workspace + "/" + product_id)
-            tag = "tags/" + name
-            subprocess.call(["git", "fetch", "origin", tag], cwd=git_path)
-            subprocess.call(["git", "checkout", "-B", tag, name], cwd=git_path)
-            logger.info('checkout to the branch: ' + tag)
+        git_path = Path(workspace + "/" + product_id)
+        tag = "tags/" + name
+        subprocess.call(["git", "fetch", "origin", tag], cwd=git_path)
+        subprocess.call(["git", "checkout", "-B", tag, name], cwd=git_path)
+        logger.info('checkout to the branch: ' + tag)
     except Exception as e:
         logger.error("Error occurred while cloning the product repo and checkout to the latest tag of the branch",
                      exc_info=True)
@@ -579,17 +560,10 @@ def create_output_property_fle():
     """Create output property file which is used when generating email
     """
     output_property_file = open("output.properties", "w+")
-
-    if test_mode == "WUM":
-        git_url = product_latest_url + "/tree/" + product_latest_branch
-        logger.info("GIT_URL: " + git_url)
-        output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
-        output_property_file.close()
-    elif test_mode == "RELEASE":
-        git_url = git_repo_url + "/tree/" + git_branch
-        output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
-        output_property_file.write("GIT_REVISION=%s\r\n" % tag_name)
-        output_property_file.close()
+    git_url = git_repo_url + "/tree/" + git_branch
+    output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
+    output_property_file.write("GIT_REVISION=%s\r\n" % tag_name)
+    output_property_file.close()
 
 
 def replace_file(source, destination):
@@ -625,11 +599,9 @@ def main():
             dist_name = get_dist_name()
             get_latest_released_dist()
             testng_source = Path(workspace + "/" + "testng.xml")
-            testng_destination = Path(workspace + "/" + product_id + "/" +
-                                      'modules/integration/tests-integration/tests-backend/src/test/resources/testng.xml')
+            testng_destination = Path(workspace + "/" + product_id + "/" + TESTNG_DIST_XML_PATH)
             testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
-            testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" +
-                                                 'modules/integration/tests-integration/tests-backend/src/test/resources/testng-server-mgt.xml')
+            testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" + TESTNG_SERVER_MGT_DIST)
             # replace testng source
             replace_file(testng_source, testng_destination)
             # replace testng server mgt source
@@ -642,14 +614,11 @@ def main():
             dist_name = get_dist_name()
             get_latest_stable_dist()
         elif test_mode == "WUM":
-            checkout_branch(product_id)
-            dist_name = get_dist_name()
+            dist_name = get_dist_name_wum()
             testng_source = Path(workspace + "/" + "testng.xml")
-            testng_destination = Path(workspace + "/" + product_id + "/" +
-                                      'modules/integration/tests-integration/tests-backend/src/test/resources/testng.xml')
+            testng_destination = Path(workspace + "/" + product_id + "/" + TESTNG_DIST_XML_PATH)
             testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
-            testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" +
-                                                 'modules/integration/tests-integration/tests-backend/src/test/resources/testng-server-mgt.xml')
+            testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" + TESTNG_SERVER_MGT_DIST)
             # replace testng source
             replace_file(testng_source, testng_destination)
             # replace testng server mgt source

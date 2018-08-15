@@ -39,6 +39,8 @@ MYSQL_DB_ENGINE = "MYSQL"
 DEFAULT_ORACLE_SID = "orcl"
 DEFAULT_DB_USERNAME = "wso2carbon"
 LOG_STORAGE = "logs"
+TESTNG_DIST_XML_PATH = "modules/integration/tests-integration/tests-backend/src/test/resources/testng.xml"
+TESTNG_SERVER_MGT_DIST = "modules/integration/tests-integration/tests-backend/src/test/resources/testng-server-mgt.xml"
 LOG_FILE_PATHS = {"product-apim": [
     "modules/integration/tests-integration/tests-backend/target/surefire-reports/emailable-report.html",
     "modules/integration/tests-integration/tests-backend/target/surefire-reports/index.html",

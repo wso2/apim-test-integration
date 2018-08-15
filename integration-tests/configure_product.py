@@ -210,19 +210,17 @@ def add_distribution_to_m2(storage, name, product_version):
         shutil.rmtree(linux_m2_path, onerror=on_rm_error)
 
 
-def construct_dist_name(dist_name, product_version):
+def construct_dist_name(dist_name):
      global product_name
-
      product_name = dist_name
 
      if product_name.find("full"):
-     # wso2am-2.0.0+1533121192382.full
-        product = re.search('(?<=wso2)\w+', product_name)
+        product = re.search('(?<=wso2)\w+\D\d{0,9}\.\d{0,9}\.\d{0,9}', product_name)
         name=product.group(0)
-        product_name = "wso2"+name + "-" + product_version
+        product_name = "wso2"+name
         logger.info("Product name: " + product_name )
      else:
-         logger.info("Product name " + product_name )
+        logger.info("Product name: " + product_name )
      return product_name
 
 
@@ -245,7 +243,7 @@ def configure_product(name, id, db_config, ws, product_version):
         datasource_paths = DATASOURCE_PATHS[product_id]
         zip_name = dist_name + ZIP_FILE_EXTENSION
 
-        product_name=construct_dist_name(dist_name, product_version)
+        product_name=construct_dist_name(dist_name)
 
         storage_dir_abs_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
         target_dir_abs_path = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])

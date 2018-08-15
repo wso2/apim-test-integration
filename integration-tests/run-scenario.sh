@@ -17,7 +17,7 @@
 set -e
 set -o xtrace
 
-build_type(){
+test_mode(){
 
 #Defining Test Modes
 TEST_MODE_1="WUM"
@@ -25,57 +25,57 @@ TEST_MODE_2="RELEASE"
 
 #WUM product pack directory to check if its already exist
 PRODUCT_FILE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}"
-PRODUCT_FILE_UPDATE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}/${PRODUCT_VERSION}/${WUM_CHANNEL}/"
+PRODUCT_FILE_UPDATE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}/${WUM_VERSION}/${WUM_CHANNEL}/"
 
 if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
 
-            echo 'Getting WUM Binary....'
-            wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.0/wum-3.0.0-linux-x64.tar.gz
-            echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.0-linux-x64.tar.gz
-            export PATH=$PATH:/usr/local/wum/bin
+   echo 'Getting WUM Binary....'
+   wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.0/wum-3.0.0-linux-x64.tar.gz
+   echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.0-linux-x64.tar.gz
+   export PATH=$PATH:/usr/local/wum/bin
 
-            echo 'Initializing WUM....'
-            wum init -u ${USER_NAME} -p ${PASSWORD}
+   echo 'Initializing WUM....'
+   wum init -u ${USER_NAME} -p ${PASSWORD}
 
 
       if [ -d "$PRODUCT_FILE_DIR" ]; then
-            if [ -d "$PRODUCT_FILE_UPDATE_DIR" ]; then
+         if [ -d "$PRODUCT_FILE_UPDATE_DIR" ]; then
 
-                 echo 'WUM DESCRIBE...'
-                 wum describe ${PRODUCT_CODE}-${PRODUCT_VERSION} ${WUM_CHANNEL}
+            echo 'WUM DESCRIBE...'
+            wum describe ${PRODUCT_CODE}-${WUM_VERSION} ${WUM_CHANNEL}
 
-                 echo 'Product Path...'
-                 wum_path=$(wum describe ${PRODUCT_CODE}-${PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-                 echo $wum_path
+            echo 'Product Path...'
+            wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+            echo $wum_path
 
-             else
+         else
 
-                 echo 'Updating the WUM Product....'
-                 wum update ${PRODUCT_CODE}-${PRODUCT_VERSION}
+            echo 'Updating the WUM Product....'
+            wum update ${PRODUCT_CODE}-${WUM_VERSION}
 
-                 echo 'WUM DESCRIBE......'
-                 wum describe ${PRODUCT_CODE}-${PRODUCT_VERSION} ${WUM_CHANNEL}
+            echo 'WUM DESCRIBE......'
+            wum describe ${PRODUCT_CODE}-${WUM_VERSION} ${WUM_CHANNEL}
 
-                 echo 'Product Path'
-                 wum_path=$(wum describe ${PRODUCT_CODE}-${PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-                 echo $wum_path
-            fi
-     else
-       echo 'Adding WUM Product...'
-       wum add -y ${PRODUCT_CODE}-${PRODUCT_VERSION}
+            echo 'Product Path'
+            wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+            echo $wum_path
+         fi
 
-       echo 'Updating the WUM Product...'
-       wum update ${PRODUCT_CODE}-${PRODUCT_VERSION}
+      else
+         echo 'Adding WUM Product...'
+         wum add -y ${PRODUCT_CODE}-${WUM_VERSION}
 
-       echo 'WUM DESCRIBE...'
-       wum describe ${PRODUCT_CODE}-${PRODUCT_VERSION} ${WUM_CHANNEL}
+         echo 'Updating the WUM Product...'
+         wum update ${PRODUCT_CODE}-${WUM_VERSION}
 
-       echo 'Product Path...'
-       wum_path=$(wum describe ${PRODUCT_CODE}-${PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-       echo $wum_path
+         echo 'WUM DESCRIBE...'
+         wum describe ${PRODUCT_CODE}-${WUM_VERSION} ${WUM_CHANNEL}
+
+         echo 'Product Path...'
+         wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+         echo $wum_path
 
       fi
-
 else
     echo "Error while setting up WUM"
 fi
@@ -83,7 +83,7 @@ fi
 
 }
 
-build_type
+test_mode
 
 DIR=$2
 FILE1=${DIR}/infrastructure.properties
