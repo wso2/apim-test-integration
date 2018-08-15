@@ -24,8 +24,8 @@ TEST_MODE_1="WUM"
 TEST_MODE_2="RELEASE"
 
 #WUM product pack directory to check if its already exist
-PRODUCT_FILE_DIR="~/.wum3/products/${PRODUCT_CODE}"
-PRODUCT_FILE_UPDATE_DIR="~/.wum3/products/${PRODUCT_CODE}/${WUM_VERSION}/${WUM_CHANNEL}/"
+PRODUCT_FILE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}"
+PRODUCT_FILE_UPDATE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}/${WUM_VERSION}/${WUM_CHANNEL}/"
 
 if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
 
