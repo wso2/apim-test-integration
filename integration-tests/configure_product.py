@@ -19,6 +19,7 @@ from zipfile import ZipFile
 import os
 import stat
 import sys
+import re
 from pathlib import Path
 import shutil
 import logging
@@ -39,6 +40,7 @@ storage_dir_abs_path = None
 workspace = None
 sql_driver_location = None
 product_id = None
+product_name = None
 database_names = []
 
 logging.basicConfig(level=logging.DEBUG)
@@ -208,6 +210,20 @@ def add_distribution_to_m2(storage, name, product_version):
         shutil.rmtree(linux_m2_path, onerror=on_rm_error)
 
 
+def construct_dist_name(dist_name):
+     global product_name
+     product_name = dist_name
+
+     if product_name.find("full"):
+        product = re.search('(?<=wso2)\w+\D\d{0,9}\.\d{0,9}\.\d{0,9}', product_name)
+        name=product.group(0)
+        product_name = "wso2"+name
+        logger.info("Product name: " + product_name )
+     else:
+        logger.info("Product name: " + product_name )
+     return product_name
+
+
 def configure_product(name, id, db_config, ws, product_version):
     try:
         global dist_name
@@ -218,6 +234,7 @@ def configure_product(name, id, db_config, ws, product_version):
         global target_dir_abs_path
         global storage_dist_abs_path
         global storage_dir_abs_path
+        global product_name
 
         dist_name = name
         product_id = id
@@ -226,21 +243,25 @@ def configure_product(name, id, db_config, ws, product_version):
         datasource_paths = DATASOURCE_PATHS[product_id]
         zip_name = dist_name + ZIP_FILE_EXTENSION
 
+        product_name=construct_dist_name(dist_name)
+
         storage_dir_abs_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
         target_dir_abs_path = Path(workspace + "/" + product_id + "/" + DISTRIBUTION_PATH[product_id])
         storage_zip_abs_path = Path(storage_dir_abs_path / zip_name)
-        storage_dist_abs_path = Path(storage_dir_abs_path / dist_name)
-        configured_dist_storing_loc = Path(target_dir_abs_path / dist_name)
+        storage_dist_abs_path = Path(storage_dir_abs_path / product_name)
+        configured_dist_storing_loc = Path(target_dir_abs_path / product_name)
 
         extract_product(storage_zip_abs_path)
+
         copy_jar_file(Path(database_config['sql_driver_location']), Path(storage_dist_abs_path / LIB_PATH))
+
         if datasource_paths is not None:
             modify_datasources()
         else:
             logger.info("datasource paths are not defined in the config file")
         os.remove(str(storage_zip_abs_path))
         compress_distribution(configured_dist_storing_loc, storage_dir_abs_path)
-        add_distribution_to_m2(storage_dir_abs_path, dist_name, product_version)
+        add_distribution_to_m2(storage_dir_abs_path, product_name, product_version)
         shutil.rmtree(configured_dist_storing_loc, onerror=on_rm_error)
         return database_names
     except FileNotFoundError as e:

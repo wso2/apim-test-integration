@@ -23,15 +23,17 @@ import os
 import shutil
 import pymysql
 import sqlparse
+import glob
 import stat
 import re
 from pathlib import Path
+
 import urllib.request as urllib2
 from xml.dom import minidom
 import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
-    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, LOG_STORAGE, LOG_FILE_PATHS, DIST_POM_PATH, NS, ZIP_FILE_EXTENSION
+    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, LOG_STORAGE, TESTNG_DIST_XML_PATH, TESTNG_SERVER_MGT_DIST, LOG_FILE_PATHS, DIST_POM_PATH, NS, ZIP_FILE_EXTENSION
 
 git_repo_url = None
 git_branch = None
@@ -53,7 +55,9 @@ db_username = None
 db_password = None
 tag_name = None
 test_mode = None
-product_version = None
+product_code = None
+wum_product_version = None
+make_dev_happy = None
 database_config = {}
 
 
@@ -72,7 +76,10 @@ def read_proprty_files():
     global workspace
     global product_id
     global database_config
+    global wum_product_version
     global test_mode
+    global product_code
+    global make_dev_happy
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -118,6 +125,13 @@ def read_proprty_files():
                         db_password = val.strip()
                     elif key == "TEST_MODE":
                         test_mode = val.strip()
+                    elif key == "WUM_PRODUCT_VERSION":
+                        wum_product_version = val.strip()
+                    elif key == "PRODUCT_CODE":
+                        product_code = val.strip()
+                    elif key == "MAKE_DEV_HAPPY":
+                        make_dev_happy = val.strip()
+
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
 
@@ -146,6 +160,12 @@ def validate_property_readings():
         missing_values += " -DBPassword- "
     if test_mode is None:
         missing_values += " -TEST_MODE- "
+    if product_code is None:
+        missing_values += " -PRODUCT_CODE- "
+    if wum_product_version is None:
+        missing_values += " -WUM_PRODUCT_VERSION- "
+    if make_dev_happy is None:
+        missing_values += " -MAKE_DEV_HAPPY- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -307,7 +327,6 @@ def copy_file(source, target):
     else:
         shutil.copy(source, target)
 
-
 def get_dist_name():
     """Get the product name by reading distribution pom.
     """
@@ -327,11 +346,19 @@ def get_dist_name():
     dist_zip_name = dist_name + ZIP_FILE_EXTENSION
     return dist_name
 
+def get_dist_name_wum():
+    global dist_name
+    global product_version
+    os.chdir(PRODUCT_STORAGE_DIR_NAME)
+    name = glob.glob('*.zip')[0]
+    dist_name=os.path.splitext(name)[0]
+    product_version=wum_product_version
+    return dist_name
 
 def setup_databases(db_names):
     """Create required databases.
     """
-    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + dist_name + "/" + 'dbscripts')
+    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_code + "-" + product_version + "/" + 'dbscripts')
     engine = db_engine.upper()
     db_meta_data = get_db_meta_data(engine)
     if db_meta_data:
@@ -428,16 +455,14 @@ def save_log_files():
             else:
                 logger.error("File doesn't contain in the given location: " + str(absolute_file_path))
 
-
 def clone_repo():
     """Clone the product repo
     """
     try:
         subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
-        logger.info('product repository cloning is done.')
+        logger.info('product repository cloning is done.)
     except Exception as e:
         logger.error("Error occurred while cloning the product repo: ", exc_info=True)
-
 
 def checkout_to_tag(name):
     """Checkout to the given tag
@@ -536,9 +561,19 @@ def create_output_property_fle():
     """Create output property file which is used when generating email
     """
     output_property_file = open("output.properties", "w+")
-    git_url = git_repo_url + "/tree/" + git_branch
-    output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
-    output_property_file.write("GIT_REVISION=%s\r\n" % tag_name)
+    if test_mode == "WUM":
+        head, sep, tail = git_repo_url.partition('//')
+        uri=head
+        head, sep, tail = git_repo_url.partition('@')
+        urn=tail
+        git_url=uri+urn
+        git_url = git_url + "/tree/" + git_branch
+        output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
+        output_property_file.write("GIT_REVISION=%s\r\n" % git_branch)
+    else:
+        git_url = git_repo_url + "/tree/" + git_branch
+        output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
+        output_property_file.write("GIT_REVISION=%s\r\n" % tag_name)
     output_property_file.close()
 
 
@@ -570,20 +605,19 @@ def main():
         # clone the repository
         clone_repo()
 
-        if test_mode == "DEBUG":
-            checkout_to_tag(get_latest_tag_name(product_id))
-            dist_name = get_dist_name()
-            get_latest_released_dist()
-            testng_source = Path(workspace + "/" + "testng.xml")
-            testng_destination = Path(workspace + "/" + product_id + "/" +
-                                      'modules/integration/tests-integration/tests-backend/src/test/resources/testng.xml')
-            testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
-            testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" +
-                                                 'modules/integration/tests-integration/tests-backend/src/test/resources/testng-server-mgt.xml')
-            # replace testng source
-            replace_file(testng_source, testng_destination)
-            # replace testng server mgt source
-            replace_file(testng_server_mgt_source, testng_server_mgt_destination)
+        if test_mode == "WUM":
+            if make_dev_happy == "TRUE":
+                dist_name = get_dist_name_wum()
+                testng_source = Path(workspace + "/" + "testng.xml")
+                testng_destination = Path(workspace + "/" + product_id + "/" + TESTNG_DIST_XML_PATH)
+                testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
+                testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" + TESTNG_SERVER_MGT_DIST)
+                # replace testng source
+                replace_file(testng_source, testng_destination)
+                # replace testng server mgt source
+                replace_file(testng_server_mgt_source, testng_server_mgt_destination)
+            else:
+                dist_name = get_dist_name_wum()
         elif test_mode == "RELEASE":
             checkout_to_tag(get_latest_tag_name(product_id))
             dist_name = get_dist_name()
@@ -591,10 +625,6 @@ def main():
         elif test_mode == "SNAPSHOT":
             dist_name = get_dist_name()
             get_latest_stable_dist()
-        elif test_mode == "WUM":
-            # todo after identify specific steps that are related to WUM, add them to here
-            dist_name = get_dist_name()
-            logger.info("WUM specific steps are empty")
 
         db_names = cp.configure_product(dist_name, product_id, database_config, workspace, product_version)
         if db_names is None or not db_names:
