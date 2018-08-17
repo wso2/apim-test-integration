@@ -460,7 +460,7 @@ def clone_repo():
     """
     try:
         subprocess.call(['git', 'clone', '--branch', git_branch, git_repo_url], cwd=workspace)
-        logger.info('product repository cloning is done.)
+        logger.info('product repository cloning is done.')
     except Exception as e:
         logger.error("Error occurred while cloning the product repo: ", exc_info=True)
 
