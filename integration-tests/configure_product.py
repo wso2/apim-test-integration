@@ -40,7 +40,6 @@ storage_dir_abs_path = None
 workspace = None
 sql_driver_location = None
 product_id = None
-product_name = None
 database_names = []
 
 logging.basicConfig(level=logging.DEBUG)
@@ -211,10 +210,11 @@ def add_distribution_to_m2(storage, name, product_version):
 
 
 def construct_dist_name(dist_name):
-     global product_name
      product_name = dist_name
 
      if product_name.find("full"):
+        #distname comes as wso2<product>-<version>+<timestamp>+<wum_channel>.
+        #add regex for get the product name as wso2<product>
         product = re.search('(?<=wso2)\w+\D\d{0,9}\.\d{0,9}\.\d{0,9}', product_name)
         name=product.group(0)
         product_name = "wso2"+name
@@ -234,7 +234,6 @@ def configure_product(name, id, db_config, ws, product_version):
         global target_dir_abs_path
         global storage_dist_abs_path
         global storage_dir_abs_path
-        global product_name
 
         dist_name = name
         product_id = id

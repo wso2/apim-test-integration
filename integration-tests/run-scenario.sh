@@ -17,49 +17,37 @@
 set -e
 set -o xtrace
 
-test_mode(){
+set_product_pack(){
 
 #Defining Test Modes
 TEST_MODE_1="WUM"
-TEST_MODE_2="RELEASE"
 
 #WUM product pack directory to check if its already exist
 PRODUCT_FILE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}"
-PRODUCT_FILE_UPDATE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}/${WUM_PRODUCT_VERSION}/${WUM_CHANNEL}/"
 
 if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
-
-   echo 'Getting WUM Binary....'
-   wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.0/wum-3.0.0-linux-x64.tar.gz
-   echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.0-linux-x64.tar.gz
-   export PATH=$PATH:/usr/local/wum/bin
-
-   echo 'Initializing WUM....'
-   wum init -u ${USER_NAME} -p ${PASSWORD}
-
+    if [ "${os}" = "Windows" ]; then
+        wget -nv -nc http://product-dist.wso2.com/downloads/wum/3.0.1/wum-3.0.1-windows-x64.msi -P "C:\Program Files"
+        msiexec /i "C:\Program Files\wum-3.0.1-windows-x64.msi" TARGETDIR="C:\Program Files"
+        setx WUM_HOME "C:\Program Files\WUM"
+        setx PATH "%PATH%;%WUM_HOME%\bin";
+    else
+        wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.0/wum-3.0.0-linux-x64.tar.gz
+        echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.0-linux-x64.tar.gz
+        export PATH=$PATH:/usr/local/wum/bin
+    fi
+    wum init -u ${USER_NAME} -p ${PASSWORD}
       if [ -d "$PRODUCT_FILE_DIR" ]; then
-         if [ -d "$PRODUCT_FILE_UPDATE_DIR" ]; then
+         echo 'Updating the WUM Product....'
+         wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
 
-            echo 'WUM DESCRIBE...'
-            wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
+         wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
 
-            echo 'Product Path...'
-            wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-            echo $wum_path
-
-         else
-
-            echo 'Updating the WUM Product....'
-            wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-
-            echo 'WUM DESCRIBE......'
-            wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
-
-            echo 'Product Path'
-            wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-            echo $wum_path
-         fi
-
+         echo 'Product Path'
+         #wum describe returns full product path
+         #grep "[a-zA-Z0-9+.,/,-]*$" - this regex for grep only the wum path.
+         wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+         echo $wum_path
       else
          echo 'Adding WUM Product...'
          wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
@@ -67,23 +55,18 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
          echo 'Updating the WUM Product...'
          wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
 
-         echo 'WUM DESCRIBE...'
          wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
 
          echo 'Product Path...'
          wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
          echo $wum_path
-
       fi
 else
-   echo "Error while setting up WUM"
-
+    echo "Error while setting up WUM"
 fi
-
-
 }
 
-test_mode
+set_product_pack
 
 DIR=$2
 FILE1=${DIR}/infrastructure.properties

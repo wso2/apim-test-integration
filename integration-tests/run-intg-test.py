@@ -55,9 +55,8 @@ db_username = None
 db_password = None
 tag_name = None
 test_mode = None
-product_code = None
 wum_product_version = None
-make_dev_happy = None
+use_custom_testng_file = None
 database_config = {}
 
 
@@ -78,8 +77,7 @@ def read_proprty_files():
     global database_config
     global wum_product_version
     global test_mode
-    global product_code
-    global make_dev_happy
+    global use_custom_testng_file
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -127,10 +125,8 @@ def read_proprty_files():
                         test_mode = val.strip()
                     elif key == "WUM_PRODUCT_VERSION":
                         wum_product_version = val.strip()
-                    elif key == "PRODUCT_CODE":
-                        product_code = val.strip()
                     elif key == "MAKE_DEV_HAPPY":
-                        make_dev_happy = val.strip()
+                        use_custom_testng_file = val.strip()
 
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
@@ -160,11 +156,9 @@ def validate_property_readings():
         missing_values += " -DBPassword- "
     if test_mode is None:
         missing_values += " -TEST_MODE- "
-    if product_code is None:
-        missing_values += " -PRODUCT_CODE- "
     if wum_product_version is None:
         missing_values += " -WUM_PRODUCT_VERSION- "
-    if make_dev_happy is None:
+    if use_custom_testng_file is None:
         missing_values += " -MAKE_DEV_HAPPY- "
 
     if missing_values != "":
@@ -293,7 +287,6 @@ def run_oracle_script(script, database):
     session.stdin.write(bytes(script, 'utf-8'))
     return session.communicate()
 
-
 def run_sqlserver_script_file(db_name, script_path):
     """Run SQL_SERVER script file on a provided database.
     """
@@ -358,7 +351,7 @@ def get_dist_name_wum():
 def setup_databases(db_names):
     """Create required databases.
     """
-    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + product_code + "-" + product_version + "/" + 'dbscripts')
+    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + "wso2am" + "-" + product_version + "/" + 'dbscripts')
     engine = db_engine.upper()
     db_meta_data = get_db_meta_data(engine)
     if db_meta_data:
@@ -562,6 +555,8 @@ def create_output_property_fle():
     """
     output_property_file = open("output.properties", "w+")
     if test_mode == "WUM":
+        #temporally fix. Needs to be change.
+        #get the git url without username and the password
         head, sep, tail = git_repo_url.partition('//')
         uri=head
         head, sep, tail = git_repo_url.partition('@')
@@ -586,6 +581,16 @@ def replace_file(source, destination):
         destination = cp.winapi_path(destination)
     shutil.move(source, destination)
 
+def set_custom_testng():
+    if use_custom_testng_file == "TRUE":
+        testng_source = Path(workspace + "/" + "testng.xml")
+        testng_destination = Path(workspace + "/" + product_id + "/" + TESTNG_DIST_XML_PATH)
+        testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
+        testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" + TESTNG_SERVER_MGT_DIST)
+        # replace testng source
+        replace_file(testng_source, testng_destination)
+        # replace testng server mgt source
+        replace_file(testng_server_mgt_source, testng_server_mgt_destination)
 
 def main():
     try:
@@ -604,20 +609,11 @@ def main():
         construct_db_config()
         # clone the repository
         clone_repo()
+        # set the custom testng.xml or the product testng.xml
+        set_custom_testng()
 
         if test_mode == "WUM":
-            if make_dev_happy == "TRUE":
-                dist_name = get_dist_name_wum()
-                testng_source = Path(workspace + "/" + "testng.xml")
-                testng_destination = Path(workspace + "/" + product_id + "/" + TESTNG_DIST_XML_PATH)
-                testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
-                testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" + TESTNG_SERVER_MGT_DIST)
-                # replace testng source
-                replace_file(testng_source, testng_destination)
-                # replace testng server mgt source
-                replace_file(testng_server_mgt_source, testng_server_mgt_destination)
-            else:
-                dist_name = get_dist_name_wum()
+            dist_name = get_dist_name_wum()
         elif test_mode == "RELEASE":
             checkout_to_tag(get_latest_tag_name(product_id))
             dist_name = get_dist_name()
