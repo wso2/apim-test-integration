@@ -33,6 +33,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    wum init -u ${USER_NAME} -p ${PASSWORD}
       if [ -d "$PRODUCT_FILE_DIR" ]; then
         echo 'Updating the WUM Product....'
+        set +e
         wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
         set +e
         wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
