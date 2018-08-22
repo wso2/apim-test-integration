@@ -125,7 +125,7 @@ def read_proprty_files():
                         test_mode = val.strip()
                     elif key == "WUM_PRODUCT_VERSION":
                         wum_product_version = val.strip()
-                    elif key == "MAKE_DEV_HAPPY":
+                    elif key == "USE_CUSTOM_TESTNG":
                         use_custom_testng_file = val.strip()
 
     else:
@@ -159,7 +159,7 @@ def validate_property_readings():
     if wum_product_version is None:
         missing_values += " -WUM_PRODUCT_VERSION- "
     if use_custom_testng_file is None:
-        missing_values += " -MAKE_DEV_HAPPY- "
+        missing_values += " -USE_CUSTOM_TESTNG- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
