@@ -32,34 +32,22 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
 
    wum init -u ${USER_NAME} -p ${PASSWORD}
       if [ -d "$PRODUCT_FILE_DIR" ]; then
-        MESSAGE=$(wum check-update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} )
-        sleep 30
-        echo $MESSAGE
-            if [[ $MESSAGE == *"There are no new updates available for the product"* ]]; then
-                echo 'WUM DESCRIBE...'
-                wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
-                echo 'Product Path...'
-                wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-                echo $wum_path
-            else
-                echo 'Updating the WUM Product....'
-                wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-                echo 'WUM DESCRIBE......'
-                wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
-                echo 'Product Path'
-                wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-                echo $wum_path
-            fi
+        echo 'Updating the WUM Product....'
+        wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+        wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
+        echo 'Product Path'
+        wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+        echo $wum_path
+
       else
-            echo 'Adding WUM Product...'
-            wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-            echo 'Updating the WUM Product...'
-            wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-            echo 'WUM DESCRIBE...'
-            wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
-            echo 'Product Path...'
-            wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-            echo $wum_path
+        echo 'Adding WUM Product...'
+        wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+        echo 'Updating the WUM Product...'
+        wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+        wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
+        echo 'Product Path...'
+        wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+        echo $wum_path
       fi
 else
     echo "Error while setting up WUM"
