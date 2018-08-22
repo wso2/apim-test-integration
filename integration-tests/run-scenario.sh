@@ -34,6 +34,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
       if [ -d "$PRODUCT_FILE_DIR" ]; then
         echo 'Updating the WUM Product....'
         wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+        set +e
         wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
         echo 'Product Path'
         wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
