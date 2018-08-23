@@ -555,14 +555,14 @@ def create_output_property_fle():
     """
     output_property_file = open("output.properties", "w+")
     if test_mode == "WUM":
-        #temporally fix. Needs to be change.
-        #get the git url without username and the password
+        # temporally fix. Needs to be change.get the git url without username and the password
         head, sep, tail = git_repo_url.partition('//')
         uri=head
         head, sep, tail = git_repo_url.partition('@')
         urn=tail
         git_url=uri+"//"+urn
         git_url = git_url + "/tree/" + git_branch
+        logger.info("GIT URL: " + git_url)
         output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
         output_property_file.write("GIT_REVISION=%s\r\n" % git_branch)
     else:
