@@ -555,6 +555,7 @@ def create_output_property_fle():
     """
     output_property_file = open("output.properties", "w+")
     if test_mode == "WUM":
+        logger.info("PRODUCT GIT URL: " + git_repo_url)
         # temporally fix. Needs to be change.get the git url without username and the password
         head, sep, tail = git_repo_url.partition('//')
         uri=head
