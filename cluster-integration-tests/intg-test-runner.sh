@@ -27,7 +27,7 @@ INIT_ENV=env
 PYTHON=$(which python3)
 
 # get the working directory
-WD=$2
+WD=$(pwd)
 cd ${WD}
 
 # create the virtual env

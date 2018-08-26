@@ -47,16 +47,13 @@ db_engine_version = None
 latest_product_release_api = None
 latest_product_build_artifacts_api = None
 sql_driver_location = None
-db_host = None
-db_port = None
-db_username = None
-db_password = None
 tag_name = None
 test_mode = None
 product_version = None
 database_config = {}
 product_host = None
 product_port = None
+product_ip = None
 
 def read_proprty_files():
     global db_engine
@@ -66,16 +63,13 @@ def read_proprty_files():
     global latest_product_release_api
     global latest_product_build_artifacts_api
     global sql_driver_location
-    global db_host
-    global db_port
-    global db_username
-    global db_password
     global workspace
     global product_id
     global database_config
     global test_mode
     global product_host
     global product_port
+    global product_ip
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -111,20 +105,14 @@ def read_proprty_files():
                         sql_driver_location = val.strip()
                     elif key == "SQL_DRIVERS_LOCATION_WINDOWS" and sys.platform.startswith('win'):
                         sql_driver_location = val.strip()
-                    elif key == "DatabaseHost":
-                        db_host = val.strip()
-                    elif key == "DatabasePort":
-                        db_port = val.strip()
-                    elif key == "DBUsername":
-                        db_username = val.strip()
-                    elif key == "DBPassword":
-                        db_password = val.strip()
                     elif key == "TEST_MODE":
                         test_mode = val.strip()
                     elif key == "PRODUCT_HOST":
                         product_host = val.strip()
                     elif key == "PRODUCT_PORT":
                         product_port = val.strip()
+                    elif key == "PRODUCT_IP":
+                        product_ip = val.strip()
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
 
@@ -145,34 +133,20 @@ def validate_property_readings():
         missing_values += " -LATEST_PRODUCT_BUILD_ARTIFACTS_API- "
     if sql_driver_location is None:
         missing_values += " -SQL_DRIVERS_LOCATION_<OS_Type>- "
-    if db_host is None:
-        missing_values += " -DatabaseHost- "
-    if db_port is None:
-        missing_values += " -DatabasePort- "
-    if db_password is None:
-        missing_values += " -DBPassword- "
     if test_mode is None:
         missing_values += " -TEST_MODE- "
     if product_host is None:
         missing_values += " -PRODUCT_HOST- "
     if product_port is None:
         missing_values += " -PRODUCT_PORT- "
+    if product_ip is None:
+        missing_values += " -PRODUCT_IP- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
         return False
     else:
         return True
-
-
-#def get_db_meta_data(argument):
-#    switcher = DB_META_DATA
-#    return switcher.get(argument, False)
-
-
-def construct_url(prefix):
-    url = prefix + db_host + ":" + db_port
-    return url
 
 
 def function_logger(file_level, console_level=None):
@@ -207,107 +181,6 @@ def download_file(url, destination):
     """
     wget.download(url, destination)
 
-
-def get_db_hostname(url, db_type):
-    """Retreive db hostname from jdbc url
-    """
-    if db_type == 'ORACLE':
-        hostname = url.split(':')[3].replace("@", "")
-    else:
-        hostname = url.split(':')[2].replace("//", "")
-    return hostname
-
-
-def run_sqlserver_commands(query):
-    """Run SQL_SERVER commands using sqlcmd utility.
-    """
-    subprocess.call(
-        ['sqlcmd', '-S', db_host, '-U', database_config['user'], '-P', database_config['password'], '-Q', query])
-
-
-def get_mysql_connection(db_name=None):
-    if db_name is not None:
-        conn = pymysql.connect(host=get_db_hostname(database_config['url'], 'MYSQL'), user=database_config['user'],
-                               passwd=database_config['password'], db=db_name)
-    else:
-        conn = pymysql.connect(host=get_db_hostname(database_config['url'], 'MYSQL'), user=database_config['user'],
-                               passwd=database_config['password'])
-    return conn
-
-
-def run_mysql_commands(query):
-    """Run mysql commands using mysql client when db name not provided.
-    """
-    conn = get_mysql_connection()
-    conectr = conn.cursor()
-    conectr.execute(query)
-    conn.close()
-
-
-def get_ora_user_carete_query(database):
-    query = "CREATE USER {0} IDENTIFIED BY {1};".format(
-        database, database_config["password"])
-    return query
-
-
-def get_ora_grant_query(database):
-    query = "GRANT CONNECT, RESOURCE, DBA TO {0};".format(
-        database)
-    return query
-
-
-def execute_oracle_command(query):
-    """Run oracle commands using sqlplus client when db name(user) is not provided.
-    """
-    connect_string = "{0}/{1}@//{2}/{3}".format(database_config["user"], database_config["password"],
-                                                db_host, "ORCL")
-    session = Popen(['sqlplus', '-S', connect_string], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    session.stdin.write(bytes(query, 'utf-8'))
-    return session.communicate()
-
-
-def create_oracle_user(database):
-    """This method is able to create the user and grant permission to the created user in oracle
-    """
-    user_creating_query = get_ora_user_carete_query(database)
-    logger.info(execute_oracle_command(user_creating_query))
-    permission_granting_query = get_ora_grant_query(database)
-    return execute_oracle_command(permission_granting_query)
-
-
-def run_oracle_script(script, database):
-    """Run oracle commands using sqlplus client when dbname(user) is provided.
-    """
-    connect_string = "{0}/{1}@//{2}/{3}".format(database, database_config["password"],
-                                                db_host, "ORCL")
-    session = Popen(['sqlplus', '-S', connect_string], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    session.stdin.write(bytes(script, 'utf-8'))
-    return session.communicate()
-
-
-def run_sqlserver_script_file(db_name, script_path):
-    """Run SQL_SERVER script file on a provided database.
-    """
-    subprocess.call(
-        ['sqlcmd', '-S', db_host, '-U', database_config["user"], '-P', database_config["password"], '-d', db_name, '-i',
-         script_path])
-
-
-def run_mysql_script_file(db_name, script_path):
-    """Run MYSQL db script file on a provided database.
-    """
-    conn = get_mysql_connection(db_name)
-    connector = conn.cursor()
-
-    sql = open(script_path).read()
-    sql_parts = sqlparse.split(sql)
-    for sql_part in sql_parts:
-        if sql_part.strip() == '':
-            continue
-        connector.execute(sql_part)
-    conn.close()
-
-
 def copy_file(source, target):
     """Copy the source file to the target.
     """
@@ -330,79 +203,6 @@ def get_dist_name():
     dist_name = artifact_id + "-" + product_version
     dist_zip_name = dist_name + ZIP_FILE_EXTENSION
     return dist_name
-
-
-#def setup_databases(db_names):
-#    """Create required databases.
-#    """
-#    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + dist_name + "/" + 'dbscripts')
-#    engine = db_engine.upper()
-#    db_meta_data = get_db_meta_data(engine)
-#    if db_meta_data:
-#        databases = db_meta_data["DB_SETUP"][product_id]
-#        if databases:
-#            for db_name in db_names:
-#                db_scripts = databases[db_name]
-#                if len(db_scripts) == 0:
-#                    if engine == 'SQLSERVER-SE':
-#                        # create database for MsSQL
-#                        run_sqlserver_commands('CREATE DATABASE {0}'.format(db_name))
-#                    elif engine == 'MYSQL':
-#                        # create database for MySQL
-#                        run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(db_name))
-#                    elif engine == 'ORACLE-SE2':
-#                        # create database for Oracle
-#                        create_oracle_user(db_name)
-#                else:
-#                    if engine == 'SQLSERVER-SE':
-#                        # create database for MsSQL
-#                        run_sqlserver_commands('CREATE DATABASE {0}'.format(db_name))
-#                        for db_script in db_scripts:
-#                            path = base_path / db_script
-#                            # run db scripts
-#                            run_sqlserver_script_file(db_name, str(path))
-#                    elif engine == 'MYSQL':
-#                        # create database for MySQL
-#                        run_mysql_commands('CREATE DATABASE IF NOT EXISTS {0};'.format(db_name))
-#                        # run db scripts
-#                        for db_script in db_scripts:
-#                            path = base_path / db_script
-#                            run_mysql_script_file(db_name, str(path))
-#                   elif engine == 'ORACLE-SE2':
-#                        # create oracle schema
-#                        create_oracle_user(db_name)
-#                        # run db script
-#                        for db_script in db_scripts:
-#                            path = base_path / db_script
-#                            run_oracle_script('@{0}'.format(str(path)), db_name)
-#            logger.info('Database setting up is done.')
-#        else:
-#            raise Exception("Database setup configuration is not defined in the constant file")
-#    else:
-#        raise Exception("Database meta data is not defined in the constant file")
-
-
-#def construct_db_config():
-#    """Use properties which are get by reading property files and construct the database config object which will use
-#    when configuring the databases.
-#   """
-#    db_meta_data = get_db_meta_data(db_engine.upper())
-#    if db_meta_data:
-#        database_config["driver_class_name"] = db_meta_data["driverClassName"]
-#        database_config["password"] = db_password
-#        database_config["sql_driver_location"] = sql_driver_location + "/" + db_meta_data["jarName"]
-#        database_config["url"] = construct_url(db_meta_data["prefix"])
-#        database_config["db_engine"] = db_engine
-#        if db_username is None:
-#            database_config["user"] = DEFAULT_DB_USERNAME
-#        else:
-#            database_config["user"] = db_username
-
-#    else:
-#        raise BaseException(
-#            "DB config parsing is failed. DB engine name in the property file doesn't match with the constant: " + str(
-#                db_engine.upper()))
-
 
 def build_module(module_path):
     """Build a given module.
@@ -599,16 +399,21 @@ def build_module_param(module_path, mvn_param):
 def cert_generation(product_host, product_port, cert_path):
     """Importing the cert to the test client.
     """
-    cmd1 = "echo | openssl s_client -servername "+product_host+ " -connect "+product_host+":"+product_port+ " 2>/dev/null | openssl x509 -text > opensslcert.txt"
-    cmd2 = "keytool -import -trustcacerts -alias testprod3 -file opensslcert.txt -keystore wso2carbon.jks -storepass wso2carbon -noprompt"
-    cmd3 = "rm -rf opensslcert.txt"
-    os.chdir(cert_path)
+    cmd1 = "echo | openssl s_client -servername "+product_host+ " -connect "+product_host+":"+product_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
+    cmd2 = "keytool -import -trustcacerts -alias testprod3 -file "+str(cert_path)+"/opensslcert.txt -keystore "+str(cert_path)+"/wso2carbon.jks -storepass wso2carbon -noprompt"
+    cmd3 = "rm -rf "+str(cert_path)+"/opensslcert.txt"
     os.system(cmd1)
     os.system(cmd2)
     os.system(cmd3)
     logger.info('Product vertificate imported successfully to the test client ')
     
-    
+def host_mapping(product_host, product_ip):
+    if product_host not in open('/etc/hosts').read():
+        cmd = "echo "+product_ip+" "+product_host+" >> /etc/hosts"
+        os.system(cmd)
+    else:
+        logger.info('Hostname already defined')
+
 def main():
     try:
         global logger
@@ -646,10 +451,12 @@ def main():
         elif test_mode == "SNAPSHOT":
             dist_name = get_dist_name()
             get_latest_stable_dist()
-
+        
+        host_mapping(product_host, product_ip)
         cert_path = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/keystores/products')
-        cert_generation("product_host","product_port",cert_path)
+        print(product_host, "+++++++++++++++++++++++++++++++++++++", product_port, "+++++++++++++++++++++++++++++++++++", cert_path)
+        cert_generation(product_host,product_port,cert_path)
         if product_id == "product-apim":
             platform_template = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/platform-test-host-config.xsl')
