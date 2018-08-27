@@ -342,16 +342,17 @@ def get_dist_name():
 def get_dist_name_wum():
     global dist_name
     global product_version
+    product_version=wum_product_version
     os.chdir(PRODUCT_STORAGE_DIR_NAME)
     name = glob.glob('*.zip')[0]
-    dist_name=os.path.splitext(name)[0]
-    product_version=wum_product_version
+    product_name=os.path.splitext(name)[0]
+    dist_name=product_name+"-"+product_version
     return dist_name
 
 def setup_databases(db_names):
     """Create required databases.
     """
-    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + "wso2am" + "-" + product_version + "/" + 'dbscripts')
+    base_path = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME + "/" + dist_name + "/" + 'dbscripts')
     engine = db_engine.upper()
     db_meta_data = get_db_meta_data(engine)
     if db_meta_data:
