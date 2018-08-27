@@ -20,11 +20,11 @@ set -o xtrace
 #retry connecting to wum
 wait_for_connect_wum(){
     x=1;
-    while [[ $x -le 2 ]];
+    while [[ $x -eq 2 ]];
     do
         sleep 15 # wait for 5 second before check again
         wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-        if [ "$?" -ne "0" ]; then
+        if [ "$?" -eq "0" ]; then
             echo "Downloading WUM Pack.."
         else
              x=$((x+1))
@@ -61,9 +61,10 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
         wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
         echo $wum_path
       else
+        set +e
         echo 'Adding WUM Product...'
         wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-        if [ "$?" -ne "0" ]; then
+        if [ "$?" -eq "0" ]; then
             echo 'Updating the WUM Product...'
             wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
             wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
