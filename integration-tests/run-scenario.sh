@@ -17,15 +17,15 @@
 set -e
 set -o xtrace
 
-wait_for_connect_wum(){
-    x=1;
-    while [[ $x -le 2 ]];
-    do
-        sleep 5 # wait for 5 second before check again
-        wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-        x=$((x+1))
-    done
-}
+#wait_for_connect_wum(){
+#    x=1;
+#    while [[ $x -le 2 ]];
+#    do
+#        sleep 5 # wait for 5 second before check again
+#        wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+#        x=$((x+1))
+#    done
+#}
 
 set_product_pack(){
 
@@ -34,18 +34,18 @@ TEST_MODE_1="WUM"
 
 #WUM product pack directory to check if its already exist
 PRODUCT_FILE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}"
+TAR_ERROR_MESSAGE="gzip: stdin: unexpected end of file"
 
 if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.0/wum-3.0.0-linux-x64.tar.gz
-    try
-    {
-      echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.0-linux-x64.tar.gz
-      export PATH=$PATH:/usr/local/wum/bin
-    }
-    catch
-    {
+   echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.0-linux-x64.tar.gz
+
+   if [ "$?" -ne "0" ]; then
       echo "Error while untar the product pack or low disk space. Hence skipping the execution!"
-    }
+      exit 1
+   else
+      export PATH=$PATH:/usr/local/wum/bin
+   fi
 
    wum init -u ${USER_NAME} -p ${PASSWORD}
       if [ -d "$PRODUCT_FILE_DIR" ]; then
@@ -58,25 +58,18 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
         echo $wum_path
 
       else
-        try
-        {
-          echo 'Adding WUM Product...'
-          wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-          echo 'Updating the WUM Product...'
-          wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-        }
-        catch
-        {
-           wait_for_connect_wum
-           wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-        }
+        echo 'Adding WUM Product...'
+        wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+        sleep 10
+        echo 'Updating the WUM Product...'
+        wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
         wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
         echo 'Product Path...'
         wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
         echo $wum_path
       fi
 else
-    echo "Error while setting up WUM"
+   echo "Error while setting up WUM"
 fi
 
 }
