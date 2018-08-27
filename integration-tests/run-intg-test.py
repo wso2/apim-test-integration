@@ -345,8 +345,8 @@ def get_dist_name_wum():
     product_version=wum_product_version
     os.chdir(PRODUCT_STORAGE_DIR_NAME)
     name = glob.glob('*.zip')[0]
-    product_name=os.path.splitext(name)[0]
-    dist_name=product_name+"-"+product_version
+    dist_name=os.path.splitext(name)[0]
+    logger.info("dist_name:" + dist_name)
     return dist_name
 
 def setup_databases(db_names):

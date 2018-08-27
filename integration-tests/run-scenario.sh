@@ -17,6 +17,7 @@
 set -e
 set -o xtrace
 
+#retry connecting to wum
 wait_for_connect_wum(){
     x=1;
     while [[ $x -le 2 ]];
@@ -216,6 +217,8 @@ if [ "${os}" = "Windows" ]; then
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE10} ${user}@${host}:${REM_DIR}
 
   sshpass -p "${password}" ssh -q -o StrictHostKeyChecking=no ${user}@${host} mkdir -p "${REM_DIR}/storage"
+
+#  rename the WUM .zip file and scp
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no -r ${FILE11} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}.zip"
 
   echo "=== Files copied successfully ==="
@@ -243,7 +246,7 @@ else
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE10} ${user}@${host}:${REM_DIR}
 
   ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p "${REM_DIR}/storage"
-  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}/storage:${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}.zip"
 
   echo "=== Files copied successfully ==="
 
