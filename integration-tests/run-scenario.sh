@@ -17,15 +17,19 @@
 set -e
 set -o xtrace
 
-#wait_for_connect_wum(){
-#    x=1;
-#    while [[ $x -le 2 ]];
-#    do
-#        sleep 5 # wait for 5 second before check again
-#        wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-#        x=$((x+1))
-#    done
-#}
+wait_for_connect_wum(){
+    x=1;
+    while [[ $x -le 2 ]];
+    do
+        sleep 15 # wait for 5 second before check again
+        wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+        if [ "$?" -ne "0" ]; then
+            echo "Downloading WUM Pack.."
+        else
+             x=$((x+1))
+        fi
+    done
+}
 
 set_product_pack(){
 
@@ -34,7 +38,6 @@ TEST_MODE_1="WUM"
 
 #WUM product pack directory to check if its already exist
 PRODUCT_FILE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}"
-TAR_ERROR_MESSAGE="gzip: stdin: unexpected end of file"
 
 if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.0/wum-3.0.0-linux-x64.tar.gz
@@ -56,17 +59,20 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
         echo 'Product Path'
         wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
         echo $wum_path
-
       else
         echo 'Adding WUM Product...'
         wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-        sleep 10
-        echo 'Updating the WUM Product...'
-        wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-        wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
-        echo 'Product Path...'
-        wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-        echo $wum_path
+        if [ "$?" -ne "0" ]; then
+            echo 'Updating the WUM Product...'
+            wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+            wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
+            echo 'Product Path...'
+            wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+            echo $wum_path
+        else
+            wait_for_connect_wum
+            echo 'Failed to connecting to WUM server, Hence skipping the execution!'
+        fi
       fi
 else
    echo "Error while setting up WUM"
@@ -210,7 +216,7 @@ if [ "${os}" = "Windows" ]; then
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE10} ${user}@${host}:${REM_DIR}
 
   sshpass -p "${password}" ssh -q -o StrictHostKeyChecking=no ${user}@${host} mkdir -p "${REM_DIR}/storage"
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no -r ${FILE11} ${user}@${host}:${REM_DIR}/storage:${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no -r ${FILE11} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}.zip"
 
   echo "=== Files copied successfully ==="
   echo "Execution begins.. "
