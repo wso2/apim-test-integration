@@ -291,6 +291,11 @@ def build_module_param(module_path, mvn_param):
     """Build a given module for platform tests.
     """
     logger.info('Start building a module. Module: ' + str(module_path))
+    if sys.platform.startswith('win'):
+        subprocess.call(['mvn', 'clean', 'install', '-B',
+                         '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn', mvn_param],
+                        shell=True, cwd=module_path)
+    else:
         subprocess.call(['mvn', 'clean', 'install', '-B',
                          '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn', mvn_param],
                         cwd=module_path)
