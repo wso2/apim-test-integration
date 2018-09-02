@@ -52,18 +52,26 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    fi
 
    wum init -u ${USER_NAME} -p ${PASSWORD}
-      if [ -d "$PRODUCT_FILE_DIR" ]; then
-        echo 'Updating the WUM Product....'
-        set +e
-        wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-        wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
-        echo 'Product Path'
-        wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-        echo $wum_path
-      else
-        set +e
-        echo 'Adding WUM Product...'
-        wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+
+   #pointing to WUM UAT environment
+   wum config repositories.wso2.url https://gateway.api.cloud.wso2.com/t/wso2umuat
+   wum config repositories.wso2.appkey R0dnZThYMmk2T2E2ZldjbHhKWWplTV93REJFYTo5Q0FGbG1oR09ZbjRhTzkyNFp5REh6VEZFeTBh
+
+   #needs to initialize wum again to update the user name in the config.yaml file
+   wum init -u ${USER_NAME} -p ${PASSWORD}
+
+   if [ -d "$PRODUCT_FILE_DIR" ]; then
+      echo 'Updating the WUM Product....'
+      set +e
+      wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+      wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
+      echo 'Product Path'
+      wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+      echo $wum_path
+   else
+      set +e
+      echo 'Adding WUM Product...'
+      wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
         if [ "$?" -eq "0" ]; then
             echo 'Updating the WUM Product...'
             wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
@@ -75,7 +83,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
             wait_for_connect_wum
             echo 'Failed to connecting to WUM server, Hence skipping the execution!'
         fi
-      fi
+   fi
 else
    echo "Error while setting up WUM"
 fi
@@ -256,7 +264,7 @@ else
   #Get the reports from integration test
   scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
   scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
-  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/output.properties ${DIR}
+  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/storage/output.properties ${DIR}
   echo "=== Reports are copied success ==="
 fi
 ##script ends

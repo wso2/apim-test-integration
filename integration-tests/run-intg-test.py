@@ -616,6 +616,7 @@ def main():
 
         if test_mode == "WUM":
             dist_name = get_dist_name_wum()
+
         elif test_mode == "RELEASE":
             checkout_to_tag(get_latest_tag_name(product_id))
             dist_name = get_dist_name()

@@ -208,22 +208,6 @@ def add_distribution_to_m2(storage, name, product_version):
         compress_distribution(linux_m2_path, storage)
         shutil.rmtree(linux_m2_path, onerror=on_rm_error)
 
-
-# def construct_dist_name(dist_name):
-#      product_name = dist_name
-#
-#      if product_name.find("full"):
-#         #distname comes as wso2<product>-<version>+<timestamp>+<wum_channel>.
-#         #add regex for get the product name as wso2<product>
-#         product = re.search('(?<=wso2)\w+\D\d{0,9}\.\d{0,9}\.\d{0,9}', product_name)
-#         name=product.group(0)
-#         product_name = "wso2"+name
-#         logger.info("Product name: " + product_name )
-#      else:
-#         logger.info("Product name: " + product_name )
-#      return product_name
-
-
 def configure_product(name, id, db_config, ws, product_version):
     try:
         global dist_name
@@ -249,7 +233,6 @@ def configure_product(name, id, db_config, ws, product_version):
         configured_dist_storing_loc = Path(target_dir_abs_path / dist_name)
 
         extract_product(storage_zip_abs_path)
-
         copy_jar_file(Path(database_config['sql_driver_location']), Path(storage_dist_abs_path / LIB_PATH))
 
         if datasource_paths is not None:
