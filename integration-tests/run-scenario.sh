@@ -67,7 +67,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
       wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
       echo 'Product Path'
       wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-      echo $wum_path > ${DIR}/testplan-props.properties
+      echo $wum_path
    else
       set +e
       echo 'Adding WUM Product...'
@@ -78,7 +78,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
             wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
             echo 'Product Path...'
             wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-            echo $wum_path > ${DIR}/testplan-props.properties
+            echo $wum_path
         else
             wait_for_connect_wum
             echo 'Failed to connecting to WUM server, Hence skipping the execution!'
