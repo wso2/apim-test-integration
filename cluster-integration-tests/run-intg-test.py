@@ -30,7 +30,8 @@ from pathlib import Path
 import urllib.request as urllib2
 from xml.dom import minidom
 from subprocess import Popen, PIPE
-from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, PRODUCT_STORAGE_DIR_NAME, LOG_STORAGE, LOG_FILE_PATHS
+from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, \
+    PRODUCT_STORAGE_DIR_NAME, LOG_STORAGE, LOG_FILE_PATHS, APIM_CONST_HOST
 
 git_repo_url = None
 git_branch = None
@@ -39,6 +40,7 @@ dist_name = None
 dist_zip_name = None
 product_id = None
 log_file_name = None
+constant_host = None
 target_path = None
 tag_name = None
 product_version = None
@@ -247,6 +249,8 @@ def replace_file(source, destination):
     shutil.move(source, destination)
 
 def setPlatformTestHostConfig(file) :
+    global constant_host
+    constant_host = APIM_CONST_HOST
     datafile=str(file)
     xmlparse = XSET.parse(datafile)
     xslt = XSET.parse(datafile)
@@ -255,11 +259,11 @@ def setPlatformTestHostConfig(file) :
     root = newdom.getroot()
     
     PLATFORM_TEST_HOST_CONFIG = {   "xs:coverage/text()" : "true" ,
-                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
-                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
-                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
-                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
-                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
+                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : constant_host,
+                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : constant_host,
+                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : constant_host,
+                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : constant_host,
+                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : constant_host,
                                 "xs:instance/xs:ports/xs:port[@type='http']/text()" : "9763",
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
                                 "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8280",

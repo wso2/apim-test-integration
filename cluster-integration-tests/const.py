@@ -40,4 +40,5 @@ LOG_FILE_PATHS = {"product-apim": [
     "modules/integration/tests-integration/tests-backend/target/logs/automation.log"],
     "product-is": [],
     "product-ei": []}
+APIM_CONST_HOST = "wso2.apim.test.com"
 
