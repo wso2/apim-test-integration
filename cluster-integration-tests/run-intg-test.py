@@ -30,8 +30,7 @@ from pathlib import Path
 import urllib.request as urllib2
 from xml.dom import minidom
 from subprocess import Popen, PIPE
-from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
-    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, LOG_STORAGE, LOG_FILE_PATHS, DIST_POM_PATH, NS, ZIP_FILE_EXTENSION
+from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, PRODUCT_STORAGE_DIR_NAME, LOG_STORAGE, LOG_FILE_PATHS
 
 git_repo_url = None
 git_branch = None
@@ -47,6 +46,7 @@ database_config = {}
 lb_host = None
 lb_port = None
 lb_ip = None
+test_mode = None
 
 def read_proprty_files():
     global git_repo_url
@@ -57,6 +57,7 @@ def read_proprty_files():
     global lb_host
     global lb_port
     global lb_ip
+    global test_mode
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -80,12 +81,15 @@ def read_proprty_files():
                         product_id = git_repo_url.split("/")[-1].split('.')[0]
                     elif key == "PRODUCT_GIT_BRANCH":
                         git_branch = val.strip()
+                    elif key == "TEST_MODE":
+                        test_mode = val.strip()
                     elif key == "LB_HOST":
                         lb_host = val.strip()
                     elif key == "LB_PORT":
                         lb_port = val.strip()
                     elif key == "LB_IP":
                         lb_ip = val.strip()
+
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
 
@@ -104,6 +108,8 @@ def validate_property_readings():
         missing_values += " -LB_PORT- "
     if lb_ip is None:
         missing_values += " -LB_IP- "
+    if test_mode is None:
+        missing_values += " -TEST_MODE- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -149,23 +155,6 @@ def copy_file(source, target):
     """
     shutil.copy(source, target)
 
-
-def get_dist_name():
-    """Get the product name by reading distribution pom.
-    """
-    global dist_name
-    global dist_zip_name
-    global product_version
-    dist_pom_path = Path(workspace + "/" + product_id + "/" + DIST_POM_PATH[product_id])
-    ET.register_namespace('', NS['d'])
-    artifact_tree = ET.parse(dist_pom_path)
-    artifact_root = artifact_tree.getroot()
-    parent = artifact_root.find('d:parent', NS)
-    artifact_id = artifact_root.find('d:artifactId', NS).text
-    product_version = parent.find('d:version', NS).text
-    dist_name = artifact_id + "-" + product_version
-    dist_zip_name = dist_name + ZIP_FILE_EXTENSION
-    return dist_name
 
 def build_module(module_path):
     """Build a given module.
@@ -266,15 +255,15 @@ def setPlatformTestHostConfig(file) :
     root = newdom.getroot()
     
     PLATFORM_TEST_HOST_CONFIG = {   "xs:coverage/text()" : "true" ,
-                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : lb_host,
-                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : lb_host,
-                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : lb_host,
-                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : lb_host,
-                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : lb_host,
-                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : 9763,
+                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
+                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
+                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
+                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
+                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : "wso2.apim.test.com",
+                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : "9763",
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
-                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : 8280,
-                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : 8243
+                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8280",
+                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : "8243"
                                 }
 
     keysArray = PLATFORM_TEST_HOST_CONFIG.keys()
@@ -299,7 +288,7 @@ def build_module_param(module_path, mvn_param):
 def cert_generation(lb_host, lb_port, cert_path):
     """Importing the cert to the test client.
     """
-    cmd1 = "echo | openssl s_client -servername wso2.apim.test.com " -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
+    cmd1 = "echo | openssl s_client -servername wso2.apim.test.com -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
     cmd2 = "keytool -import -trustcacerts -alias testprod3 -file "+str(cert_path)+"/opensslcert.txt -keystore "+str(cert_path)+"/wso2carbon.jks -storepass wso2carbon -noprompt"
     cmd3 = "rm -rf "+str(cert_path)+"/opensslcert.txt"
     os.system(cmd1)
@@ -328,6 +317,18 @@ def main():
                 "and the format")
         # clone the repository
         clone_repo()
+
+        if test_mode == "DEBUG":
+            testng_source = Path(workspace + "/" + "testng.xml")
+            testng_destination = Path(workspace + "/" + product_id + "/" +
+                                      'modules/integration/tests-integration/tests-backend/src/test/resources/testng.xml')
+            testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
+            testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" +
+                                                 'modules/integration/tests-integration/tests-backend/src/test/resources/testng-server-mgt.xml')
+            # replace testng source
+            replace_file(testng_source, testng_destination)
+            # replace testng server mgt source
+            replace_file(testng_server_mgt_source, testng_server_mgt_destination)
       
         host_mapping("wso2.apim.test.com", lb_ip)
         cert_path = Path(workspace + "/" + product_id + "/" +
