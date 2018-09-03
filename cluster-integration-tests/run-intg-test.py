@@ -44,9 +44,9 @@ target_path = None
 tag_name = None
 product_version = None
 database_config = {}
-product_host = None
-product_port = None
-product_ip = None
+lb_host = None
+lb_port = None
+lb_ip = None
 
 def read_proprty_files():
     global git_repo_url
@@ -54,9 +54,9 @@ def read_proprty_files():
     global workspace
     global product_id
     global database_config
-    global product_host
-    global product_port
-    global product_ip
+    global lb_host
+    global lb_port
+    global lb_ip
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -80,12 +80,12 @@ def read_proprty_files():
                         product_id = git_repo_url.split("/")[-1].split('.')[0]
                     elif key == "PRODUCT_GIT_BRANCH":
                         git_branch = val.strip()
-                    elif key == "PRODUCT_HOST":
-                        product_host = val.strip()
-                    elif key == "PRODUCT_PORT":
-                        product_port = val.strip()
-                    elif key == "PRODUCT_IP":
-                        product_ip = val.strip()
+                    elif key == "LB_HOST":
+                        lb_host = val.strip()
+                    elif key == "LB_PORT":
+                        lb_port = val.strip()
+                    elif key == "LB_IP":
+                        lb_ip = val.strip()
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
 
@@ -98,12 +98,12 @@ def validate_property_readings():
         missing_values += " -product-id- "
     if git_branch is None:
         missing_values += " -PRODUCT_GIT_BRANCH- "
-    if product_host is None:
-        missing_values += " -PRODUCT_HOST- "
-    if product_port is None:
-        missing_values += " -PRODUCT_PORT- "
-    if product_ip is None:
-        missing_values += " -PRODUCT_IP- "
+    if lb_host is None:
+        missing_values += " -LB_HOST- "
+    if lb_port is None:
+        missing_values += " -LB_PORT- "
+    if lb_ip is None:
+        missing_values += " -LB_IP- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -266,15 +266,15 @@ def setPlatformTestHostConfig(file) :
     root = newdom.getroot()
     
     PLATFORM_TEST_HOST_CONFIG = {   "xs:coverage/text()" : "true" ,
-                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : product_host,
-                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : product_host,
-                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : product_host,
-                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : product_host,
-                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : product_host,
-                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : product_port,
-                                "xs:instance/xs:ports/xs:port[@type='https']/text()" : product_port,
-                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : product_port,
-                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : product_port
+                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : 9763,
+                                "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
+                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : 8280,
+                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : 8243
                                 }
 
     keysArray = PLATFORM_TEST_HOST_CONFIG.keys()
@@ -291,25 +291,24 @@ def build_module_param(module_path, mvn_param):
     """Build a given module for platform tests.
     """
     logger.info('Start building a module. Module: ' + str(module_path))
-        subprocess.call(['mvn', 'clean', 'install', '-B',
+    subprocess.call(['mvn', 'clean', 'install', '-B',
                          '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn', mvn_param],
                         cwd=module_path)
     logger.info('Platform module build is completed. Module: ' + str(module_path))
 
-def cert_generation(product_host, product_port, cert_path):
+def cert_generation(lb_host, lb_port, cert_path):
     """Importing the cert to the test client.
     """
-    cmd1 = "echo | openssl s_client -servername "+product_host+ " -connect "+product_host+":"+product_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
+    cmd1 = "echo | openssl s_client -servername wso2.apim.test.com " -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
     cmd2 = "keytool -import -trustcacerts -alias testprod3 -file "+str(cert_path)+"/opensslcert.txt -keystore "+str(cert_path)+"/wso2carbon.jks -storepass wso2carbon -noprompt"
     cmd3 = "rm -rf "+str(cert_path)+"/opensslcert.txt"
     os.system(cmd1)
     os.system(cmd2)
     os.system(cmd3)
-    logger.info('Product certificate imported successfully to the test client ')
     
-def host_mapping(product_host, product_ip):
-    if product_host not in open('/etc/hosts').read():
-        cmd = "echo "+product_ip+" "+product_host+" >> /etc/hosts"
+def host_mapping(lb_host, lb_ip):
+    if lb_host not in open('/etc/hosts').read():
+        cmd = "echo "+lb_ip+" "+lb_host+" >> /etc/hosts"
         os.system(cmd)
     else:
         logger.info('Hostname already defined')
@@ -330,10 +329,10 @@ def main():
         # clone the repository
         clone_repo()
       
-        host_mapping(product_host, product_ip)
+        host_mapping("wso2.apim.test.com", lb_ip)
         cert_path = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/keystores/products')
-        cert_generation(product_host,product_port,cert_path)
+        cert_generation(lb_host,lb_port,cert_path)
         if product_id == "product-apim":
             platform_template = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/platform-test-host-config.xsl')
