@@ -110,8 +110,6 @@ def validate_property_readings():
         missing_values += " -LB_PORT- "
     if lb_ip is None:
         missing_values += " -LB_IP- "
-    if test_mode is None:
-        missing_values += " -TEST_MODE- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
