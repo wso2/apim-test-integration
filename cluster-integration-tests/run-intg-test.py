@@ -271,10 +271,10 @@ def setPlatformTestHostConfig(file) :
                                 "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : product_host,
                                 "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : product_host,
                                 "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : product_host,
-                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : product_port,
-                                "xs:instance/xs:ports/xs:port[@type='https']/text()" : product_port,
-                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : product_port,
-                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : product_port
+                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : "9763",
+                                "xs:instance/xs:ports/xs:port[@type='https']/text()" : "9443",
+                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8280",
+                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : "8243"
                                 }
 
     keysArray = PLATFORM_TEST_HOST_CONFIG.keys()
