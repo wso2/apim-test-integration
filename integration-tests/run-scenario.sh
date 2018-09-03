@@ -54,8 +54,8 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    wum init -u ${USER_NAME} -p ${PASSWORD}
 
    #pointing to WUM UAT environment
-   wum config repositories.wso2.url https://gateway.api.cloud.wso2.com/t/wso2umuat
-   wum config repositories.wso2.appkey R0dnZThYMmk2T2E2ZldjbHhKWWplTV93REJFYTo5Q0FGbG1oR09ZbjRhTzkyNFp5REh6VEZFeTBh
+   wum config repositories.wso2.url ${WUM_UAT_URL}
+   wum config repositories.wso2.appkey ${WUM_UAT_APPKEY}
 
    #needs to initialize wum again to update the user name in the config.yaml file
    wum init -u ${USER_NAME} -p ${PASSWORD}
@@ -67,7 +67,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
       wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
       echo 'Product Path'
       wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-      echo $wum_path
+      echo $wum_path > ${DIR}/testplan-props.properties
    else
       set +e
       echo 'Adding WUM Product...'
@@ -78,7 +78,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
             wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
             echo 'Product Path...'
             wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
-            echo $wum_path
+            echo $wum_path > ${DIR}/testplan-props.properties
         else
             wait_for_connect_wum
             echo 'Failed to connecting to WUM server, Hence skipping the execution!'
