@@ -59,6 +59,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    wum config repositories.wso2.appkey ${WUM_UAT_APPKEY}
 
    #needs to initialize wum again to update the username in the config.yaml file
+
    wum init -u ${USER_NAME} -p ${PASSWORD}
 
    if [ -d "$PRODUCT_FILE_DIR" ]; then
