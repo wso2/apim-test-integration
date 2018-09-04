@@ -23,15 +23,17 @@ import os
 import shutil
 import pymysql
 import sqlparse
+import glob
 import stat
 import re
 from pathlib import Path
+
 import urllib.request as urllib2
 from xml.dom import minidom
 import configure_product as cp
 from subprocess import Popen, PIPE
 from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, DB_META_DATA, \
-    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, LOG_STORAGE, LOG_FILE_PATHS, DIST_POM_PATH, NS, ZIP_FILE_EXTENSION
+    PRODUCT_STORAGE_DIR_NAME, DEFAULT_DB_USERNAME, LOG_STORAGE, TESTNG_DIST_XML_PATH, TESTNG_SERVER_MGT_DIST, LOG_FILE_PATHS, DIST_POM_PATH, NS, ZIP_FILE_EXTENSION
 
 git_repo_url = None
 git_branch = None
@@ -53,7 +55,8 @@ db_username = None
 db_password = None
 tag_name = None
 test_mode = None
-product_version = None
+wum_product_version = None
+use_custom_testng_file = None
 database_config = {}
 
 
@@ -72,7 +75,9 @@ def read_proprty_files():
     global workspace
     global product_id
     global database_config
+    global wum_product_version
     global test_mode
+    global use_custom_testng_file
 
     workspace = os.getcwd()
     property_file_paths = []
@@ -118,6 +123,11 @@ def read_proprty_files():
                         db_password = val.strip()
                     elif key == "TEST_MODE":
                         test_mode = val.strip()
+                    elif key == "WUM_PRODUCT_VERSION":
+                        wum_product_version = val.strip()
+                    elif key == "USE_CUSTOM_TESTNG":
+                        use_custom_testng_file = val.strip()
+
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
 
@@ -146,6 +156,10 @@ def validate_property_readings():
         missing_values += " -DBPassword- "
     if test_mode is None:
         missing_values += " -TEST_MODE- "
+    if wum_product_version is None:
+        missing_values += " -WUM_PRODUCT_VERSION- "
+    if use_custom_testng_file is None:
+        missing_values += " -USE_CUSTOM_TESTNG- "
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -273,7 +287,6 @@ def run_oracle_script(script, database):
     session.stdin.write(bytes(script, 'utf-8'))
     return session.communicate()
 
-
 def run_sqlserver_script_file(db_name, script_path):
     """Run SQL_SERVER script file on a provided database.
     """
@@ -307,7 +320,6 @@ def copy_file(source, target):
     else:
         shutil.copy(source, target)
 
-
 def get_dist_name():
     """Get the product name by reading distribution pom.
     """
@@ -327,6 +339,15 @@ def get_dist_name():
     dist_zip_name = dist_name + ZIP_FILE_EXTENSION
     return dist_name
 
+def get_dist_name_wum():
+    global dist_name
+    global product_version
+    product_version=wum_product_version
+    os.chdir(PRODUCT_STORAGE_DIR_NAME)
+    name = glob.glob('*.zip')[0]
+    dist_name=os.path.splitext(name)[0]
+    logger.info("dist_name:" + dist_name)
+    return dist_name
 
 def setup_databases(db_names):
     """Create required databases.
@@ -428,7 +449,6 @@ def save_log_files():
             else:
                 logger.error("File doesn't contain in the given location: " + str(absolute_file_path))
 
-
 def clone_repo():
     """Clone the product repo
     """
@@ -437,7 +457,6 @@ def clone_repo():
         logger.info('product repository cloning is done.')
     except Exception as e:
         logger.error("Error occurred while cloning the product repo: ", exc_info=True)
-
 
 def checkout_to_tag(name):
     """Checkout to the given tag
@@ -536,9 +555,22 @@ def create_output_property_fle():
     """Create output property file which is used when generating email
     """
     output_property_file = open("output.properties", "w+")
-    git_url = git_repo_url + "/tree/" + git_branch
-    output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
-    output_property_file.write("GIT_REVISION=%s\r\n" % tag_name)
+    if test_mode == "WUM":
+        logger.info("PRODUCT GIT URL: " + git_repo_url)
+        # temporally fix. Needs to be change.get the git url without username and the password
+        head, sep, tail = git_repo_url.partition('//')
+        uri=head
+        head, sep, tail = git_repo_url.partition('@')
+        urn=tail
+        git_url=uri+"//"+urn
+        git_url = git_url + "/tree/" + git_branch
+        logger.info("GIT URL: " + git_url)
+        output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
+        output_property_file.write("GIT_REVISION=%s\r\n" % git_branch)
+    else:
+        git_url = git_repo_url + "/tree/" + git_branch
+        output_property_file.write("GIT_LOCATION=%s\r\n" % git_url)
+        output_property_file.write("GIT_REVISION=%s\r\n" % tag_name)
     output_property_file.close()
 
 
@@ -551,6 +583,16 @@ def replace_file(source, destination):
         destination = cp.winapi_path(destination)
     shutil.move(source, destination)
 
+def set_custom_testng():
+    if use_custom_testng_file == "TRUE":
+        testng_source = Path(workspace + "/" + "testng.xml")
+        testng_destination = Path(workspace + "/" + product_id + "/" + TESTNG_DIST_XML_PATH)
+        testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
+        testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" + TESTNG_SERVER_MGT_DIST)
+        # replace testng source
+        replace_file(testng_source, testng_destination)
+        # replace testng server mgt source
+        replace_file(testng_server_mgt_source, testng_server_mgt_destination)
 
 def main():
     try:
@@ -569,21 +611,12 @@ def main():
         construct_db_config()
         # clone the repository
         clone_repo()
+        # set the custom testng.xml or the product testng.xml
+        set_custom_testng()
 
-        if test_mode == "DEBUG":
-            checkout_to_tag(get_latest_tag_name(product_id))
-            dist_name = get_dist_name()
-            get_latest_released_dist()
-            testng_source = Path(workspace + "/" + "testng.xml")
-            testng_destination = Path(workspace + "/" + product_id + "/" +
-                                      'modules/integration/tests-integration/tests-backend/src/test/resources/testng.xml')
-            testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
-            testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" +
-                                                 'modules/integration/tests-integration/tests-backend/src/test/resources/testng-server-mgt.xml')
-            # replace testng source
-            replace_file(testng_source, testng_destination)
-            # replace testng server mgt source
-            replace_file(testng_server_mgt_source, testng_server_mgt_destination)
+        if test_mode == "WUM":
+            dist_name = get_dist_name_wum()
+
         elif test_mode == "RELEASE":
             checkout_to_tag(get_latest_tag_name(product_id))
             dist_name = get_dist_name()
@@ -591,10 +624,6 @@ def main():
         elif test_mode == "SNAPSHOT":
             dist_name = get_dist_name()
             get_latest_stable_dist()
-        elif test_mode == "WUM":
-            # todo after identify specific steps that are related to WUM, add them to here
-            dist_name = get_dist_name()
-            logger.info("WUM specific steps are empty")
 
         db_names = cp.configure_product(dist_name, product_id, database_config, workspace, product_version)
         if db_names is None or not db_names:

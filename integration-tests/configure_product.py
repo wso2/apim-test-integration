@@ -19,6 +19,7 @@ from zipfile import ZipFile
 import os
 import stat
 import sys
+import re
 from pathlib import Path
 import shutil
 import logging
@@ -207,7 +208,6 @@ def add_distribution_to_m2(storage, name, product_version):
         compress_distribution(linux_m2_path, storage)
         shutil.rmtree(linux_m2_path, onerror=on_rm_error)
 
-
 def configure_product(name, id, db_config, ws, product_version):
     try:
         global dist_name
@@ -234,6 +234,7 @@ def configure_product(name, id, db_config, ws, product_version):
 
         extract_product(storage_zip_abs_path)
         copy_jar_file(Path(database_config['sql_driver_location']), Path(storage_dist_abs_path / LIB_PATH))
+
         if datasource_paths is not None:
             modify_datasources()
         else:
