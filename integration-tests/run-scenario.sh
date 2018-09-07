@@ -107,7 +107,7 @@ FILE9=testng.xml
 FILE10=testng-server-mgt.xml
 FILE11=$wum_path
 
-PROP_KEY=sshKeyFileLocation      #pem file
+PROP_KEY=keyFileLocation      #pem file
 PROP_OS=OS                       #OS name e.g. centos
 PROP_HOST=WSO2PublicIP           #host IP
 PROP_INSTANCE_ID=WSO2InstanceId  #Physical ID (Resource ID) of WSO2 EC2 Instance
