@@ -170,7 +170,7 @@ def modify_datasources():
                     drive_class_name = configuration.find('driverClassName')
                     if MYSQL_DB_ENGINE == database_config['db_engine'].upper():
                         url.text = url.text.replace(url.text, database_config[
-                            'url'] + "/" + database_name + "?autoReconnect=true&useSSL=false&requireSSL=false&"
+                            'url'] + "/" + database_name + "?autoCommit=true&autoReconnect=true&useSSL=false&requireSSL=false&"
                                                      "verifyServerCertificate=false")
                         user.text = user.text.replace(user.text, database_config['user'])
                     elif ORACLE_DB_ENGINE == database_config['db_engine'].upper():
