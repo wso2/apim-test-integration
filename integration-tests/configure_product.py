@@ -182,9 +182,6 @@ def modify_datasources():
                     password = configuration.find('password')
                     validation_query = configuration.find('validationQuery')
                     drive_class_name = configuration.find('driverClassName')
-                    default_auto_commit = configuration.find('defaultAutoCommit')
-                    if default_auto_commit is not None:
-                        default_auto_commit.text = 'true'
                     if MYSQL_DB_ENGINE == database_config['db_engine'].upper():
                         url.text = url.text.replace(url.text, database_config[
                             'url'] + "/" + database_name + "?autoReconnect=true&useSSL=false&requireSSL=false&"
