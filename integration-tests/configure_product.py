@@ -146,7 +146,7 @@ def modify_pom_files():
 
 def attach_jolokia_agent(spath):
     logger.info('attaching jolokia agent as a java agent')
-    sp=str(spath)
+    sp = str(spath)
     with open(sp, "r") as in_file:
         buf = in_file.readlines()
 
