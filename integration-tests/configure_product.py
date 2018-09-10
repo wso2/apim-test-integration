@@ -25,7 +25,7 @@ import shutil
 import logging
 from const import ZIP_FILE_EXTENSION, NS, SURFACE_PLUGIN_ARTIFACT_ID, CARBON_NAME, VALUE_TAG, \
     DEFAULT_ORACLE_SID, DATASOURCE_PATHS, MYSQL_DB_ENGINE, ORACLE_DB_ENGINE, LIB_PATH, PRODUCT_STORAGE_DIR_NAME, \
-    DISTRIBUTION_PATH, MSSQL_DB_ENGINE, M2_PATH
+    DISTRIBUTION_PATH, MSSQL_DB_ENGINE, M2_PATH, WSO2SERVER
 
 datasource_paths = None
 database_url = None
@@ -144,6 +144,20 @@ def modify_pom_files():
         artifact_tree.write(file_path)
 
 
+def attach_jolokia_agent(spath):
+    logger.info('attaching jolokia agent as a java agent')
+    sp = str(spath)
+    with open(sp, "r") as in_file:
+        buf = in_file.readlines()
+
+    with open(sp, "w") as out_file:
+        for line in buf:
+            if line == "    $JAVACMD \\\n":
+                line = line + "    -javaagent:/opt/wso2/jolokia-jvm-1.6.0-agent.jar=port=8778,host=localhost,protocol=http \\\n"
+                logger.info(line)
+            out_file.write(line)
+
+
 def modify_datasources():
     """Modify datasources files which are defined in the const.py. DB ulr, uname, pwd, driver class values are modifying.
     """
@@ -231,8 +245,11 @@ def configure_product(name, id, db_config, ws, product_version):
         storage_zip_abs_path = Path(storage_dir_abs_path / zip_name)
         storage_dist_abs_path = Path(storage_dir_abs_path / dist_name)
         configured_dist_storing_loc = Path(target_dir_abs_path / dist_name)
+        script_name = Path(WSO2SERVER)
+        script_path = Path(storage_dist_abs_path / script_name)
 
         extract_product(storage_zip_abs_path)
+        attach_jolokia_agent(script_path)
         copy_jar_file(Path(database_config['sql_driver_location']), Path(storage_dist_abs_path / LIB_PATH))
 
         if datasource_paths is not None:
