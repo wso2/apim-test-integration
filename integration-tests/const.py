@@ -30,6 +30,7 @@ DISTRIBUTION_PATH = {"product-apim": "modules/distribution/product/target",
                      "product-is": "modules/distribution/target",
                      "product-ei": "modules/distribution/target"}
 PRODUCT_STORAGE_DIR_NAME = "storage"
+WSO2SERVER = "bin/wso2server.sh"
 TEST_PLAN_PROPERTY_FILE_NAME = "testplan-props.properties"
 INFRA_PROPERTY_FILE_NAME = "infrastructure.properties"
 LOG_FILE_NAME = "integration.log"
