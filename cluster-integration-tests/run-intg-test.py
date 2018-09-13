@@ -204,8 +204,6 @@ def replace_file(source, destination):
     shutil.move(source, destination)
 
 def setPlatformTestHostConfig(file) :
-    global constant_host
-    constant_host = APIM_CONST_HOST
     if Path.exists(file):
         datafile=str(file)
         xmlparse = XSET.parse(datafile)
@@ -215,15 +213,15 @@ def setPlatformTestHostConfig(file) :
         root = newdom.getroot()
     
         PLATFORM_TEST_HOST_CONFIG = {   "xs:coverage/text()" : "true" ,
-                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : constant_host,
-                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : constant_host,
-                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : constant_host,
-                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : constant_host,
-                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : constant_host,
-                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : "9763",
+                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
+                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
+                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
+                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
+                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
+                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : "10263",
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
-                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8280",
-                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : "8243"
+                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8780",
+                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : "8743"
                                 }
 
         keysArray = PLATFORM_TEST_HOST_CONFIG.keys()
@@ -294,7 +292,7 @@ def main():
             # replace testng server mgt source
             replace_file(testng_server_mgt_source, testng_server_mgt_destination)
       
-        host_mapping("wso2.apim.test.com", lb_ip)
+        host_mapping(APIM_CONST_HOST, lb_ip)
         cert_path = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/keystores/products')
         cert_generation(lb_host,lb_port,cert_path)
