@@ -143,13 +143,6 @@ def function_logger(file_level, console_level=None):
 
     return logger
 
-
-def download_file(url, destination):
-    """Download a file using wget package.
-    Download the given file in _url_ as the directory+name provided in _destination_
-    """
-    wget.download(url, destination)
-
 def copy_file(source, target):
     """Copy the source file to the target.
     """
@@ -194,42 +187,6 @@ def clone_repo():
     except Exception as e:
         logger.error("Error occurred while cloning the product repo: ", exc_info=True)
 
-
-def checkout_to_tag(name):
-    """Checkout to the given tag
-    """
-    try:
-        git_path = Path(workspace + "/" + product_id)
-        tag = "tags/" + name
-        subprocess.call(["git", "fetch", "origin", tag], cwd=git_path)
-        subprocess.call(["git", "checkout", "-B", tag, name], cwd=git_path)
-        logger.info('checkout to the branch: ' + tag)
-    except Exception as e:
-        logger.error("Error occurred while cloning the product repo and checkout to the latest tag of the branch",
-                     exc_info=True)
-
-
-def get_latest_tag_name(product):
-    """Get the latest tag name from git location
-    """
-    global tag_name
-    git_path = Path(workspace + "/" + product)
-    binary_val_of_tag_name = subprocess.Popen(["git", "describe", "--abbrev=0", "--tags"],
-                                              stdout=subprocess.PIPE, cwd=git_path)
-    tag_name = binary_val_of_tag_name.stdout.read().strip().decode("utf-8")
-    return tag_name
-
-
-def get_product_file_path():
-    """Get the absolute path of the distribution which is located in the storage directory
-    """
-    # product download path and file name constructing
-    product_download_dir = Path(workspace + "/" + PRODUCT_STORAGE_DIR_NAME)
-    if not Path.exists(product_download_dir):
-        Path(product_download_dir).mkdir(parents=True, exist_ok=True)
-    return product_download_dir / dist_zip_name
-
-
 def create_output_property_fle():
     """Create output property file which is used when generating email
     """
@@ -249,14 +206,15 @@ def replace_file(source, destination):
 def setPlatformTestHostConfig(file) :
     global constant_host
     constant_host = APIM_CONST_HOST
-    datafile=str(file)
-    xmlparse = XSET.parse(datafile)
-    xslt = XSET.parse(datafile)
-    transform = XSET.XSLT(xslt)
-    newdom = transform(xmlparse)
-    root = newdom.getroot()
+    if Path.exists(file):
+        datafile=str(file)
+        xmlparse = XSET.parse(datafile)
+        xslt = XSET.parse(datafile)
+        transform = XSET.XSLT(xslt)
+        newdom = transform(xmlparse)
+        root = newdom.getroot()
     
-    PLATFORM_TEST_HOST_CONFIG = {   "xs:coverage/text()" : "true" ,
+        PLATFORM_TEST_HOST_CONFIG = {   "xs:coverage/text()" : "true" ,
                                 "xs:instance[@name='store']/xs:hosts/xs:host/text()" : constant_host,
                                 "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : constant_host,
                                 "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : constant_host,
@@ -268,15 +226,17 @@ def setPlatformTestHostConfig(file) :
                                 "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : "8243"
                                 }
 
-    keysArray = PLATFORM_TEST_HOST_CONFIG.keys()
-    print(keysArray)
-    for key in keysArray:
-        for conf in root.findall('{http://www.w3.org/1999/XSL/Transform}template'):
-            if conf.attrib['match']==key:
-                conf.text = PLATFORM_TEST_HOST_CONFIG.get(key)
-    newdom.write(str(file))
+        keysArray = PLATFORM_TEST_HOST_CONFIG.keys()
+        print(keysArray)
+        for key in keysArray:
+            for conf in root.findall('{http://www.w3.org/1999/XSL/Transform}template'):
+                if conf.attrib['match']==key:
+                    conf.text = PLATFORM_TEST_HOST_CONFIG.get(key)
+        newdom.write(str(file))
+        logger.info('Platform test host configurations successfully completed for: ' + str(file))
     
-    logger.info('Platform test host configurations successfully completed for: ' + str(file))
+    else:
+        logger.error("File does not exists in path " + str(file) , exc_info=True)
 
 def build_module_param(module_path, mvn_param):
     """Build a given module for platform tests.
@@ -290,6 +250,7 @@ def build_module_param(module_path, mvn_param):
 def cert_generation(lb_host, lb_port, cert_path):
     """Importing the cert to the test client.
     """
+    logger.info('Importing the product cert to the test client')
     cmd1 = "echo | openssl s_client -servername wso2.apim.test.com -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
     cmd2 = "keytool -import -trustcacerts -alias testprod3 -file "+str(cert_path)+"/opensslcert.txt -keystore "+str(cert_path)+"/wso2carbon.jks -storepass wso2carbon -noprompt"
     cmd3 = "rm -rf "+str(cert_path)+"/opensslcert.txt"
@@ -299,6 +260,7 @@ def cert_generation(lb_host, lb_port, cert_path):
     
 def host_mapping(lb_host, lb_ip):
     if lb_host not in open('/etc/hosts').read():
+        logger.info('Configuring the host mapping ')
         cmd = "echo "+lb_ip+" "+lb_host+" >> /etc/hosts"
         os.system(cmd)
     else:
