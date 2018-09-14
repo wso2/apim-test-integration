@@ -477,10 +477,14 @@ def get_latest_tag_name(product):
     """
     global tag_name
     git_path = Path(workspace + "/" + product)
-    latest_rev = subprocess.Popen(["git", "rev-list", "--tags", "--max-count=1"], stdout=subprocess.PIPE, cwd=git_path)
-    binary_val_of_tag_name = subprocess.Popen(
+    """latest_rev = subprocess.Popen(["git", "rev-list", "--tags", "--max-count=1"], stdout=subprocess.PIPE, cwd=git_path)
+    """
+    """binary_val_of_tag_name = subprocess.Popen(
         ["git", "describe", "--tags", latest_rev.stdout.read().strip().decode("utf-8")], stdout=subprocess.PIPE,
         cwd=git_path)
+    """
+    binary_val_of_tag_name = subprocess.Popen(["git", "describe", "--abbrev=0", "--tags"], stdout=subprocess.PIPE, cwd=git_path)
+    
     tag_name = binary_val_of_tag_name.stdout.read().strip().decode("utf-8")
     return tag_name
 
