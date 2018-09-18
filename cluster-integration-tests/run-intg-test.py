@@ -47,6 +47,7 @@ product_version = None
 database_config = {}
 lb_host = None
 lb_port = None
+lb_http_port = None
 lb_ip = None
 test_mode = None
 
@@ -58,6 +59,7 @@ def read_proprty_files():
     global database_config
     global lb_host
     global lb_port
+    global lb_http_port
     global lb_ip
     global test_mode
 
@@ -89,6 +91,8 @@ def read_proprty_files():
                         lb_host = val.strip()
                     elif key == "LB_PORT":
                         lb_port = val.strip()
+                    elif key == "LB_HTTP_PORT":
+                        lb_http_port = val.strip()
                     elif key == "LB_IP":
                         lb_ip = val.strip()
 
@@ -97,6 +101,8 @@ def read_proprty_files():
 
 
 def validate_property_readings():
+    global lb_port
+    global lb_http_port
     missing_values = ""
     if git_repo_url is None:
         missing_values += " -PRODUCT_GIT_URL- "
@@ -106,10 +112,12 @@ def validate_property_readings():
         missing_values += " -PRODUCT_GIT_BRANCH- "
     if lb_host is None:
         missing_values += " -LB_HOST- "
-    if lb_port is None:
-        missing_values += " -LB_PORT- "
     if lb_ip is None:
         missing_values += " -LB_IP- "
+    if lb_port is None:
+        lb_port = "443"
+    if lb_http_port is None:
+        lb_http_port = "80"
 
     if missing_values != "":
         logger.error('Invalid property file is found. Missing values: %s ', missing_values)
@@ -218,7 +226,7 @@ def setPlatformTestHostConfig(file) :
                                 "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
                                 "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
                                 "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : "80",
+                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : lb_http_port,
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
                                 "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8780",
                                 "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : "8743"
