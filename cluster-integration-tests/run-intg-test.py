@@ -218,7 +218,7 @@ def setPlatformTestHostConfig(file) :
                                 "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
                                 "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
                                 "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : "10263",
+                                "xs:instance/xs:ports/xs:port[@type='http']/text()" : "80",
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
                                 "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8780",
                                 "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : "8743"
