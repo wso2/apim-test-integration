@@ -17,6 +17,83 @@
 set -e
 set -o xtrace
 
+#retry connecting to wum
+connect_to_wum_server(){
+    x=1;
+    while [[ $x -eq 2 ]];
+    do
+        # wait for 15 seconds before check again
+        sleep 15
+        wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+        if [ "$?" -eq "0" ]; then
+            echo "Downloading WUM Pack.."
+        else
+             x=$((x+1))
+        fi
+    done
+}
+
+set_product_pack(){
+
+#Defining Test Modes
+TEST_MODE_1="WUM"
+
+#WUM product pack directory to check if its already exist
+PRODUCT_FILE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}"
+
+if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
+   wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.0/wum-3.0.0-linux-x64.tar.gz
+   echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.0-linux-x64.tar.gz
+
+   if [ "$?" -ne "0" ]; then
+      echo "Error while untar the product pack or low disk space. Hence skipping the execution!"
+      exit 1
+   else
+      export PATH=$PATH:/usr/local/wum/bin
+   fi
+
+   wum init -u ${USER_NAME} -p ${PASSWORD}
+
+   #pointing to WUM UAT environment
+   wum config repositories.wso2.url ${WUM_UAT_URL}
+   wum config repositories.wso2.appkey ${WUM_UAT_APPKEY}
+
+   #needs to initialize wum again to update the username in the config.yaml file
+
+   wum init -u ${USER_NAME} -p ${PASSWORD}
+
+   if [ -d "$PRODUCT_FILE_DIR" ]; then
+      echo 'Updating the WUM Product....'
+      set +e
+      wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+      wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
+      echo 'Product Path'
+      wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+      echo $wum_path
+   else
+      set +e
+      echo 'Adding WUM Product...'
+      wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+        if [ "$?" -eq "0" ]; then
+            echo 'Updating the WUM Product...'
+            wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+            wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
+            echo 'Product Path...'
+            wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+            echo $wum_path
+        else
+            connect_to_wum_server
+            echo 'Failed to connecting to WUM server, Hence skipping the execution!'
+        fi
+   fi
+else
+   echo "Error while setting up WUM"
+fi
+
+}
+
+set_product_pack
+
 DIR=$2
 FILE1=${DIR}/infrastructure.properties
 FILE2=${DIR}/testplan-props.properties
@@ -28,8 +105,9 @@ FILE7=intg-test-runner.sh
 FILE8=intg-test-runner.bat
 FILE9=testng.xml
 FILE10=testng-server-mgt.xml
+FILE11=$wum_path
 
-PROP_KEY=sshKeyFileLocation      #pem file
+PROP_KEY=keyFileLocation      #pem file
 PROP_OS=OS                       #OS name e.g. centos
 PROP_HOST=WSO2PublicIP           #host IP
 PROP_INSTANCE_ID=WSO2InstanceId  #Physical ID (Resource ID) of WSO2 EC2 Instance
@@ -149,6 +227,12 @@ if [ "${os}" = "Windows" ]; then
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE9} ${user}@${host}:${REM_DIR}
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE10} ${user}@${host}:${REM_DIR}
 
+  if [ ${TEST_MODE} = "WUM" ]; then
+    sshpass -p "${password}" ssh -q -o StrictHostKeyChecking=no ${user}@${host} mkdir -p "${REM_DIR}/storage"
+    #rename the WUM .zip file and scp
+    sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no -r ${FILE11} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}.zip"
+  fi
+
   echo "=== Files copied successfully ==="
   echo "Execution begins.. "
 
@@ -157,7 +241,7 @@ if [ "${os}" = "Windows" ]; then
   echo "Retrieving reports from instance.. "
   sshpass -p "${password}" scp -r -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/output.properties ${DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/storage/output.properties ${DIR}
   echo "=== Reports retrieved successfully ==="
   set -o xtrace
 else
@@ -173,6 +257,11 @@ else
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE9} ${user}@${host}:${REM_DIR}
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE10} ${user}@${host}:${REM_DIR}
 
+  if [ ${TEST_MODE} = "WUM" ]; then
+    ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p "${REM_DIR}/storage"
+    scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}.zip"
+  fi
+
   echo "=== Files copied successfully ==="
 
   ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/intg-test-runner.sh --wd ${REM_DIR}
@@ -180,7 +269,7 @@ else
   #Get the reports from integration test
   scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
   scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
-  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/output.properties ${DIR}
+  scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${user}@${host}:${REM_DIR}/storage/output.properties ${DIR}
   echo "=== Reports are copied success ==="
 fi
 ##script ends
