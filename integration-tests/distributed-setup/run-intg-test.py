@@ -48,7 +48,6 @@ database_config = {}
 lb_host = None
 lb_port = None
 lb_http_port = None
-lb_ip = None
 test_mode = None
 
 def read_proprty_files():
@@ -60,7 +59,6 @@ def read_proprty_files():
     global lb_host
     global lb_port
     global lb_http_port
-    global lb_ip
     global test_mode
 
     workspace = os.getcwd()
@@ -93,8 +91,6 @@ def read_proprty_files():
                         lb_port = val.strip()
                     elif key == "LB_HTTP_PORT":
                         lb_http_port = val.strip()
-                    elif key == "LB_IP":
-                        lb_ip = val.strip()
 
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
@@ -112,8 +108,6 @@ def validate_property_readings():
         missing_values += " -PRODUCT_GIT_BRANCH- "
     if lb_host is None:
         missing_values += " -LB_HOST- "
-    if lb_ip is None:
-        missing_values += " -LB_IP- "
     if lb_port is None:
         lb_port = "443"
     if lb_http_port is None:
@@ -264,9 +258,10 @@ def cert_generation(lb_host, lb_port, cert_path):
     os.system(cmd2)
     os.system(cmd3)
     
-def host_mapping(lb_host, lb_ip):
+def host_mapping(lb_host):
     if lb_host not in open('/etc/hosts').read():
         logger.info('Configuring the host mapping ')
+        lb_ip = os.popen("ping -c 1 apim.wso2.com | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'").read()
         cmd = "echo "+lb_ip+" "+lb_host+" >> /etc/hosts"
         os.system(cmd)
     else:
@@ -300,7 +295,7 @@ def main():
             # replace testng server mgt source
             replace_file(testng_server_mgt_source, testng_server_mgt_destination)
       
-        host_mapping(APIM_CONST_HOST, lb_ip)
+        host_mapping(APIM_CONST_HOST)
         cert_path = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/keystores/products')
         cert_generation(lb_host,lb_port,cert_path)
