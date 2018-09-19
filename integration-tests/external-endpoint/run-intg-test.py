@@ -261,7 +261,7 @@ def cert_generation(lb_host, lb_port, cert_path):
 def host_mapping(lb_host):
     if lb_host not in open('/etc/hosts').read():
         logger.info('Configuring the host mapping ')
-        lb_ip = os.popen("ping -c 1 apim.wso2.com | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'").read()
+        lb_ip = os.popen("ping -c 1"+ lb_host +"| grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'").read()
         cmd = "echo "+lb_ip+" "+lb_host+" >> /etc/hosts"
         os.system(cmd)
     else:
