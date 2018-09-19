@@ -310,7 +310,7 @@ def main():
             setPlatformTestHostConfig(platform_template)
             module_path = Path(workspace + "/" + product_id + "/" + 'modules/api-import-export')
             build_module(module_path)
-        intg_module_path = Path(workspace + "/" + product_id + "/" + 'modules/integration')
+        intg_module_path = Path(workspace + "/" + product_id)
         build_module_param(intg_module_path, "-DplatformTests")
         save_log_files()
         create_output_property_fle()
