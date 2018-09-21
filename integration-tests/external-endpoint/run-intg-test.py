@@ -77,20 +77,20 @@ def read_proprty_files():
                     prop = line.split("=")
                     key = prop[0]
                     val = prop[1]
-                    if key == "PRODUCT_GIT_URL":
+                    if key == "ProductGITURL":
                         git_repo_url = val.strip().replace('\\', '')
                         product_id = git_repo_url.split("/")[-1].split('.')[0]
-                    elif key == "PRODUCT_GIT_BRANCH":
+                    elif key == "ProductGITBranch":
                         git_branch = val.strip()
-                    elif key == "TEST_MODE":
+                    elif key == "TestMode":
                         test_mode = val.strip()
-                    elif key == "LB_HOST":
+                    elif key == "LBHost":
                         lb_host = val.strip()
-                    elif key == "LB_PORT":
+                    elif key == "LBPort":
                         lb_port = val.strip()
-                    elif key == "LB_HTTP_PORT":
+                    elif key == "LBHTTPPort":
                         lb_http_port = val.strip()
-                    elif key == "OFFSET":
+                    elif key == "Offset":
                         offset = int(val.strip())
 
     else:
