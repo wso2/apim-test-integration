@@ -24,7 +24,7 @@ export LC_ALL=C
 INIT_ENV=env
 
 # Set python interpreter you want for your environment
-PYTHON=$(which python3)
+PYTHON=$(which python3.7)
 
 # get the working directory
 WD=$(pwd)
@@ -37,7 +37,7 @@ virtualenv $WD/$INIT_ENV -p $PYTHON
 source $WD/env/bin/activate
 
 # install packages to the virtual environment
-env/bin/pip install -r requirements.txt
+pip3.7 install -r requirements.txt
 
 # run the run-intg-test.py script
-python run-intg-test.py
+python3.7 run-intg-test.py
