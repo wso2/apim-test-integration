@@ -262,7 +262,7 @@ def host_mapping(lb_host):
     if lb_host not in open('/etc/hosts').read():
         logger.info('Configuring the host mapping ')
         lb_ip = os.popen("ping -c 1"+ lb_host +"| grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'").read()
-        cmd = "echo "+lb_ip+" "+lb_host+" >> /etc/hosts"
+        cmd = "sudo echo "+lb_ip+" "+lb_host+" >> /etc/hosts"
         os.system(cmd)
     else:
         logger.info('Hostname already defined')
