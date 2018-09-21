@@ -16,6 +16,10 @@
 
 set -o xtrace
 
+
+DIR=$2
+FILE1=${DIR}/infrastructure.properties
+
 # Configuring locale support for python
 export LC_ALL=C
 
@@ -38,6 +42,8 @@ source $WD/env/bin/activate
 
 # install packages to the virtual environment
 env/bin/pip install -r requirements.txt
+
+cp FILE1 infrastructure.properties
 
 # run the run-intg-test.py script
 python run-intg-test.py

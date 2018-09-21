@@ -30,8 +30,7 @@ from pathlib import Path
 import urllib.request as urllib2
 from xml.dom import minidom
 from subprocess import Popen, PIPE
-from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, \
-    PRODUCT_STORAGE_DIR_NAME, LOG_STORAGE, LOG_FILE_PATHS, APIM_CONST_HOST
+from const import INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, LOG_STORAGE, LOG_FILE_PATHS, APIM_CONST_HOST
 
 git_repo_url = None
 git_branch = None
@@ -49,6 +48,7 @@ lb_host = None
 lb_port = None
 lb_http_port = None
 test_mode = None
+offset = None
 
 def read_proprty_files():
     global git_repo_url
@@ -60,14 +60,13 @@ def read_proprty_files():
     global lb_port
     global lb_http_port
     global test_mode
+    global offset
 
     workspace = os.getcwd()
     property_file_paths = []
-    test_plan_prop_path = Path(workspace + "/" + TEST_PLAN_PROPERTY_FILE_NAME)
     infra_prop_path = Path(workspace + "/" + INFRA_PROPERTY_FILE_NAME)
 
-    if Path.exists(test_plan_prop_path) and Path.exists(infra_prop_path):
-        property_file_paths.append(test_plan_prop_path)
+    if Path.exists(infra_prop_path):
         property_file_paths.append(infra_prop_path)
 
         for path in property_file_paths:
@@ -91,6 +90,8 @@ def read_proprty_files():
                         lb_port = val.strip()
                     elif key == "LB_HTTP_PORT":
                         lb_http_port = val.strip()
+                    elif key == "OFFSET":
+                        offset = int(val.strip())
 
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
