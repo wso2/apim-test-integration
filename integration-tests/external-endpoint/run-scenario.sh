@@ -41,9 +41,9 @@ virtualenv $WD/$INIT_ENV -p $PYTHON
 source $WD/env/bin/activate
 
 # install packages to the virtual environment
-sudo pip3.7 install -r requirements.txt
+env/bin/pip3.7 install -r requirements.txt
 
 cp ${INFRA_FILE} infrastructure.properties
 
 # run the run-intg-test.py script
-sudo python3.7 run-intg-test.py
+python3.7 run-intg-test.py
