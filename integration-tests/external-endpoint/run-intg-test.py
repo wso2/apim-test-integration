@@ -252,7 +252,7 @@ def cert_generation(lb_host, lb_port, cert_path):
     """Importing the cert to the test client.
     """
     logger.info('Importing the product cert to the test client')
-    cmd1 = "echo | openssl s_client -servername wso2.apim.test.com -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
+    cmd1 = "echo | openssl s_client -servername " + lb_host + " -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
     cmd2 = "keytool -import -trustcacerts -alias testprod3 -file "+str(cert_path)+"/opensslcert.txt -keystore "+str(cert_path)+"/wso2carbon.jks -storepass wso2carbon -noprompt"
     cmd3 = "rm -rf "+str(cert_path)+"/opensslcert.txt"
     os.system(cmd1)
