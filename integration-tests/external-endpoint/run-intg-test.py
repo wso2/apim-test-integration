@@ -216,11 +216,11 @@ def setPlatformTestHostConfig(file) :
         root = newdom.getroot()
     
         PLATFORM_TEST_HOST_CONFIG = {   "xs:coverage/text()" : "true" ,
-                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
+                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : lb_host,
                                 "xs:instance/xs:ports/xs:port[@type='http']/text()" : lb_http_port,
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
                                 "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8780",
