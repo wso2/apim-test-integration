@@ -216,11 +216,11 @@ def setPlatformTestHostConfig(file) :
         root = newdom.getroot()
     
         PLATFORM_TEST_HOST_CONFIG = {   "xs:coverage/text()" : "true" ,
-                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
+                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : lb_host,
                                 "xs:instance/xs:ports/xs:port[@type='http']/text()" : lb_http_port,
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
                                 "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8780",
@@ -252,7 +252,7 @@ def cert_generation(lb_host, lb_port, cert_path):
     """Importing the cert to the test client.
     """
     logger.info('Importing the product cert to the test client')
-    cmd1 = "echo | openssl s_client -servername " + APIM_CONST_HOST + " -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
+    cmd1 = "echo | openssl s_client -servername " + lb_host + " -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
     cmd2 = "keytool -import -trustcacerts -alias testprod3 -file "+str(cert_path)+"/opensslcert.txt -keystore "+str(cert_path)+"/wso2carbon.jks -storepass wso2carbon -noprompt"
     cmd3 = "rm -rf "+str(cert_path)+"/opensslcert.txt"
     os.system(cmd1)
@@ -296,7 +296,7 @@ def main():
             # replace testng server mgt source
             replace_file(testng_server_mgt_source, testng_server_mgt_destination)
       
-        host_mapping(APIM_CONST_HOST)
+        #host_mapping(APIM_CONST_HOST)
         cert_path = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/keystores/products')
         cert_generation(lb_host,lb_port,cert_path)
