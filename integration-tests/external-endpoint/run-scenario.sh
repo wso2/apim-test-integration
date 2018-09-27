@@ -47,3 +47,6 @@ cp ${INFRA_FILE} infrastructure.properties
 
 # run the run-intg-test.py script
 python3.7 run-intg-test.py
+
+cp -r product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
+cp product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
