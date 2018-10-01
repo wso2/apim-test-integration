@@ -30,8 +30,7 @@ from pathlib import Path
 import urllib.request as urllib2
 from xml.dom import minidom
 from subprocess import Popen, PIPE
-from const import TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, \
-    PRODUCT_STORAGE_DIR_NAME, LOG_STORAGE, LOG_FILE_PATHS, APIM_CONST_HOST
+from const import INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, LOG_STORAGE, LOG_FILE_PATHS, APIM_CONST_HOST
 
 git_repo_url = None
 git_branch = None
@@ -49,6 +48,7 @@ lb_host = None
 lb_port = None
 lb_http_port = None
 test_mode = None
+offset = None
 
 def read_proprty_files():
     global git_repo_url
@@ -60,14 +60,13 @@ def read_proprty_files():
     global lb_port
     global lb_http_port
     global test_mode
+    global offset
 
     workspace = os.getcwd()
     property_file_paths = []
-    test_plan_prop_path = Path(workspace + "/" + TEST_PLAN_PROPERTY_FILE_NAME)
     infra_prop_path = Path(workspace + "/" + INFRA_PROPERTY_FILE_NAME)
 
-    if Path.exists(test_plan_prop_path) and Path.exists(infra_prop_path):
-        property_file_paths.append(test_plan_prop_path)
+    if Path.exists(infra_prop_path):
         property_file_paths.append(infra_prop_path)
 
         for path in property_file_paths:
@@ -78,19 +77,21 @@ def read_proprty_files():
                     prop = line.split("=")
                     key = prop[0]
                     val = prop[1]
-                    if key == "PRODUCT_GIT_URL":
+                    if key == "ProductGITURL":
                         git_repo_url = val.strip().replace('\\', '')
                         product_id = git_repo_url.split("/")[-1].split('.')[0]
-                    elif key == "PRODUCT_GIT_BRANCH":
+                    elif key == "ProductGITBranch":
                         git_branch = val.strip()
-                    elif key == "TEST_MODE":
+                    elif key == "TestMode":
                         test_mode = val.strip()
-                    elif key == "LB_HOST":
+                    elif key == "LBHost":
                         lb_host = val.strip()
-                    elif key == "LB_PORT":
+                    elif key == "LBPort":
                         lb_port = val.strip()
-                    elif key == "LB_HTTP_PORT":
+                    elif key == "LBHTTPPort":
                         lb_http_port = val.strip()
+                    elif key == "Offset":
+                        offset = int(val.strip())
 
     else:
         raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
@@ -215,11 +216,11 @@ def setPlatformTestHostConfig(file) :
         root = newdom.getroot()
     
         PLATFORM_TEST_HOST_CONFIG = {   "xs:coverage/text()" : "true" ,
-                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
-                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : APIM_CONST_HOST,
+                                "xs:instance[@name='store']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='publisher']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='keyManager']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : lb_host,
+                                "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : lb_host,
                                 "xs:instance/xs:ports/xs:port[@type='http']/text()" : lb_http_port,
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
                                 "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8780",
@@ -251,7 +252,7 @@ def cert_generation(lb_host, lb_port, cert_path):
     """Importing the cert to the test client.
     """
     logger.info('Importing the product cert to the test client')
-    cmd1 = "echo | openssl s_client -servername wso2.apim.test.com -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
+    cmd1 = "echo | openssl s_client -servername " + lb_host + " -connect "+lb_host+":"+lb_port+ " 2>/dev/null | openssl x509 -text > "+str(cert_path)+"/opensslcert.txt"
     cmd2 = "keytool -import -trustcacerts -alias testprod3 -file "+str(cert_path)+"/opensslcert.txt -keystore "+str(cert_path)+"/wso2carbon.jks -storepass wso2carbon -noprompt"
     cmd3 = "rm -rf "+str(cert_path)+"/opensslcert.txt"
     os.system(cmd1)
@@ -295,7 +296,7 @@ def main():
             # replace testng server mgt source
             replace_file(testng_server_mgt_source, testng_server_mgt_destination)
       
-        host_mapping(APIM_CONST_HOST)
+        #host_mapping(APIM_CONST_HOST)
         cert_path = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/keystores/products')
         cert_generation(lb_host,lb_port,cert_path)

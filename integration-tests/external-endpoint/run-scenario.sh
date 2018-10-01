@@ -16,6 +16,10 @@
 
 set -o xtrace
 
+
+DIR=$2
+INFRA_FILE=${DIR}/infrastructure.properties
+
 # Configuring locale support for python
 export LC_ALL=C
 
@@ -24,7 +28,7 @@ export LC_ALL=C
 INIT_ENV=env
 
 # Set python interpreter you want for your environment
-PYTHON=$(which python3)
+PYTHON=$(which python3.7)
 
 # get the working directory
 WD=$(pwd)
@@ -37,7 +41,12 @@ virtualenv $WD/$INIT_ENV -p $PYTHON
 source $WD/env/bin/activate
 
 # install packages to the virtual environment
-env/bin/pip install -r requirements.txt
+env/bin/pip3.7 install -r requirements.txt
+
+cp ${INFRA_FILE} infrastructure.properties
 
 # run the run-intg-test.py script
-python run-intg-test.py
+python3.7 run-intg-test.py
+
+cp -r product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
+cp product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
