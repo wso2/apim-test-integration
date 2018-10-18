@@ -206,6 +206,9 @@ def replace_file(source, destination):
     logger.info('replacing files from:' + str(source) + "to: " + str(destination))
     shutil.move(source, destination)
 
+def port_with_offset(port,offset):
+    return port + offset
+
 def setPlatformTestHostConfig(file) :
     if Path.exists(file):
         datafile=str(file)
@@ -222,10 +225,13 @@ def setPlatformTestHostConfig(file) :
                                 "xs:instance[@name='gateway-mgt']/xs:hosts/xs:host/text()" : lb_host,
                                 "xs:instance[@name='gateway-wrk']/xs:hosts/xs:host/text()" : lb_host,
 				"xs:instance[@name='backend-server']/xs:hosts/xs:host/text()" : lb_host,
+				"xs:instance[@name='backend-server']/xs:hosts/xs:host/text()" : "localhost",
                                 "xs:instance/xs:ports/xs:port[@type='http']/text()" : lb_http_port,
                                 "xs:instance/xs:ports/xs:port[@type='https']/text()" : lb_port,
-                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : "8780",
-                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : "8743"
+                                "xs:instance/xs:ports/xs:port[@type='nhttp']/text()" : str(port_with_offset(8280,offset)),
+                                "xs:instance/xs:ports/xs:port[@type='nhttps']/text()" : str(port_with_offset(8243,offset)),
+                                "xs:instance[@name='backend-server']/xs:ports/xs:port[@type='http']/text()" : str(port_with_offset(9763,offset)),
+                                "xs:instance[@name='backend-server']/xs:ports/xs:port[@type='https']/text()" : str(port_with_offset(9443,offset))
                                 }
 
         keysArray = PLATFORM_TEST_HOST_CONFIG.keys()
