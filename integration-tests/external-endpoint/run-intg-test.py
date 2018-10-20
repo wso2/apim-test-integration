@@ -30,7 +30,7 @@ from pathlib import Path
 import urllib.request as urllib2
 from xml.dom import minidom
 from subprocess import Popen, PIPE
-from const import INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, LOG_STORAGE, LOG_FILE_PATHS, APIM_CONST_HOST
+from const import INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, LOG_STORAGE, LOG_FILE_PATHS
 
 git_repo_url = None
 git_branch = None
@@ -94,7 +94,7 @@ def read_proprty_files():
                         offset = int(val.strip())
 
     else:
-        raise Exception("Test Plan Property file or Infra Property file is not in the workspace: " + workspace)
+        raise Exception("Infra Property file is not in the workspace: " + workspace)
 
 
 def validate_property_readings():
@@ -303,7 +303,6 @@ def main():
             # replace testng server mgt source
             replace_file(testng_server_mgt_source, testng_server_mgt_destination)
       
-        #host_mapping(APIM_CONST_HOST)
         cert_path = Path(workspace + "/" + product_id + "/" +
                                       'modules/integration/tests-integration/tests-backend/src/test/resources/keystores/products')
         cert_generation(lb_host,lb_port,cert_path)
