@@ -243,7 +243,7 @@ if [ "${os}" = "Windows" ]; then
   echo "Retrieving reports from instance.. "
   sshpass -p "${password}" scp -r -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${DIR}
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/storage/output.properties ${DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/output.properties ${DIR}
   echo "=== Reports retrieved successfully ==="
   set -o xtrace
 else
@@ -261,7 +261,7 @@ else
 
   if [ ${TEST_MODE} = "WUM" ]; then
     ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p "${REM_DIR}/storage"
-    scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}.zip"
+    scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}/"${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}.zip"
   fi
 
   echo "=== Files copied successfully ==="
