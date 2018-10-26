@@ -33,12 +33,14 @@ from subprocess import Popen, PIPE
 import intg_test_manager as cm
 
 from prod_test_constant import DB_META_DATA, ARTIFACT_REPORTS_PATHS, DIST_POM_PATH, LIB_PATH, M2_PATH, \
-    DISTRIBUTION_PATH, DATASOURCE_PATHS, POM_FILE_PATHS, INTEGRATION_PATH
+    DISTRIBUTION_PATH, DATASOURCE_PATHS, POM_FILE_PATHS, INTEGRATION_PATH, TESTNG_DIST_XML_PATH, \
+    TESTNG_SERVER_MGT_DIST
 
 from intg_test_constant import NS, ZIP_FILE_EXTENSION, CARBON_NAME, VALUE_TAG, SURFACE_PLUGIN_ARTIFACT_ID, \
     TEST_PLAN_PROPERTY_FILE_NAME, INFRA_PROPERTY_FILE_NAME, LOG_FILE_NAME, PRODUCT_STORAGE_DIR_NAME, \
     DEFAULT_DB_USERNAME, LOG_STORAGE, TEST_OUTPUT_DIR_NAME, DEFAULT_ORACLE_SID, MYSQL_DB_ENGINE, \
     ORACLE_DB_ENGINE, PRODUCT_STORAGE_DIR_NAME, MSSQL_DB_ENGINE, WSO2SERVER
+
 
 database_names = []
 db_engine = None
@@ -138,21 +140,6 @@ def configure_product():
         logger.error("Error occurred while configuring the product", exc_info=True)
 
 
-#TODO: Improve the method in generic way to support all products
-def save_log_files():
-    log_storage = Path(cm.workspace + "/" + LOG_STORAGE)
-    if not Path.exists(log_storage):
-        Path(log_storage).mkdir(parents=True, exist_ok=True)
-    log_file_paths = ARTIFACT_REPORTS_PATHS
-    if log_file_paths:
-        for file in log_file_paths:
-            absolute_file_path = Path(cm.workspace + "/" + cm.product_id + "/" + file)
-            if Path.exists(absolute_file_path):
-                cm.copy_file(absolute_file_path, log_storage)
-            else:
-                logger.error("File doesn't contain in the given location: " + str(absolute_file_path))
-
-
 # Since we have added a method to clone a given git branch and checkout to the latest released tag it is not required to
 # modify pom files. Hence in the current implementation this method is not using.
 # However, in order to execute this method you can define pom file paths in const_<prod>.py as a constant
@@ -186,36 +173,6 @@ def modify_pom_files():
         artifact_tree.write(file_path)
 
 
-#TODO: Improve the method in generic way to support all products
-def save_test_output():
-    report_folder = Path(cm.workspace + "/" + TEST_OUTPUT_DIR_NAME)
-    if Path.exists(report_folder):
-        shutil.rmtree(report_folder)
-    report_file_paths = ARTIFACT_REPORTS_PATHS
-    for key, value in report_file_paths.items():
-        for file in value:
-            absolute_file_path = Path(cm.workspace + "/" + cm.product_id + "/" + file)
-            if Path.exists(absolute_file_path):
-                report_storage = Path(cm.workspace + "/" + TEST_OUTPUT_DIR_NAME + "/" + key)
-                cm.copy_file(absolute_file_path, report_storage)
-                logger.info("Report successfully copied")
-            else:
-                logger.error("File doesn't contain in the given location: " + str(absolute_file_path))
-
-
-#TODO: Improve the method in generic way to support all products
-# def set_custom_testng():
-#     if use_custom_testng_file == "TRUE":
-#         testng_source = Path(workspace + "/" + "testng.xml")
-#         testng_destination = Path(workspace + "/" + product_id + "/" + TESTNG_DIST_XML_PATH)
-#         testng_server_mgt_source = Path(workspace + "/" + "testng-server-mgt.xml")
-#         testng_server_mgt_destination = Path(workspace + "/" + product_id + "/" + TESTNG_SERVER_MGT_DIST)
-#         # replace testng source
-#         replace_file(testng_source, testng_destination)
-#         # replace testng server mgt source
-# replace_file(testng_server_mgt_source, testng_server_mgt_destination)
-
-
 def main():
     try:
         global logger
@@ -235,13 +192,16 @@ def main():
         engine = cm.db_engine.upper()
         db_meta_data = get_db_meta_data(engine)
         distribution_path = DISTRIBUTION_PATH
+        artifact_report_paths = ARTIFACT_REPORTS_PATHS
+        testng_dest = TESTNG_DIST_XML_PATH
+        testng_svr_mgt_dest = TESTNG_SERVER_MGT_DIST
 
         # construct database configuration
         cm.construct_db_config(db_meta_data)
         # clone the repository
         cm.clone_repo()
         # set the custom testng.xml or the product testng.xml
-        #set_custom_testng()
+        cm.set_custom_testng(testng_dest, testng_svr_mgt_dest)
 
         if cm.test_mode == "WUM":
             dist_name = cm.get_dist_name_wum()
@@ -265,7 +225,7 @@ def main():
             cm.build_module(module_path)
         intg_module_path = Path(cm.workspace + "/" + cm.product_id + "/" + INTEGRATION_PATH)
         cm.build_module(intg_module_path)
-        save_test_output()
+        cm.save_test_output(artifact_report_paths)
         cm.create_output_property_fle()
     except Exception as e:
         logger.error("Error occurred while running the run-intg.py script", exc_info=True)
