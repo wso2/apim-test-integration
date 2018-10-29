@@ -58,7 +58,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    else
       export PATH=$PATH:/usr/local/wum/bin
    fi
-
+   set +o xtrace
    wum init -u ${USER_NAME} -p ${PASSWORD}
 
    #pointing to WUM UAT environment
@@ -68,7 +68,7 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    #needs to initialize wum again to update the username in the config.yaml file
 
    wum init -u ${USER_NAME} -p ${PASSWORD}
-
+   set -o xtrace
    if [ -d "$PRODUCT_FILE_DIR" ]; then
       echo 'Updating the WUM Product....'
       set +e
