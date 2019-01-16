@@ -205,7 +205,6 @@ def main():
 
         if cm.test_mode == "WUM":
             dist_name = cm.get_dist_name_wum()
-
         elif cm.test_mode == "RELEASE":
             cm.checkout_to_tag()
             dist_name = cm.get_dist_name(pom_path)
@@ -221,10 +220,19 @@ def main():
 
         cm.setup_databases(db_names, db_meta_data)
         if cm.product_id == "product-apim":
-            module_path = Path(cm.workspace + "/" + cm.product_id + "/" + 'modules/api-import-export')
+            #module_path = Path(cm.workspace + "/" + cm.product_id + "/" + 'modules/api-import-export')
+            module_path = os.path.join(cm.workspace,cm.product_id,'modules/api-import-export')
             cm.build_module(module_path)
-        intg_module_path = Path(cm.workspace + "/" + cm.product_id + "/" + INTEGRATION_PATH)
-        cm.build_module(intg_module_path)
+        if cm.test_mode == "WUM":
+            support_nexus_build_file_path = os.path.join(cm.workspace,'uat-nexus-settings.xml')
+            intg_module_path = Path(cm.workspace + "/" + cm.product_id + "/modules/integration")
+            shutil.copy(support_nexus_build_file_path,intg_module_path)
+            # indetity_repo_path = Path(cm.workspace + "/identity-inbound-auth-oauth")
+            # cm.build_module_support(intg_module_path,indetity_repo_path)
+            cm.build_module_support(intg_module_path)
+        else:
+            intg_module_path = os.path.join(cm.workspace,cm.product_id,INTEGRATION_PATH)
+            cm.build_module(intg_module_path)
         cm.save_test_output(artifact_report_paths)
         cm.create_output_property_fle()
     except Exception as e:
