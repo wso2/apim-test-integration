@@ -17,10 +17,31 @@
 set -e
 set -o xtrace
 
+echo "=== Read values from deployment.properties for WUM ==="
+INPUTS_DIR=$2
+input_file=${INPUTS_DIR}/deployment.properties
+
+set +o xtrace
+
+while IFS='=' read -r key value
+  do
+    key=$(echo $key | tr '.' '_')
+    eval ${key}=\${value}
+  done < "$input_file"
+
+set -o xtrace
+
+PRODUCT_NAME=${PRODUCT_CODE}
+TEST_TYPE=${TEST_MODE}
+CHANNEL=${WUM_CHANNEL}
+PRODUCT_VERSION=${WUM_PRODUCT_VERSION}
+
 #Download the common scripts to working directory
 get_cmn_scripts_dwld(){
 git clone https://github.com/wso2-incubator/test-integration-tests-runner.git
 cp test-integration-tests-runner/intg_test_manager.py test-integration-tests-runner/intg_test_constant.py .
+cp test-integration-tests-runner/clone_product_repo_wum.sh test-integration-tests-runner/intg_test_constant.py .
+
 echo "=== Copied common scripts. ==="
 }
 
@@ -31,7 +52,7 @@ connect_to_wum_server(){
     do
         # wait for 15 seconds before check again
         sleep 15
-        wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+        wum add -y ${PRODUCT_NAME}-${PRODUCT_VERSION}
         if [ "$?" -eq "0" ]; then
             echo "Downloading WUM Pack.."
         else
@@ -46,11 +67,11 @@ set_product_pack(){
 TEST_MODE_1="WUM"
 
 #WUM product pack directory to check if its already exist
-PRODUCT_FILE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_CODE}"
+PRODUCT_FILE_DIR="/home/ubuntu/.wum3/products/${PRODUCT_NAME}"
 
-if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
-   wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.0/wum-3.0.0-linux-x64.tar.gz
-   echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.0-linux-x64.tar.gz
+if [ ${TEST_TYPE} == "$TEST_MODE_1" ]; then
+   wget -nv -nc https://product-dist.wso2.com/downloads/wum/3.0.2/wum-3.0.2-linux-x64.tar.gz
+   echo 1qaz2wsx@E | sudo -S tar -C /usr/local -xzf wum-3.0.2-linux-x64.tar.gz
 
    if [ "$?" -ne "0" ]; then
       echo "Error while untar the product pack or low disk space. Hence skipping the execution!"
@@ -72,21 +93,21 @@ if [ ${TEST_MODE} == "$TEST_MODE_1" ]; then
    if [ -d "$PRODUCT_FILE_DIR" ]; then
       echo 'Updating the WUM Product....'
       set +e
-      wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-      wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
+      wum update ${PRODUCT_NAME}-${PRODUCT_VERSION}
+      wum describe ${PRODUCT_NAME}-${PRODUCT_VERSION} ${CHANNEL}
       echo 'Product Path'
-      wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+      wum_path=$(wum describe ${PRODUCT_NAME}-${PRODUCT_VERSION} ${CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
       echo $wum_path
    else
       set +e
       echo 'Adding WUM Product...'
-      wum add -y ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
+      wum add -y ${PRODUCT_NAME}-${PRODUCT_VERSION}
         if [ "$?" -eq "0" ]; then
             echo 'Updating the WUM Product...'
-            wum update ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}
-            wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL}
+            wum update ${PRODUCT_NAME}-${PRODUCT_VERSION}
+            wum describe ${PRODUCT_NAME}-${PRODUCT_VERSION} ${CHANNEL}
             echo 'Product Path...'
-            wum_path=$(wum describe ${PRODUCT_CODE}-${WUM_PRODUCT_VERSION} ${WUM_CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
+            wum_path=$(wum describe ${PRODUCT_NAME}-${PRODUCT_VERSION} ${CHANNEL} | grep Product | grep Path |  grep "[a-zA-Z0-9+.,/,-]*$" -o)
             echo $wum_path
         else
             connect_to_wum_server
@@ -115,6 +136,8 @@ FILE8=testng.xml
 FILE9=testng-server-mgt.xml
 FILE10=$wum_path
 FILE11=prod_test_constant.py
+FILE12=clone_product_repo_wum.sh
+FILE13=uat-nexus-settings.xml
 
 PROP_KEY=keyFileLocation      #pem file
 PROP_OS=OS                       #OS name e.g. centos
@@ -238,11 +261,13 @@ if [ "${os}" = "Windows" ]; then
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE8} ${user}@${host}:${REM_DIR}
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE9} ${user}@${host}:${REM_DIR}
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE11} ${user}@${host}:${REM_DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE12} ${user}@${host}:${REM_DIR}
+  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE13} ${user}@${host}:${REM_DIR}
 
-  if [ ${TEST_MODE} = "WUM" ]; then
+  if [ ${TEST_TYPE} = "WUM" ]; then
     sshpass -p "${password}" ssh -q -o StrictHostKeyChecking=no ${user}@${host} mkdir -p "${REM_DIR}/storage"
     #rename the WUM .zip file and scp
-    sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no -r ${FILE10} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}.zip"
+    sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no -r ${FILE10} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_NAME}-${PRODUCT_VERSION}.zip"
   fi
 
   echo "=== Files copied successfully ==="
@@ -270,10 +295,12 @@ else
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE8} ${user}@${host}:${REM_DIR}
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE9} ${user}@${host}:${REM_DIR}
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}
+  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE12} ${user}@${host}:${REM_DIR}
+  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE13} ${user}@${host}:${REM_DIR}
 
-  if [ ${TEST_MODE} = "WUM" ]; then
+  if [ ${TEST_TYPE} = "WUM" ]; then
     ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p "${REM_DIR}/storage"
-    scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE10} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_CODE}-${WUM_PRODUCT_VERSION}.zip"
+    scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE10} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_NAME}-${PRODUCT_VERSION}.zip"
   fi
 
   echo "=== Files copied successfully ==="
