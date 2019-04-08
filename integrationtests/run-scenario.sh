@@ -261,10 +261,10 @@ if [ "${os}" = "Windows" ]; then
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE8} ${user}@${host}:${REM_DIR}
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE9} ${user}@${host}:${REM_DIR}
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE11} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE12} ${user}@${host}:${REM_DIR}
-  sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE13} ${user}@${host}:${REM_DIR}
 
   if [ ${TEST_TYPE} = "WUM" ]; then
+    sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE12} ${user}@${host}:${REM_DIR}
+    sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${FILE13} ${user}@${host}:${REM_DIR}
     sshpass -p "${password}" ssh -q -o StrictHostKeyChecking=no ${user}@${host} mkdir -p "${REM_DIR}/storage"
     #rename the WUM .zip file and scp
     sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no -r ${FILE10} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_NAME}-${PRODUCT_VERSION}.zip"
@@ -296,10 +296,10 @@ else
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE8} ${user}@${host}:${REM_DIR}
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE9} ${user}@${host}:${REM_DIR}
   scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE11} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE12} ${user}@${host}:${REM_DIR}
-  scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE13} ${user}@${host}:${REM_DIR}
 
   if [ ${TEST_TYPE} = "WUM" ]; then
+    scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE12} ${user}@${host}:${REM_DIR}
+    scp -o StrictHostKeyChecking=no -i ${key_pem} ${FILE13} ${user}@${host}:${REM_DIR}
     ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} mkdir -p "${REM_DIR}/storage"
     scp -o StrictHostKeyChecking=no -r -i ${key_pem} ${FILE10} ${user}@${host}:${REM_DIR}/storage/"${PRODUCT_NAME}-${PRODUCT_VERSION}.zip"
   fi
