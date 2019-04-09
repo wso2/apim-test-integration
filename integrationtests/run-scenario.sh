@@ -154,7 +154,7 @@ instance_id=`grep -w "$PROP_INSTANCE_ID" ${FILE1} | cut -d'=' -f2`
 user=''
 password=''
 host=`grep -w "$PROP_HOST" ${FILE1} | cut -d'=' -f2`
-CONNECT_RETRY_COUNT=20
+CONNECT_RETRY_COUNT=40
 
 #=== FUNCTION ==================================================================
 # NAME: request_ec2_password
