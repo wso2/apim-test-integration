@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DATASOURCE_PATHS = {"repository/conf/datasources/master-datasources.xml",
-                    "repository/conf/datasources/metrics-datasources.xml"}
+DATASOURCE_PATHS = {"repository/conf/deployment.toml"}
 M2_PATH = "am/wso2am"
 DIST_POM_PATH = "modules/distribution/product/pom.xml"
 LIB_PATH = "repository/components/lib"
@@ -32,37 +31,25 @@ ARTIFACT_REPORTS_PATHS = {
     "modules/integration/tests-integration/tests-backend/target/logs/automation.log"}
 DB_META_DATA = {
     "MYSQL": {"prefix": "jdbc:mysql://", "driverClassName": "com.mysql.jdbc.Driver", "jarName": "mysql.jar",
-              "DB_SETUP": {"WSO2_CARBON_DB": ['dbscripts/mysql5.7.sql'],
-                           "WSO2AM_DB": ['dbscripts/apimgt/mysql5.7.sql'],
-                           "WSO2AM_STATS_DB": [],
-                           "WSO2_MB_STORE_DB": ['dbscripts/mb-store/mysql-mb.sql'],
-                           "WSO2_METRICS_DB": ['dbscripts/metrics/mysql.sql']}
+              "DB_SETUP": {"WSO2_SHARED_DB": ['dbscripts/mysql.sql'],
+                           "WSO2AM_DB": ['dbscripts/apimgt/mysql.sql']}
               },
     "SQLSERVER-SE": {"prefix": "jdbc:sqlserver://",
                      "driverClassName": "com.microsoft.sqlserver.jdbc.SQLServerDriver", "jarName": "sqlserver-ex.jar",
-                     "DB_SETUP": {"WSO2_CARBON_DB": ['dbscripts/mssql.sql'],
-                                  "WSO2AM_DB": ['dbscripts/apimgt/mssql.sql'],
-                                  "WSO2AM_STATS_DB": [],
-                                  "WSO2_MB_STORE_DB": ['dbscripts/mb-store/mssql-mb.sql'],
-                                  "WSO2_METRICS_DB": ['dbscripts/metrics/mssql.sql']
+                     "DB_SETUP": {"WSO2_SHARED_DB": ['dbscripts/mssql.sql'],
+                                  "WSO2AM_DB": ['dbscripts/apimgt/mssql.sql']
                                   }
                      },
     "ORACLE-SE2": {"prefix": "jdbc:oracle:thin:@", "driverClassName": "oracle.jdbc.OracleDriver",
                    "jarName": "oracle-se.jar",
-                   "DB_SETUP": {"WSO2_CARBON_DB": ['dbscripts/oracle.sql'],
-                                "WSO2AM_DB": ['dbscripts/apimgt/oracle.sql'],
-                                "WSO2AM_STATS_DB": [],
-                                "WSO2_MB_STORE_DB": ['dbscripts/mb-store/oracle-mb.sql'],
-                                "WSO2_METRICS_DB": ['dbscripts/metrics/oracle.sql']
+                   "DB_SETUP": {"WSO2_SHARED_DB": ['dbscripts/oracle.sql'],
+                                "WSO2AM_DB": ['dbscripts/apimgt/oracle.sql']
                                 }
                    },
     "POSTGRESQL": {"prefix": "jdbc:postgresql://", "driverClassName": "org.postgresql.Driver",
                    "jarName": "postgres.jar",
-                   "DB_SETUP": {"WSO2_CARBON_DB": ['dbscripts/postgresql.sql'],
-                                "WSO2AM_DB": ['dbscripts/apimgt/postgresql.sql'],
-                                "WSO2AM_STATS_DB": [],
-                                "WSO2_MB_STORE_DB": ['dbscripts/mb-store/postgresql.sql'],
-                                "WSO2_METRICS_DB": ['dbscripts/metrics/postgresql.sql']
+                   "DB_SETUP": {"WSO2_SHARED_DB": ['dbscripts/postgresql.sql'],
+                                "WSO2AM_DB": ['dbscripts/apimgt/postgresql.sql']
                                 }
                    }
 }

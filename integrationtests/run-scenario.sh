@@ -38,7 +38,7 @@ PRODUCT_VERSION=${WUM_PRODUCT_VERSION}
 
 #Download the common scripts to working directory
 get_cmn_scripts_dwld(){
-git clone https://github.com/wso2-incubator/test-integration-tests-runner.git
+git clone --branch=public-new-config https://github.com/wso2-incubator/test-integration-tests-runner.git
 cp test-integration-tests-runner/intg_test_manager.py test-integration-tests-runner/intg_test_constant.py .
 cp test-integration-tests-runner/clone_product_repo_wum.sh test-integration-tests-runner/intg_test_constant.py .
 
@@ -272,13 +272,13 @@ if [ "${os}" = "Windows" ]; then
 
   echo "=== Files copied successfully ==="
   echo "Execution begins.. "
-  
+
   set +e #avoid exiting before files are copied from remote server
 
   sshpass -p "${password}" ssh -o StrictHostKeyChecking=no ${user}@${host} "${REM_DIR}/${FILE7}" ${REM_DIR}
   echo "=== End of execution ==="
   echo "Retrieving reports from instance.. "
-  mkdir -p ${OUTPUTS_DIR}/scenarios/integration-tests  
+  mkdir -p ${OUTPUTS_DIR}/scenarios/integration-tests
   sshpass -p "${password}" scp -r -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/surefire-reports ${OUTPUTS_DIR}/scenarios/integration-tests/
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/product-apim/modules/integration/tests-integration/tests-backend/target/logs/automation.log ${OUTPUTS_DIR}/scenarios/integration-tests/
   sshpass -p "${password}" scp -q -o StrictHostKeyChecking=no ${user}@${host}:${REM_DIR}/output.properties ${OUTPUTS_DIR}/scenarios/integration-tests/
@@ -305,7 +305,7 @@ else
   fi
 
   echo "=== Files copied successfully ==="
-  
+
   set +e #avoid exiting before files are copied from remote server
 
   ssh -o StrictHostKeyChecking=no -i ${key_pem} ${user}@${host} bash ${REM_DIR}/intg-test-runner.sh --wd ${REM_DIR}

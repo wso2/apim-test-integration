@@ -31,7 +31,7 @@ import urllib.request as urllib2
 from xml.dom import minidom
 from subprocess import Popen, PIPE
 import intg_test_manager as cm
-
+import os
 from prod_test_constant import DB_META_DATA, ARTIFACT_REPORTS_PATHS, DIST_POM_PATH, LIB_PATH, M2_PATH, \
     DISTRIBUTION_PATH, DATASOURCE_PATHS, POM_FILE_PATHS, INTEGRATION_PATH, TESTNG_DIST_XML_PATH, \
     TESTNG_SERVER_MGT_DIST
@@ -45,59 +45,49 @@ from intg_test_constant import NS, ZIP_FILE_EXTENSION, CARBON_NAME, VALUE_TAG, S
 database_names = []
 db_engine = None
 sql_driver_location = None
+apim_db_url = None
 
+apim_db = "WSO2AM_DB"
+shared_db = "WSO2_SHARED_DB"
 
 def get_db_meta_data(argument):
     switcher = DB_META_DATA
     return switcher.get(argument, False)
 
+def add_environmental_variables():
+    if MYSQL_DB_ENGINE == cm.database_config['db_engine'].upper():
+        apim_db_url = cm.database_config[
+            'url'] + "/" + apim_db + "?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false" \
+                                         "&amp;verifyServerCertificate=false"
+        shared_url = cm.database_config[
+                           'url'] + "/" + shared_db + \
+                     "?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false" \
+                     "&amp;verifyServerCertificate=false"
+        user = cm.database_config['user']
+    elif ORACLE_DB_ENGINE == cm.database_config['db_engine'].upper():
+        apim_db_url= cm.database_config['url'] + "/" + DEFAULT_ORACLE_SID
+        shared_url= cm.database_config['url'] + "/" + DEFAULT_ORACLE_SID
+        user = cm.database_config['user']
+    elif MSSQL_DB_ENGINE == cm.database_config['db_engine'].upper():
+        apim_db_url = cm.database_config['url'] + ";" + "databaseName=" + apim_db
+        shared_url = cm.database_config['url'] + ";" + "databaseName=" + shared_db
+        user = cm.database_config['user']
+    else:
+        shared_url = cm.database_config['url'] + "/" + shared_db
+        apim_db_url = cm.database_config['url'] + "/" + apim_db
+        user = cm.database_config['user']
+    password =  cm.database_config['password']
+    driver_class_name = cm.database_config['driver_class_name']
 
-def modify_datasources():
-    """Modify datasources files which are defined in the const.py. DB ulr, uname, pwd, driver class values are modifying.
-    """
-    for data_source in datasource_paths:
-        file_path = Path(storage_dist_abs_path / data_source)
-        if sys.platform.startswith('win'):
-            file_path = cm.winapi_path(file_path)
-        logger.info("Modifying datasource: " + str(file_path))
-        artifact_tree = ET.parse(file_path)
-        artifarc_root = artifact_tree.getroot()
-        data_sources = artifarc_root.find('datasources')
-        for item in data_sources.findall('datasource'):
-            database_name = None
-            for child in item:
-                if child.tag == 'name':
-                    database_name = child.text
-                # special checking for namespace object content:media
-                if child.tag == 'definition' and database_name:
-                    configuration = child.find('configuration')
-                    url = configuration.find('url')
-                    user = configuration.find('username')
-                    password = configuration.find('password')
-                    validation_query = configuration.find('validationQuery')
-                    drive_class_name = configuration.find('driverClassName')
-                    if MYSQL_DB_ENGINE == cm.database_config['db_engine'].upper():
-                        url.text = url.text.replace(url.text, cm.database_config[
-                            'url'] + "/" + database_name + "?autoReconnect=true&useSSL=false&requireSSL=false&"
-                                                           "verifyServerCertificate=false")
-                        user.text = user.text.replace(user.text, cm.database_config['user'])
-                    elif ORACLE_DB_ENGINE == cm.database_config['db_engine'].upper():
-                        url.text = url.text.replace(url.text, cm.database_config['url'] + "/" + DEFAULT_ORACLE_SID)
-                        user.text = user.text.replace(user.text, database_name)
-                        validation_query.text = validation_query.text.replace(validation_query.text,
-                                                                              "SELECT 1 FROM DUAL")
-                    elif MSSQL_DB_ENGINE == cm.database_config['db_engine'].upper():
-                        url.text = url.text.replace(url.text,
-                                                    cm.database_config['url'] + ";" + "databaseName=" + database_name)
-                        user.text = user.text.replace(user.text, cm.database_config['user'])
-                    else:
-                        url.text = url.text.replace(url.text, cm.database_config['url'] + "/" + database_name)
-                        user.text = user.text.replace(user.text, cm.database_config['user'])
-                    password.text = password.text.replace(password.text, cm.database_config['password'])
-                    drive_class_name.text = drive_class_name.text.replace(drive_class_name.text,
-                                                                          cm.database_config['driver_class_name'])
-                    database_names.append(database_name)
-        artifact_tree.write(file_path)
+    os.environ["SHARED_DATABASE_URL"] = shared_url
+    os.environ["SHARED_DATABASE_USERNAME"] = user
+    os.environ["SHARED_DATABASE_PASSWORD"] = password
+    os.environ["SHARED_DATABASE_DRIVER"] = driver_class_name
+    os.environ["API_MANAGER_DATABASE_URL"] = apim_db_url
+    os.environ["API_MANAGER_DATABASE_USERNAME"] = user
+    os.environ["API_MANAGER_DATABASE_PASSWORD"] = password
+    os.environ["API_MANAGER_DATABASE_DRIVER"] = driver_class_name
+    logger.info("Added environmental variables for integration test")
 
 
 def configure_product():
@@ -123,14 +113,12 @@ def configure_product():
         cm.attach_jolokia_agent(script_path)
         cm.copy_jar_file(Path(cm.database_config['sql_driver_location']), Path(storage_dist_abs_path / LIB_PATH))
 
-        if datasource_paths is not None:
-            modify_datasources()
-        else:
-            logger.info("datasource paths are not defined in the config file")
         os.remove(str(storage_zip_abs_path))
         cm.compress_distribution(configured_dist_storing_loc, storage_dir_abs_path)
         cm.add_distribution_to_m2(storage_dir_abs_path, M2_PATH)
         shutil.rmtree(configured_dist_storing_loc, onerror=cm.on_rm_error)
+        database_names.append(apim_db);
+        database_names.append(shared_db);
         return database_names
     except FileNotFoundError as e:
         logger.error("Error occurred while finding files", exc_info=True)
@@ -219,6 +207,8 @@ def main():
             raise Exception("Failed the product configuring")
 
         cm.setup_databases(db_names, db_meta_data)
+        # add Database environment Variables
+        add_environmental_variables()
         if cm.product_id == "product-apim":
             #module_path = Path(cm.workspace + "/" + cm.product_id + "/" + 'modules/api-import-export')
             module_path = os.path.join(cm.workspace,cm.product_id,'modules/api-import-export')
