@@ -49,7 +49,9 @@ apim_db_url = None
 
 apim_db = "WSO2AM_DB"
 shared_db = "WSO2_SHARED_DB"
-
+apim_db_user = None
+shared_db_user = None
+validation_query = None
 def get_db_meta_data(argument):
     switcher = DB_META_DATA
     return switcher.get(argument, False)
@@ -64,29 +66,44 @@ def add_environmental_variables():
                      "?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false" \
                      "&amp;verifyServerCertificate=false"
         user = cm.database_config['user']
+        apim_db_user = user
+        shared_db_user = user
+        validation_query = "SELECT 1"
     elif ORACLE_DB_ENGINE == cm.database_config['db_engine'].upper():
         apim_db_url= cm.database_config['url'] + "/" + DEFAULT_ORACLE_SID
         shared_url= cm.database_config['url'] + "/" + DEFAULT_ORACLE_SID
-        user = cm.database_config['user']
+        apim_db_user = apim_db
+        shared_db_user = shared_db
+        validation_query = "SELECT 1 FROM DUAL"
     elif MSSQL_DB_ENGINE == cm.database_config['db_engine'].upper():
         apim_db_url = cm.database_config['url'] + ";" + "databaseName=" + apim_db
         shared_url = cm.database_config['url'] + ";" + "databaseName=" + shared_db
         user = cm.database_config['user']
+        apim_db_user = user
+        shared_db_user = user
+        validation_query = "SELECT 1"
     else:
         shared_url = cm.database_config['url'] + "/" + shared_db
         apim_db_url = cm.database_config['url'] + "/" + apim_db
         user = cm.database_config['user']
+        validation_query = "SELECT 1"
+        apim_db_user = user
+        shared_db_user = user
+
     password =  cm.database_config['password']
     driver_class_name = cm.database_config['driver_class_name']
 
     os.environ["SHARED_DATABASE_URL"] = shared_url
-    os.environ["SHARED_DATABASE_USERNAME"] = user
+    os.environ["SHARED_DATABASE_USERNAME"] = shared_db_user
     os.environ["SHARED_DATABASE_PASSWORD"] = password
     os.environ["SHARED_DATABASE_DRIVER"] = driver_class_name
     os.environ["API_MANAGER_DATABASE_URL"] = apim_db_url
-    os.environ["API_MANAGER_DATABASE_USERNAME"] = user
+    os.environ["API_MANAGER_DATABASE_USERNAME"] = apim_db_user
     os.environ["API_MANAGER_DATABASE_PASSWORD"] = password
     os.environ["API_MANAGER_DATABASE_DRIVER"] = driver_class_name
+    os.environ["API_MANAGER_DATABASE_DRIVER"] = driver_class_name
+    os.environ["API_MANAGER_DATABASE_VALIDATION_QUERY"] = validation_query
+    os.environ["SHARED_DATABASE_VALIDATION_QUERY"] = validation_query
     logger.info("Added environmental variables for integration test")
 
 
