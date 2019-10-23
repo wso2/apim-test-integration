@@ -46,7 +46,7 @@ DB_META_DATA = {
                                 "WSO2AM_DB": ['dbscripts/apimgt/oracle.sql']
                                 }
                    },
-    "POSTGRESQL": {"prefix": "jdbc:postgresql://", "driverClassName": "org.postgresql.Driver",
+    "POSTGRES": {"prefix": "jdbc:postgresql://", "driverClassName": "org.postgresql.Driver",
                    "jarName": "postgres.jar",
                    "DB_SETUP": {"WSO2_SHARED_DB": ['dbscripts/postgresql.sql'],
                                 "WSO2AM_DB": ['dbscripts/apimgt/postgresql.sql']
