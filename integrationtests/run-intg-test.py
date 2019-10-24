@@ -228,8 +228,8 @@ def main():
         add_environmental_variables()
         if cm.product_id == "product-apim":
             #module_path = Path(cm.workspace + "/" + cm.product_id + "/" + 'modules/api-import-export')
-            module_path = os.path.join(cm.workspace,cm.product_id,'modules/api-import-export')
-            cm.build_module(module_path)
+            # module_path = os.path.join(cm.workspace,cm.product_id,'modules/api-import-export')
+            # cm.build_module(module_path)
         if cm.test_mode == "WUM":
             support_nexus_build_file_path = os.path.join(cm.workspace,'uat-nexus-settings.xml')
             intg_module_path = Path(cm.workspace + "/" + cm.product_id + "/modules/integration")
