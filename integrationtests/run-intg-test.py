@@ -17,6 +17,7 @@ import sys
 from xml.etree import ElementTree as ET
 import subprocess
 import wget
+import time
 import logging
 import inspect
 import os
@@ -100,7 +101,6 @@ def add_environmental_variables():
     os.environ["API_MANAGER_DATABASE_URL"] = apim_db_url
     os.environ["API_MANAGER_DATABASE_USERNAME"] = apim_db_user
     os.environ["API_MANAGER_DATABASE_PASSWORD"] = password
-    os.environ["API_MANAGER_DATABASE_DRIVER"] = driver_class_name
     os.environ["API_MANAGER_DATABASE_DRIVER"] = driver_class_name
     os.environ["API_MANAGER_DATABASE_VALIDATION_QUERY"] = validation_query
     os.environ["SHARED_DATABASE_VALIDATION_QUERY"] = validation_query
@@ -236,6 +236,9 @@ def main():
         else:
             intg_module_path = os.path.join(cm.workspace,cm.product_id,INTEGRATION_PATH)
             cm.build_module(intg_module_path)
+            logger.info("Sleeping 30 mins before test")
+            time.sleep(1800)
+            logger.info("Running test after 30 mins")            
         cm.save_test_output(artifact_report_paths)
         cm.create_output_property_fle()
     except Exception as e:
