@@ -235,10 +235,7 @@ def main():
             cm.build_module_support(intg_module_path)
         else:
             intg_module_path = os.path.join(cm.workspace,cm.product_id,INTEGRATION_PATH)
-            cm.build_module(intg_module_path)
-            logger.info("Sleeping 30 mins before test")
-            time.sleep(1800)
-            logger.info("Running test after 30 mins")            
+            cm.build_module(intg_module_path)   
         cm.save_test_output(artifact_report_paths)
         cm.create_output_property_fle()
     except Exception as e:
