@@ -174,7 +174,7 @@ request_ec2_password() {
     #Validate JSON
     if [ $(echo $responseJson | python -c "import sys,json;json.loads(sys.stdin.read());print 'Valid'") == "Valid" ]; then
       password=$(python3 -c "import sys, json;print(($responseJson)['PasswordData'])")
-      echo "Password received! : ${password}"
+      echo "Password received!"
     else
       echo "Invalid JSON response: $responseJson"
     fi
