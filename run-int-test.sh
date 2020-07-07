@@ -17,9 +17,9 @@
 #----------------------------------------------------------------------------
 
 PRODUCT_REPOSITORY_NAME=$2 # apim product integration tests repository
-API_IMPORT_EXPORT_MODULE_DIR="$PRODUCT_REPOSITORY_NAME/modules/api-import-export"
-INT_TEST_MODULE_DIR="$PRODUCT_REPOSITORY_NAME/modules/integration"
-NEXUS_SCRIPT_NAME="uat-nexus-settings.xml"
+API_IMPORT_EXPORT_MODULE_DIR="/opt/testgrid/workspace/$PRODUCT_REPOSITORY_NAME/modules/api-import-export"
+INT_TEST_MODULE_DIR="/opt/testgrid/workspace/$PRODUCT_REPOSITORY_NAME/modules/integration"
+NEXUS_SCRIPT_PATH="/opt/testgrid/workspace/uat-nexus-settings.xml"
 
 # export JAVA_HOME and other environment variables
 source /etc/environment
@@ -27,4 +27,4 @@ source /etc/environment
 # install api-import-export module
 cd $API_IMPORT_EXPORT_MODULE_DIR && mvn clean install -fae -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 # run integration tests
-cd $INT_TEST_MODULE_DIR  && mvn clean install -s $NEXUS_SCRIPT_NAME -fae -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+cd $INT_TEST_MODULE_DIR  && mvn clean install -s $NEXUS_SCRIPT_PATH -fae -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
