@@ -55,7 +55,7 @@ function install_jdk(){
 }
 
 log_info "Clone Product repository"
-git clone $PRODUCT_REPOSITORY --branch $PRODUCT_REPOSITORY_BRANCH
+git clone https://$PRODUCT_REPOSITORY --branch $PRODUCT_REPOSITORY_BRANCH
 
 mkdir -p $PRODUCT_REPOSITORY_PACK_DIR
 
