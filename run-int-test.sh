@@ -1,5 +1,3 @@
-#!/bin/bash
-
 #----------------------------------------------------------------------------
 #  Copyright (c) 2020 WSO2, Inc. http://www.wso2.org
 #
@@ -15,16 +13,45 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #----------------------------------------------------------------------------
+#!/bin/bash
 
-PRODUCT_REPOSITORY_NAME=$2 # apim product integration tests repository
-API_IMPORT_EXPORT_MODULE_DIR="/opt/testgrid/workspace/$PRODUCT_REPOSITORY_NAME/modules/api-import-export"
-INT_TEST_MODULE_DIR="/opt/testgrid/workspace/$PRODUCT_REPOSITORY_NAME/modules/integration"
-NEXUS_SCRIPT_PATH="/opt/testgrid/workspace/uat-nexus-settings.xml"
+WORKING_DIR=$(pwd)
 
-# export JAVA_HOME and other environment variables
+PRODUCT_REPOSITORY=$1
+PRODUCT_REPOSITORY_BRANCH=$2
+PRODUCT_REPOSITORY_NAME=$(echo $PRODUCT_REPOSITORY | rev | cut -d'/' -f1 | rev | cut -d'.' -f1)
+LOCAL_PRODUCT_PACK_LOCATION="/mnt/$(echo $PRODUCT_REPOSITORY_NAME | cut -d'-' -f2)"
+
+PRODUCT_REPOSITORY_PACK_DIR="$WORKING_DIR/$PRODUCT_REPOSITORY_NAME/modules/distribution/product/target"
+INT_TEST_MODULE_DIR="$WORKING_DIR/$PRODUCT_REPOSITORY_NAME/modules/integration"
+API_IMPORT_EXPORT_MODULE_DIR="$WORKING_DIR/$PRODUCT_REPOSITORY_NAME/modules/api-import-export"
+NEXUS_SCRIPT_NAME="uat-nexus-settings.xml"
+
+PRODUCT_NAME=$3
+PRODUCT_VERSION=$4
+
+GIT_USER=$5
+GIT_PASS=$6
+
+set -o xtrace
+
+function log_info(){
+    echo "[INFO][$(date '+%Y-%m-%d %H:%M:%S')]: $1"
+}
+
+echo "Test script running"
+
+log_info "Clone Product repository"
+git clone https://$GIT_USER:$GIT_PASS@$PRODUCT_REPOSITORY --branch $PRODUCT_REPOSITORY_BRANCH
+
+mkdir -p $PRODUCT_REPOSITORY_PACK_DIR
+
+log_info "Copying product pack to Repository"
+cd $LOCAL_PRODUCT_PACK_LOCATION && zip -qr $PRODUCT_NAME-$PRODUCT_VERSION.zip $PRODUCT_NAME-$PRODUCT_VERSION
+mv $PRODUCT_NAME-$PRODUCT_VERSION.zip $PRODUCT_REPOSITORY_PACK_DIR/.
+mv $WORKING_DIR/$NEXUS_SCRIPT_NAME $INT_TEST_MODULE_DIR/.
+
 source /etc/environment
 
-# install api-import-export module
 cd $API_IMPORT_EXPORT_MODULE_DIR && mvn clean install -fae -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-# run integration tests
-cd $INT_TEST_MODULE_DIR  && mvn clean install -s $NEXUS_SCRIPT_PATH -fae -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+cd $INT_TEST_MODULE_DIR  && mvn clean install -s $NEXUS_SCRIPT_NAME -fae -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
