@@ -39,7 +39,7 @@
 		},
 		{
 			"name": "postgres",
-			"file_name": "",
+			"file_name": "postgresql-42.2.14",
 			"driver": "org.postgresql.Driver",
             "database": 
             [
@@ -60,7 +60,7 @@
 		},
 		{
 			"name": "sqlserver",
-			"file_name": "",
+			"file_name": "mssql-jdbc-8.2.2",
 			"driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
             "database": 
             [
