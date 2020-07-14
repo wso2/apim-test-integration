@@ -59,7 +59,7 @@
 			"validation_query": "SELECT 1; COMMIT"
 		},
 		{
-			"name": "sqlserver",
+			"name": "sqlserver-se",
 			"file_name": "mssql-jdbc-8.2.2",
 			"driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
             "database": 
@@ -80,7 +80,7 @@
 			"validation_query": "SELECT 1; COMMIT"
 		},
 		{
-			"name": "oracle",
+			"name": "oracle-se2",
 			"file_name": "ojdbc8",
 			"driver": "oracle.jdbc.OracleDriver",
             "database": 
