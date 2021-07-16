@@ -23,6 +23,8 @@ PRODUCT_REPOSITORY=$1
 PRODUCT_REPOSITORY_BRANCH=$2
 PRODUCT_NAME=$3
 PRODUCT_VERSION=$4
+GIT_USER=$5
+GIT_PASS=$6
 
 PRODUCT_REPOSITORY_NAME=$(echo $PRODUCT_REPOSITORY | rev | cut -d'/' -f1 | rev | cut -d'.' -f1)
 PRODUCT_REPOSITORY_PACK_DIR="$TESTGRID_DIR/$PRODUCT_REPOSITORY_NAME/modules/distribution/product/target"
@@ -82,7 +84,7 @@ function export_db_params(){
 source /etc/environment
 
 log_info "Clone Product repository"
-git clone https://$PRODUCT_REPOSITORY $TESTGRID_DIR/${PRODUCT_REPOSITORY_NAME} --branch $PRODUCT_REPOSITORY_BRANCH
+git clone https://${GIT_USER}:${GIT_PASS}@$PRODUCT_REPOSITORY --branch $PRODUCT_REPOSITORY_BRANCH --single-branch
 
 log_info "Exporting JDK"
 install_jdk ${JDK_TYPE}
