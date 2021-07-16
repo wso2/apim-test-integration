@@ -100,7 +100,8 @@ sed -i "s|DB_NAME|${DB_NAME}|g" ${INFRA_JSON}
 export_db_params ${DB_TYPE}
 
 mkdir -p $PRODUCT_REPOSITORY_PACK_DIR
-
+log_info "sleeping for 30min"
+sleep 30m
 log_info "Copying product pack to Repository"
 [ -f $TESTGRID_DIR/$PRODUCT_NAME-$PRODUCT_VERSION-*.zip ] && rm -f $TESTGRID_DIR/$PRODUCT_NAME-$PRODUCT_VERSION-*.zip
 cd $TESTGRID_DIR && zip -qr $PRODUCT_PACK_NAME.zip $PRODUCT_PACK_NAME
