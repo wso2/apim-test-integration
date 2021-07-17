@@ -91,7 +91,7 @@ install_jdk ${JDK_TYPE}
 log_info "Sleep for 30 mins"
 sleep 15m
 db_file=$(jq -r '.jdbc[] | select ( .name == '\"${DB_TYPE}\"') | .file_name' ${INFRA_JSON})
-wget -q https://integration-testgrid-resources.s3.amazonaws.com/lib/jdbc/${db_file}.jar  -P $TESTGRID_DIR/${PRODUCT_NAME}-${PRODUCT_VERSION}-*/repository/components/lib
+wget -q https://integration-testgrid-resources.s3.amazonaws.com/lib/jdbc/${db_file}.jar  -P $TESTGRID_DIR/${PRODUCT_PACK_NAME}-*/repository/components/lib
 
 sed -i "s|DB_HOST|${CF_DB_HOST}|g" ${INFRA_JSON}
 sed -i "s|DB_USERNAME|${CF_DB_USERNAME}|g" ${INFRA_JSON}
