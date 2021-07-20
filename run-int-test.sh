@@ -88,8 +88,6 @@ git clone https://${GIT_USER}:${GIT_PASS}@$PRODUCT_REPOSITORY --branch $PRODUCT_
 
 log_info "Exporting JDK"
 install_jdk ${JDK_TYPE}
-log_info "Sleep for 30 mins"
-sleep 15m
 db_file=$(jq -r '.jdbc[] | select ( .name == '\"${DB_TYPE}\"') | .file_name' ${INFRA_JSON})
 wget -q https://integration-testgrid-resources.s3.amazonaws.com/lib/jdbc/${db_file}.jar  -P $TESTGRID_DIR/${PRODUCT_PACK_NAME}/repository/components/lib
 
