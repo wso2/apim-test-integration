@@ -80,6 +80,14 @@ function export_db_params(){
     export API_MANAGER_DATABASE_VALIDATION_QUERY=$(jq -r '.jdbc[] | select ( .name == '\"${db_name}\"' ) | .validation_query' ${INFRA_JSON})
     
 }
+function build_identity_inbound_oauth(){
+log_info "Cloning identity-inbound-auth-oauth support-6.4.2"
+git clone https://${GIT_USER}:${GIT_PASS}@github.com/wso2-support/identity-inbound-auth-oauth --branch support-6.4.2 --single-branch
+cd identity-inbound-auth-oauth/components/org.wso2.carbon.identity.oauth.stub
+log_info "Building identity-inbound-auth-oauth support-6.4.2"
+mvn clean install
+cd ../../../
+}
 
 source /etc/environment
 
@@ -97,7 +105,9 @@ sed -i "s|DB_PASSWORD|${CF_DB_PASSWORD}|g" ${INFRA_JSON}
 sed -i "s|DB_NAME|${DB_NAME}|g" ${INFRA_JSON}
 
 export_db_params ${DB_TYPE}
-
+if [ "$TEST_MODE" == "WUM" ]; then
+build_identity_inbound_oauth
+fi
 mkdir -p $PRODUCT_REPOSITORY_PACK_DIR
 log_info "Copying product pack to Repository"
 [ -f $TESTGRID_DIR/$PRODUCT_NAME-$PRODUCT_VERSION*.zip ] && rm -f $TESTGRID_DIR/$PRODUCT_NAME-$PRODUCT_VERSION*.zip
@@ -105,8 +115,4 @@ cd $TESTGRID_DIR && zip -qr $PRODUCT_PACK_NAME.zip $PRODUCT_PACK_NAME
 mv $TESTGRID_DIR/$PRODUCT_PACK_NAME.zip $PRODUCT_REPOSITORY_PACK_DIR/.
 log_info "install pack into local maven Repository"
 mvn install:install-file -Dfile=$PRODUCT_REPOSITORY_PACK_DIR/$PRODUCT_PACK_NAME.zip -DgroupId=org.wso2.am -DartifactId=wso2am -Dversion=$PRODUCT_VERSION -Dpackaging=zip --file=$PRODUCT_REPOSITORY_PACK_DIR/../pom.xml 
-if [ "$TEST_MODE" == "WUM" ]; then
-cd $INT_TEST_MODULE_DIR  && mvn clean install -fae -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Ptestgrid --settings ${TESTGRID_DIR}/uat-nexus-settings.xml
-else
 cd $INT_TEST_MODULE_DIR  && mvn clean install -fae -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Ptestgrid
-fi
