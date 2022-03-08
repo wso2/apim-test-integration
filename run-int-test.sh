@@ -86,8 +86,14 @@ source /etc/environment
 log_info "Clone Product repository"
 git clone https://${GIT_USER}:${GIT_PASS}@$PRODUCT_REPOSITORY --branch $PRODUCT_REPOSITORY_BRANCH --single-branch
 
-#log_info "Exporting JDK"
-#install_jdk ${JDK_TYPE}
+if [[ ${JDK_TYPE} == "TEMURIN_OPEN_JDK8" ]]
+   then
+    log_info "Exporting ${JDK_TYPE}"
+   else
+    log_info "Exporting ${JDK_TYPE}"
+    install_jdk ${JDK_TYPE}
+fi
+
 db_file=$(jq -r '.jdbc[] | select ( .name == '\"${DB_TYPE}\"') | .file_name' ${INFRA_JSON})
 wget -q https://integration-testgrid-resources.s3.amazonaws.com/lib/jdbc/${db_file}.jar  -P $TESTGRID_DIR/${PRODUCT_PACK_NAME}/repository/components/lib
 
