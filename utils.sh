@@ -6,3 +6,4 @@ isEmpty () {
         return 1;
     fi;
 }
+

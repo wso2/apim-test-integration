@@ -69,3 +69,4 @@ elif [[ $DB_ENGINE =~ 'mssql' ]]; then
     echo "SQL Server DB Engine Selected! Running WSO2-APIM 2.6.0 DB Scripts for SQL Server..."
     sqlcmd -S "$DB_HOST" -U "$DB_USERNAME" -P "$DB_PASSWORD" -i "./$DB_ENGINE/apim.sql"
 fi
+

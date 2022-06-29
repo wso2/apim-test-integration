@@ -186,3 +186,4 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
 
 cd "$workingdir"
+

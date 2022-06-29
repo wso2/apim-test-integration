@@ -32,3 +32,4 @@ echo "Delete fargate profile."
 eksctl delete fargateprofile  --name "${product_name}-fargate-profile" --cluster "${EKS_CLUSTER_NAME}" --region ${EKS_CLUSTER_REGION}
 
 cd "$workingdir"
+
