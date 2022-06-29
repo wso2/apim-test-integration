@@ -1,0 +1,20 @@
+[
+  "^.*Digester Match .* failed to set property .* to .*$",
+  "^.*ApplicationManagementServiceComponent Templates directory not found at .*$",
+  "^.*SSLUtilBase The trusted certificate with alias .* and DN .* is not valid due to .*. Certificates signed by this trusted certificate WILL be accepted.*$",
+  "^.*GlobalThrowableMapper An unknown exception has been captured by the global exception mapper.*$",
+  "^.*KeyManagerConfigurationDataRetriever Failed retrieving Key Manager Configurations from remote endpoint. Retrying after .*$",
+  "^.*GlobalThrowableMapper No API Artifacts.*$",
+  "^.*APIManagerComponent Failed create default roles for tenant .*$",
+  "^.*DataEndpointConnectionWorker Error while trying to connect to the endpoint. Cannot borrow client for .*$",
+  "^.*DataEndpointGroup No receiver is reachable at URL Endpoint/Endpoints .*, will try to reconnect every .*$",
+  "^.*DataEndpointConnectionWorker Error while trying to connect to the endpoint. Cannot borrow client for .*$",
+  "^.*RegistryConfigurationProcessor Could not find the handler class .*. This handler will not be registered. All handler and filter classes should be in the class path of the Registry.*$",
+  "^.*IdentityEventServiceComponent Properties for userPostSelfRegistration is not configured. This event handler will not be activated.*$",
+  "^.*ReservedUserCreationObserver Error occurred while getting the realm configuration, User store properties might not be returned.*$",
+  "^.*JDBCAuthorizationManager .* is already added to the .*$",
+  "^.*ApiMgtDAO Application Policy .* in tenant domain - .* is already persisted.*$",
+  "^.*DefaultClaimMetadataStore Error while adding claim dialect http://wso2.org/claims.*$",
+  "^.*$"
+]
+
