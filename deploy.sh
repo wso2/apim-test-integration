@@ -83,8 +83,6 @@ else
     exit 1;
 fi;
 
-echo "Details : $dbDriver $driverUrl $dbType";
-
 
 # Download DB scripts from S3 bucket.
 mkdir "${db_engine}"
@@ -108,7 +106,7 @@ eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_n
 # Extract DB port and DB host name detail.
 dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCPort`].OutputValue' --output text | xargs)
 dbHost=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCConnectionString`].OutputValue' --output text | xargs)
-echo "db details DB port : $dbPort, DB host : $dbHost"
+echo "Db details DB port : $dbPort, DB host : $dbHost"
 
 if [ "${db_engine}" = "postgres" ];
     then 
@@ -130,9 +128,6 @@ else
     echo "The specified DB engine not supported.";
     exit 1;
 fi;
-
-echo "Details : $dbDriver $driverUrl $dbType";
-
 
 
 # Validate DB Port.
