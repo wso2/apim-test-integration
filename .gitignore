@@ -4,6 +4,12 @@
 # Log file
 *.log
 
+# Ignored folders
+cypress/videos/
+cypress/screenshots/
+cypress/reports/
+node_modules
+
 # BlueJ files
 *.ctxt
 
