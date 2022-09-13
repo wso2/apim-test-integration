@@ -18,34 +18,37 @@
 
 import Utils from "@support/utils";
 
-describe("Anonymous view apis", () => {
-    const { publisher, developer, password, } = Utils.getUserInfo();
+describe("devportal-002-01 : Subscribe unsubscribe to app from application view ", () => {
+    const { publisher, developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
-    const apiName = Utils.generateName();
+    let apiName;
     const apiContext = apiName;
     let testApiId;
-    const appName = Utils.generateName();
+    let appName;
     const appDescription = 'app description';
+    let activeTenant;
 
-    it.only("Subscribe unsubscribe to app from application view", () => {
-        cy.loginToPublisher(publisher, password);
+    const subscribeUnsubscribeToAppFromApp = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             cy.log("API ID", apiId);
             cy.log("API Name", apiName);
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
                 cy.logoutFromPublisher();
-                cy.loginToDevportal(developer, password);
-                cy.createApp(appName, appDescription);
-                cy.visit(`/devportal/applications?tenant=carbon.super`);
+                cy.loginToDevportal(developer, password, tenant);
+                appName = Utils.generateName();
+                cy.createApp(appName, appDescription, tenant);
+                cy.visit(`/devportal/applications?${tenant}`);
                 cy.get(`#itest-application-list-table td a`, {timeout: Cypress.config().largeTimeout}).contains(appName).click();
 
                 // Go to application subscription page
                 cy.get('#left-menu-subscriptions').click();
                 cy.intercept('**/apis**').as('apiGetFirst');
                 cy.contains('Subscribe APIs', {timeout: Cypress.config().largeTimeout}).click();
-                cy.wait('@apiGetFirst', {timeout: Cypress.config().largeTimeout}).then(() => {
+                cy.wait('@apiGetFirst', { timeout: 30000 }).then(() => {
                     cy.wait(2000)
                     cy.get('[aria-labelledby="simple-dialog-title"]').find('input[placeholder="Search APIs"]').click().type(apiName+"{enter}");
                     cy.contains('1-1 of 1'); 
@@ -76,11 +79,18 @@ describe("Anonymous view apis", () => {
 
             });
         })
-
+    }
+    it.only("Subscribe unsubscribe to app from application view - super admin", () => {
+        activeTenant = superTenant;
+        subscribeUnsubscribeToAppFromApp(superTenant);
+    })
+    it.only("Subscribe unsubscribe to app from application view - tenant user", () => {
+        activeTenant = testTenant;
+        subscribeUnsubscribeToAppFromApp(testTenant);
     })
 
     after(() => {
-        cy.deleteApp(appName + '2');
+        cy.deleteApp(appName + '2', activeTenant);
         Utils.deleteAPI(testApiId);
     })
 })

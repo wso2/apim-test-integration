@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,34 +17,34 @@
  */
 import PublisherComonPage from './PublisherComonPage';
 class APIMenuPage extends PublisherComonPage{
-    getUrl(apiID){
+    static getUrl(apiID){
         return `publisher/apis/${apiID}/overview`;
     }
-    getPortalConfigurationsMenu(){
+    static getPortalConfigurationsMenu(){
         return cy.get('#itest-api-details-portal-config-acc > div > div > p')
     }
-    getPortalConfigurations_BasicInforMenu(){
+    static getPortalConfigurations_BasicInforMenu(){
         return cy.get('#left-menu-itemDesignConfigurations')
     }
-    getApiConfigurationsMenu(){
+    static getApiConfigurationsMenu(){
         cy.get('#itest-api-details-api-config-acc')
     }
-    getAPIConfigurationsMenu(){
+    static getAPIConfigurationsMenu(){
         return cy.get('#itest-api-details-api-config-acc')
     }
-    getAPIConfigurationsMenu_ResourcesMenu(){
+    static getAPIConfigurationsMenu_ResourcesMenu(){
         return cy.get('#left-menu-itemresources')
     }
-    getAPIConfigurationsMenu_LocalScopesMenu(){
+    static getAPIConfigurationsMenu_LocalScopesMenu(){
         return cy.get('#left-menu-itemLocalScopes')
     }
-    getAPIConfigurationsMenu_DocumentsMenu(){
+    static getAPIConfigurationsMenu_DocumentsMenu(){
         return cy.get('#left-menu-itemdocuments')
     }
-    getDeploy_DeployementsMenu(){
+    static getDeploy_DeployementsMenu(){
         return cy.get('#left-menu-itemdeployments')
     }
-    getPublish_LifecycleMenu(){
+    static getPublish_LifecycleMenu(){
         return cy.get('#left-menu-itemlifecycle')
     }
 }

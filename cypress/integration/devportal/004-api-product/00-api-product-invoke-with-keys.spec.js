@@ -16,8 +16,8 @@
 
 import Utils from "@support/utils";
 
-describe("Invoke API Product", () => {
-    const { publisher, developer, password, } = Utils.getUserInfo();
+describe("devportal-004-00 : Invoke API Product with keys", () => {
+    const { publisher, developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
     const apiName = Utils.generateName();
@@ -27,13 +27,8 @@ describe("Invoke API Product", () => {
     const appName = Utils.generateName();
     const appDescription = 'Testing app ';
     const productName = Utils.generateName();
-    it("Invoke API Product using Oauth 2 and API Key", {
-        retries: {
-            runMode: 3,
-            openMode: 0,
-        },
-    }, () => {
-        cy.loginToPublisher(publisher, password);
+    const apiProductInvokeWithKeys = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         cy.visit(`/publisher/apis`);
         // cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.visit(`/publisher/apis/create/openapi`);
@@ -111,11 +106,11 @@ describe("Invoke API Product", () => {
                         cy.logoutFromPublisher();
 
                         //Log into developer portal
-                        cy.loginToDevportal(developer, password);
+                        cy.loginToDevportal(developer, password, tenant);
 
                         //Test with Oath2 Token
-                        cy.visit(`/devportal/applications/create?tenant=carbon.super`);
-                        cy.createApp(appName, appDescription);
+                        cy.visit(`/devportal/applications/create?tenant=${tenant}`);
+                        cy.createApp(appName, appDescription, tenant);
 
                         cy.get('#production-keys-oauth').click();
                         cy.get('#generate-keys', { timeout: 30000 }).click();
@@ -161,7 +156,7 @@ describe("Invoke API Product", () => {
 
                         //Test with API Key
                         const appName2 = Utils.generateName();
-                        cy.createApp(appName2, appDescription);
+                        cy.createApp(appName2, appDescription, tenant);
                         cy.location('pathname').then((pathName) => {
                             const pathSegments = pathName.split('/');
                             const uuidApp = pathSegments[pathSegments.length - 2];
@@ -208,7 +203,7 @@ describe("Invoke API Product", () => {
                         cy.logoutFromDevportal();
 
 
-                        cy.loginToPublisher(publisher, password);
+                        cy.loginToPublisher(publisher, password, tenant);
 
                         // Deleting the api and api product
                         cy.visit(`/publisher/api-products/${uuidProduct}/overview`);
@@ -224,7 +219,23 @@ describe("Invoke API Product", () => {
                 });
             });
         });
+    }
+    it("Invoke API Product using Oauth 2 and API Key - super admin", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        apiProductInvokeWithKeys(superTenant);
 
+    });
+    it("Invoke API Product using Oauth 2 and API Key - tenant user", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        apiProductInvokeWithKeys(testTenant);
     });
     after(() => {
         Utils.deleteAPIProduct(testProductId);

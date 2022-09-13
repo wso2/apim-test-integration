@@ -18,15 +18,13 @@
 
 import Utils from "@support/utils";
 
-describe("Make api the default version", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-005-01 : Make api the default version", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-    it.only("Add Authorization Header for the api", () => {
+    const makeApiTheDefaultVersion = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
@@ -40,5 +38,11 @@ describe("Make api the default version", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+    it.only("Add Authorization Header for the api - super admin", () => {
+        makeApiTheDefaultVersion(superTenant);
+    });
+    it.only("Add Authorization Header for the api - tenant user", () => {
+        makeApiTheDefaultVersion(testTenant);
     });
 });

@@ -16,21 +16,14 @@
 
 import Utils from "@support/utils";
 
-describe("Mock the api response and test it", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-013-03 : Mock the api response and test it", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const productName = Utils.generateName();
     const apiName = Utils.generateName();
     let testApiID;
-    beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it("Mock the api response and test it", {
-        retries: {
-            runMode: 3,
-            openMode: 0,
-        },
-    }, () => {
+    
+    const undeployNewRevisionOfApiProduct = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Cypress.on('uncaught:exception', (err, runnable) => {
             // returning false here prevents Cypress from
             // failing the test
@@ -111,6 +104,23 @@ describe("Mock the api response and test it", () => {
                 });
             });    
         });
+    }
+
+    it("Mock the api response and test it - super admin", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        undeployNewRevisionOfApiProduct(superTenant);
+    });
+    it("Mock the api response and test it - tenant user", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        undeployNewRevisionOfApiProduct(testTenant);
     });
     afterEach(() => {
         Utils.deleteAPI(testApiID);

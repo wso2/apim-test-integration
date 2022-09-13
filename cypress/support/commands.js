@@ -19,7 +19,10 @@
 import Utils from "@support/utils";
 import 'cypress-file-upload';
 
-Cypress.Commands.add('carbonLogin', (username, password) => {
+Cypress.Commands.add('carbonLogin', (username, password, tenant = 'carbon.super') => {
+    if (username != 'carbon.super') {
+        username = `${username}@${tenant}`
+    }
     Cypress.log({
         name: 'carbonLogin',
         message: `${username} | ${password}`,
@@ -32,10 +35,13 @@ Cypress.Commands.add('carbonLogin', (username, password) => {
 })
 
 Cypress.Commands.add('carbonLogout', () => {
-    cy.get('[href="../admin/logout_action.jsp"]').click();
+    cy.visit('/carbon/admin/logout_action.jsp');
 })
 
-Cypress.Commands.add('portalLogin', (username, password, portal) => {
+Cypress.Commands.add('portalLogin', (username, password, tenant, portal) => {
+    if (tenant != 'carbon.super') {
+        username = `${username}@${tenant}`;
+    }
     Cypress.log({
         name: 'portalLogin',
         message: `${username} | ${password}`,
@@ -43,7 +49,7 @@ Cypress.Commands.add('portalLogin', (username, password, portal) => {
 
     cy.visit(`/${portal}`);
     if (portal === 'devportal') {
-        cy.visit(`/devportal/apis?tenant=carbon.super`);
+        cy.visit(`/devportal/apis?tenant=${tenant}`);
         cy.get('#itest-devportal-sign-in', {timeout: Cypress.config().largeTimeout}).click();
     }
     cy.url().should('contains', `/authenticationendpoint/login.do`);
@@ -54,16 +60,16 @@ Cypress.Commands.add('portalLogin', (username, password, portal) => {
     cy.url().should('contains', `/${portal}`);
 })
 
-Cypress.Commands.add('loginToPublisher', (username, password) => {
-    cy.portalLogin(username, password, 'publisher');
+Cypress.Commands.add('loginToPublisher', (username, password, tenant = 'carbon.super') => {
+    cy.portalLogin(username, password, tenant, 'publisher');
 })
 
-Cypress.Commands.add('loginToDevportal', (username, password) => {
-    cy.portalLogin(username, password, 'devportal');
+Cypress.Commands.add('loginToDevportal', (username, password, tenant = 'carbon.super') => {
+    cy.portalLogin(username, password, tenant, 'devportal');
 })
 
-Cypress.Commands.add('loginToAdmin', (username, password) => {
-    cy.portalLogin(username, password, 'admin');
+Cypress.Commands.add('loginToAdmin', (username, password, tenant = 'carbon.super') => {
+    cy.portalLogin(username, password, tenant, 'admin');
 })
 
 Cypress.Commands.add('addNewTenant', (tenant = 'wso2.com', username = 'admin', password = 'admin') => {
@@ -111,20 +117,6 @@ Cypress.Commands.add('addNewUser', (name = 'newuser', roles = [], password = 'te
     // cy.get('#messagebox-info p').contains(`User PRIMARY/${name} is added successfully.`).should('exist');
 })
 
-Cypress.Commands.add('addNewTenantUser', (
-    tenantUser,
-    password = 'test123',
-    tenantRoles = ['Internal/publisher', 'Internal/creator', 'Internal/subscriber', 'Internal/everyone'],
-    tenant = 'wso2.com',
-    tenantAdminUsername = 'admin',
-    tenantAdminPassword = 'admin'
-) => {
-    cy.addNewTenant(tenant, tenantAdminUsername, tenantAdminPassword);
-    cy.reload();
-    cy.carbonLogout();
-    cy.carbonLogin(`${tenantAdminUsername}@${tenant}`, tenantAdminPassword);
-    cy.addNewUser(tenantUser, tenantRoles, password);
-})
 
 Cypress.Commands.add('deleteUser', (name) => {
     cy.get(`[onClick="deleteUser(\\'${name}\\')"]`).click();
@@ -136,8 +128,8 @@ Cypress.Commands.add('deleteUser', (name) => {
 Cypress.Commands.add('deleteApi', (name, version) => {
     var cardName='card-'+name+version;
     var actionCardName='card-action-'+name+version;
-    cy.intercept('**/apis*').as('getApis');
     cy.visit(`/publisher/apis`);
+    cy.intercept('**/apis*').as('getApis');
     cy.wait('@getApis', {timeout: Cypress.config().largeTimeout}).then(() => {
         cy.get(`[data-testid="${cardName}"]`).get(`[data-testid="${actionCardName}"]`).within(($panel) => {
             cy.get("#itest-id-deleteapi-icon-button", { timeout: 30000 }).click();
@@ -508,8 +500,8 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name=null,version=null,type = 
     cy.get('#itest-api-name-version').contains(`${apiVersion}`);
 })
 
-Cypress.Commands.add('createApp', (appName, appDescription) => {
-    cy.visit(`/devportal/applications/create?tenant=carbon.super`);
+Cypress.Commands.add('createApp', (appName, appDescription, tenant = 'carbon.super') => {
+    cy.visit(`/devportal/applications/create?tenant=${tenant}`);
     cy.intercept('**/application-attributes').as('attrGet');
     cy.wait('@attrGet', { timeout: 300000 }).then(() => {
         // Filling the form
@@ -526,9 +518,9 @@ Cypress.Commands.add('createApp', (appName, appDescription) => {
     })
 });
 
-Cypress.Commands.add('deleteApp', (appName) => {
-    cy.visit(`/devportal/applications?tenant=carbon.super`);
+Cypress.Commands.add('deleteApp', (appName, tenant = 'carbon.super') => {
     cy.intercept('**/applications**').as('appGet');
+    cy.visit(`/devportal/applications?tenant=${tenant}`);
     cy.wait('@appGet', { timeout: 300000 }).then(() => {
         cy.get(`#delete-${appName}-btn`, { timeout: 30000 });
         cy.get(`#delete-${appName}-btn`).click({force:true});
@@ -605,7 +597,8 @@ Cypress.Commands.add('logoutFromPublisher', () => {
 })
 
 Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
-    cy.get('[area-label="Go to ThirdPartyApi"]', {timeout: Cypress.config().largeTimeout}).click();
+    cy.get("#searchQuery").type(apiName).type('{enter}')
+    cy.get(`[area-label="Go to ${apiName}"]`, {timeout: Cypress.config().largeTimeout}).click();
 
     //Check if the subscriptions, tryout, comments and SDKs sections are present
     cy.get('#left-menu-credentials').should('exist');

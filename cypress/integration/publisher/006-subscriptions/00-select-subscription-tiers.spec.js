@@ -19,16 +19,13 @@
 import Utils from "@support/utils";
 
 
-describe("Select subscription tiers for the API", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-006-00 : Select subscription tiers for the API", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Select subscription tiers for the API", () => {
+    const selectSubscriptionTiers = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
@@ -43,5 +40,12 @@ describe("Select subscription tiers for the API", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Select subscription tiers for the API - super admin", () => {
+        selectSubscriptionTiers(superTenant);
+    });
+    it.only("Select subscription tiers for the API - tenant user", () => {
+        selectSubscriptionTiers(testTenant);
     });
 });

@@ -2,22 +2,13 @@ import { getSampleServiceMeta, getSampleOpenAPI } from '../../../support/mockDat
 import Utils from "@support/utils";
 
 
-describe("Service catalog create flow", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-016-00 : Service catalog create flow", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
 
-    beforeEach(function () {
+    const serviceCreate = (tenant) => {
         // login before each test
         cy.viewport(1920, 980)
-        cy.loginToPublisher(publisher, password)
-    })
-    it.skip("Deploy sample service", () => {
-        cy.visit(`/publisher/service-catalog`);
-        cy.get('#itest-service-catalog-onboarding').should('be.visible')
-        cy.get('#itest-services-landing-deploy-sample').click()
-
-    });
-
-    it("Create 15~25 services", () => {
+        cy.loginToPublisher(publisher, password, tenant)
         cy.getCookies()
             .then((cookies) => {
                 let i = Utils.getRandomRange(15, 25);
@@ -56,7 +47,19 @@ describe("Service catalog create flow", () => {
 
             })
         cy.visit(`/publisher/service-catalog`);
+    }
+    it.skip("Deploy sample service", () => {
+        cy.visit(`/publisher/service-catalog`);
+        cy.get('#itest-service-catalog-onboarding').should('be.visible')
+        cy.get('#itest-services-landing-deploy-sample').click()
 
+    });
+
+    it("Create 15~25 services - super admin", () => {
+        serviceCreate(superTenant);
+    });
+    it("Create 15~25 services - tenant user", () => {
+        serviceCreate(testTenant);
     });
 
 

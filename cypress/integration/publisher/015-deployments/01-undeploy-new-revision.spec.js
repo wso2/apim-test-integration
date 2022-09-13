@@ -18,19 +18,11 @@
 
 import Utils from "@support/utils";
 
-describe("Undeploy new revision", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-015-01 : Undeploy new revision", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
-    beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Create new revision and undeploy", {
-        retries: {
-          runMode: 3,
-          openMode: 0,
-        },
-      }, () => {
+    const undeployNewRevision = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPIWithEndpoints({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             // Going to deployments page
@@ -48,5 +40,22 @@ describe("Undeploy new revision", () => {
             cy.get('#revision-selector').should('exist');
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Create new revision and undeploy - super admin", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        undeployNewRevision(superTenant);
+    });
+    it.only("Create new revision and undeploy - tenant user", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        undeployNewRevision(testTenant);
     });
 });

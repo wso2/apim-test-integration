@@ -18,13 +18,11 @@
 
 import Utils from "@support/utils";
 
-describe("creating document", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-012-00 : creating document", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-    it.only("Creating inline document", () => {
+    const addEditInlineDocument = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         const documentName = 'api_document';
         const documentSummary = 'api document summery';
         Utils.addAPI({}).then((apiId) => {
@@ -46,5 +44,11 @@ describe("creating document", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+    it.only("Creating inline document - super admin", () => {
+        addEditInlineDocument(superTenant);
+    });
+    it.only("Creating inline document - tenant user", () => {
+        addEditInlineDocument(testTenant);
     });
 });

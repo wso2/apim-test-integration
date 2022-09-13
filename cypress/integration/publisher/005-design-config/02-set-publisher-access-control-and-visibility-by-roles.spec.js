@@ -18,16 +18,13 @@
 
 import Utils from "@support/utils";
 
-describe("Set publisher access control and visibility by roles", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-005-02 : Set publisher access control and visibility by roles", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Set role based API Store visibility and access control for the api", () => {
+    const setPublisherAccessControAndVisibilityByRoles = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         const role = 'internal/everyone';
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
@@ -56,5 +53,12 @@ describe("Set publisher access control and visibility by roles", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Set role based API Store visibility and access control for the api - super admin", () => {
+        setPublisherAccessControAndVisibilityByRoles(superTenant);
+    });
+    it.only("Set role based API Store visibility and access control for the api - tenant user", () => {
+        setPublisherAccessControAndVisibilityByRoles(testTenant);
     });
 });

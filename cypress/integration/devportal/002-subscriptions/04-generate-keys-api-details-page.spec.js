@@ -18,27 +18,31 @@
 
 import Utils from "@support/utils";
 
-describe("Generate keys from api details page", () => {
-    const { publisher, developer, password, } = Utils.getUserInfo();
+describe("devportal-002-04 : Generate keys from api details page", () => {
+    const { publisher, developer, password, superTenant, testTenant} = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
-    const apiName = Utils.generateName();
-    const apiContext = apiName;
+    let apiName;
+    let apiContext;
     let testApiId;
-    const appName = Utils.generateName();
-    it.only("Generate keys from api details page", () => {
-        cy.loginToPublisher(publisher, password);
+    let activeTenant;
+    let appName;
+    const generateKeysApiDetailsPage = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();
+        apiContext = apiName;
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
                 // TODO: Proper error handling here instead of cypress wait
                 cy.logoutFromPublisher();
-                cy.loginToDevportal(developer, password);
+                cy.loginToDevportal(developer, password, tenant);
 
                 // Create an app and subscribe
-                cy.createApp(appName, 'application description');
-                cy.visit(`/devportal/apis?tenant=carbon.super`);
-                cy.url().should('contain', '/apis?tenant=carbon.super');
+                appName = Utils.generateName();
+                cy.createApp(appName, 'application description', tenant);
+                cy.visit(`/devportal/apis?tenant=${tenant}`);
+                cy.url().should('contain', `/apis?tenant=${tenant}`);
                 cy.get(`[title="${apiName}"]`, { timeout: 30000 });
                 cy.get(`[title="${apiName}"]`).click();
                 cy.get('#left-menu-credentials').click();
@@ -56,11 +60,18 @@ describe("Generate keys from api details page", () => {
                 cy.get('#consumer-key').should('exist');
             })
         })
-
+    }
+    it.only("Generate keys from api details page - super admin", () => { 
+        activeTenant = superTenant;  
+        generateKeysApiDetailsPage(superTenant);
+    })
+    it.only("Generate keys from api details page - tenant user", () => {   
+        activeTenant = testTenant;
+        generateKeysApiDetailsPage(testTenant);
     })
 
     after(() => {
-        cy.deleteApp(appName);
+        cy.deleteApp(appName, activeTenant);
         Utils.deleteAPI(testApiId);
     })
 })

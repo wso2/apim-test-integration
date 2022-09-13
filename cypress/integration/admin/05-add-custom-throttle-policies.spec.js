@@ -16,7 +16,7 @@
  * under the License.
  */
 
-describe("Add custom throttle policies", () => {
+describe("admin-05 : Add custom throttle policies", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 

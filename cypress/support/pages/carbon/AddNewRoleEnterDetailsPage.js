@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,25 +16,25 @@
  * under the License.
  */
 class AddNewRoleEnterDetailsPage {
-    getUrl(){
+    static getUrl(){
         return "/carbon/role/add-step1.jsp";
     }
-    getDomainDropdown(){
+    static getDomainDropdown(){
         return cy.get("#domain")
     }
-    getRoleNameTextBox(){
+    static getRoleNameTextBox(){
         return cy.get("input[name='roleName']");
     }
-    getDomainDropdown(){
+    static getDomainDropdown(){
         return cy.get('#domain');
     }
-    getNextButton(){
+    static getNextButton(){
         return cy.get('input[value="Next >"]');
     }
-    getFinishButton(){
+    static getFinishButton(){
         return cy.get("");
     }
-    getCancelButton(){
+    static getCancelButton(){
         return cy.get("");
     }
 }

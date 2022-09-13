@@ -16,14 +16,14 @@
  * under the License.
  */
 
-describe("Add key manager", () => {
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+import Utils from "@support/utils";
 
-    before(function () {
-        cy.loginToAdmin(carbonUsername, carbonPassword);
-    })
-    it.only("Add key manager", () => {
+describe("admin-09 : Add key manager", () => {
+    
+    const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
+
+    const addKeyManager = (usernameLocal, passwordLocal, tenant) => {
+        cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
         const km = 'myAuth0';
         const wellKnowUrl = 'https://my-tenant.us.auth0.com/.well-known/openid-configuration';
         const clientId = 'test';
@@ -57,6 +57,12 @@ describe("Add key manager", () => {
         cy.get(`[data-testid="${km}-actions"] > span:first-child svg`).click();
         cy.get('button > span').contains('Delete').click();
         cy.get('td > div').contains(km).should('not.exist');
+    }
+    it.only("Add key manager - super admin", () => {
+        addKeyManager(carbonUsername, carbonPassword, superTenant);
+    });
+    it.only("Add key manager - tenant user", () => {
+        addKeyManager(carbonUsername, carbonPassword, testTenant);
     });
 
 })

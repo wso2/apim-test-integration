@@ -16,17 +16,18 @@
 
 import Utils from "@support/utils";
 
-describe("Change subscription tier of an application", () => {
-    const { publisher, developer, password, } = Utils.getUserInfo();
+describe("devportal-002-03 : Change subscription tier of an application", () => {
+    const { publisher, developer, password, superTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
-    const apiName = Utils.generateName();
+    let apiName;
     const apiContext = apiName;
     let testApiId;
-    const appName = Utils.generateName();
-    it.only("Change subscription tier", () => {
-
-        cy.loginToPublisher(publisher, password);
+    let activeTenant;
+    let appName;
+    const changeSubscriptionTierOnApplication = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
@@ -38,9 +39,10 @@ describe("Change subscription tier of an application", () => {
                 // TODO: Proper error handling here instead of cypress wait
                 cy.wait(3000);
                 cy.logoutFromPublisher();
-                cy.loginToDevportal(developer, password);
-                cy.createApp(appName, 'application description');
-                cy.visit(`/devportal/applications?tenant=carbon.super`);
+                cy.loginToDevportal(developer, password, tenant);
+                appName = Utils.generateName();
+                cy.createApp(appName, 'application description', tenant);
+                cy.visit(`/devportal/applications?tenant=${tenant}`);
                 cy.get(`#itest-application-list-table td a`).contains(appName).click();
 
                 // Go to application subscription page
@@ -70,10 +72,14 @@ describe("Change subscription tier of an application", () => {
                 cy.contains('Silver').should('exist');
             })
         })
+    }
+    it.only("Change subscription tier - super admin", () => {
+        activeTenant = superTenant;
+        changeSubscriptionTierOnApplication(superTenant);
     });
 
     after(() => {
-        cy.deleteApp(appName);
+        cy.deleteApp(appName, activeTenant);
         Utils.deleteAPI(testApiId);
     })
 });

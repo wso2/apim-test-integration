@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("Deploy as prototype", () => {
+describe("publisher-011-02 : Deploy as prototype", () => {
     const { publisher, password, } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';

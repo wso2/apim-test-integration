@@ -18,11 +18,11 @@
 
 import Utils from "@support/utils";
 
-describe("Anonymous view apis", () => {
+describe("devportal-000-01 : Anonymous user view public apis", () => {
     const { publisher, developer, password, tenantUser, tenant, } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
-    const apiName = Utils.generateName();
+    let apiName;
     const apiContext = apiName;
     let testApiId;
 
@@ -32,6 +32,7 @@ describe("Anonymous view apis", () => {
           openMode: 0,
         },
       }, () => {
+        apiName = Utils.generateName();
         cy.loginToPublisher(publisher, password);
 
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
@@ -112,10 +113,6 @@ describe("Anonymous view apis", () => {
 
         })
         */
-    })
-
-    it.only("Login to devportal by supper tenant user", () => {
-        cy.loginToDevportal(`${tenantUser}@${tenant}`, password);
     })
 
     after(() => {

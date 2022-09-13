@@ -18,15 +18,12 @@
 
 import Utils from "@support/utils";
 
-describe("adding comment", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-014-00 : Adding comment", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Adding comments per API", () => {
+    const addCommentToApi = (tenant) => {
         const comment = 'test api';
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.intercept('**/comments?limit=5&offset=0').as('commentsGet');
             cy.visit(`/publisher/apis/${apiId}/comments`);
@@ -42,5 +39,12 @@ describe("adding comment", () => {
                 Utils.deleteAPI(apiId);
             })
         });
+    }
+
+    it.only("Adding comments per API - super admin", () => {
+        addCommentToApi(superTenant);
+    });
+    it.only("Adding comments per API - tenant user", () => {
+        addCommentToApi(testTenant);
     });
 });

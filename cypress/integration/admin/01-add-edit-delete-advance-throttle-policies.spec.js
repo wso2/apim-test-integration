@@ -16,14 +16,14 @@
  * under the License.
  */
 
-describe("Add Edit Delete advance throttle policies", () => {
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+import Utils from "@support/utils";
 
-    before(function () {
-        cy.loginToAdmin(carbonUsername, carbonPassword);
-    })
-    it.only("Add Edit Delete advance throttle policies", () => {
+describe("admin-01 : Add Edit Delete advance throttle policies", () => {
+
+    const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
+
+    const addEditDeleteAdvancedThrottlePolicies = (usernameLocal, passwordLocal, tenant) => {
+        cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
         const policyName = '030PerMin';
         cy.get('[data-testid="Advanced Policies-child-link"]', {timeout: Cypress.config().largeTimeout}).click();
         cy.get('[data-testid="Add New Policy-btn"]').click();
@@ -47,6 +47,11 @@ describe("Add Edit Delete advance throttle policies", () => {
         cy.get(`[data-testid="${policyName}-actions"] > span svg`).click();
         cy.get('button > span').contains('Delete').click();
         cy.get('table tr td a').contains(policyName).should('not.exist');
+    }
+    it.only("Add Edit Delete advance throttle policies - super admin", () => {
+        addEditDeleteAdvancedThrottlePolicies(carbonUsername, carbonPassword, superTenant);
     });
-
+    it.only("Add Edit Delete advance throttle policies - tenant user", () => {
+        addEditDeleteAdvancedThrottlePolicies(carbonUsername, carbonPassword, testTenant);
+    });
 })

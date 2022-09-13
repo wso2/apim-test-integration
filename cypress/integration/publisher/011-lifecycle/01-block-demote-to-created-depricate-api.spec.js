@@ -18,21 +18,14 @@
 
 import Utils from "@support/utils";
 
-describe("Lifecycle changes", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-011-01 : Lifecycle changes", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
     let testApiId;
 
-    beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-    it.only("Block demote retire api", {
-        retries: {
-          runMode: 3,
-          openMode: 0,
-        },
-      }, () => {
+    const blockDemoteToCreatedDepricatedApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion }).then((apiId) => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/overview`);
@@ -111,6 +104,22 @@ describe("Lifecycle changes", () => {
 
             cy.get('button[data-testid="Retire-btn"]', {timeout: Cypress.config().largeTimeout}).click();   
         });
+    }
+    it.only("Block demote retire api - super admin", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        blockDemoteToCreatedDepricatedApi(superTenant);
+    });
+    it.only("Block demote retire api - tenant user", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        blockDemoteToCreatedDepricatedApi(testTenant);
     });
     afterEach(() => {
         // Test is done. Now delete the api

@@ -18,15 +18,12 @@
 
 import Utils from "@support/utils";
 
-describe("Add production sandbox endpoints for SOAP", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-004-01 : Add production sandbox endpoints for SOAP", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const endpoint = 'https://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php?wsdl';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Add production sandbox endpoints for SOAP", () => {
+    const addSoapEndpointProductionSandbox = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.config().largeTimeout}).click();
@@ -51,6 +48,11 @@ describe("Add production sandbox endpoints for SOAP", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
-
+    }
+    it.only("Add production sandbox endpoints for SOAP - super admin", () => {
+        addSoapEndpointProductionSandbox(superTenant);
+    });
+    it.only("Add production sandbox endpoints for SOAP - tenant user", () => {
+        addSoapEndpointProductionSandbox(testTenant);
     });
 });

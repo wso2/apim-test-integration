@@ -16,9 +16,10 @@
 
 import Utils from "@support/utils";
 
-describe("Application tests", () => {
-    const { developer, password } = Utils.getUserInfo();
-    const appName = Utils.generateName();
+describe("devportal-001-03 : Generate API Keys", () => {
+    const { developer, password, superTenant, testTenant } = Utils.getUserInfo();
+    let appName;
+    let activeTenant;
     const appDescription = 'Key gen application description';
     const checkIfKeyExists = () => {
         // Check if the key exists
@@ -26,8 +27,9 @@ describe("Application tests", () => {
         cy.get('#access-token').should('not.be.empty');
         cy.get('#generate-api-keys-close-btn').click();
     }
-    it.only("Generate API Keys", () => {
-        cy.loginToDevportal(developer, password);
+    const generateApiKeys = (tenant) => {
+        cy.loginToDevportal(developer, password, tenant);
+        appName = Utils.generateName();
         cy.createApp(appName, appDescription);
 
         // Generating keys production
@@ -56,9 +58,17 @@ describe("Application tests", () => {
         cy.get('#generate-api-keys-btn').click();
 
         checkIfKeyExists();
+    }
+    it.only("Generate API Keys - super admin", () => {
+        activeTenant = superTenant;
+        generateApiKeys(superTenant)
+    })
+    it.only("Generate API Keys - tenant user", () => {
+        activeTenant = testTenant;
+        generateApiKeys(testTenant)
     })
 
-    after(() => {
-        cy.deleteApp(appName);
+    afterEach(() => {
+        cy.deleteApp(appName, activeTenant);
     })
 })

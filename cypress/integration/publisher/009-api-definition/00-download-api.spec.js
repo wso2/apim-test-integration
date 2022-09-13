@@ -18,16 +18,13 @@
 
 import Utils from "@support/utils";
 
-describe("Api Definition", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-009-00 : Api Definition - Download API", () => {
+    const { publisher, password,  superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Download api", () => {
+    const downloadApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
@@ -44,5 +41,12 @@ describe("Api Definition", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Download api - super admin", () => {
+        downloadApi(superTenant);
+    });
+    it.only("Download api - tenant user", () => {
+        downloadApi(testTenant);
     });
 });

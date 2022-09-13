@@ -16,14 +16,14 @@
  * under the License.
  */
 
-describe("Add Edit Delete Microgateway Environments", () => {
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+import Utils from "@support/utils";
 
-    before(function () {
-        cy.loginToAdmin(carbonUsername, carbonPassword);
-    })
-    it.only("Add Edit Delete Microgateway Environments", () => {
+describe("admin-00 : Add Edit Delete Microgateway Environments", () => {
+
+    const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
+
+    const addEditDeleteMicrogatewayEnvironment = (usernameLocal, passwordLocal, tenant) => {
+        cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
         cy.get('[data-testid="Gateways"]').click();
         cy.get('.MuiButton-label').contains('Add Gateway Environment').click();
         cy.get('input[name="name"]').type('MARKETING_STORE');
@@ -52,6 +52,14 @@ describe("Add Edit Delete Microgateway Environments", () => {
         cy.get('[data-testid="MuiDataTableBodyCell-5-1"] button:nth-child(2)').click();
         cy.get('button > span').contains('Delete').click();
         cy.get('#client-snackbar').should('have.text','Gateway Environment deleted successfully');
+    }
+
+    it.only("Add Edit Delete Microgateway Environments - super admin", () => {
+        addEditDeleteMicrogatewayEnvironment(carbonUsername, carbonPassword, superTenant);
+    });
+
+    it.only("Add Edit Delete Microgateway Environments - tenant user", () => {
+        addEditDeleteMicrogatewayEnvironment(carbonUsername, carbonPassword, testTenant)
     });
 
 })

@@ -16,15 +16,13 @@
 
 import Utils from "@support/utils";
 
-describe("Upload api spec from the api definition page", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-009-02 : Upload api spec from the api definition page", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-    it.only("Upload api spec from the api definition page", () => {
+    const uploadApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
@@ -51,5 +49,11 @@ describe("Upload api spec from the api definition page", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+    it.only("Upload api spec from the api definition page - super admin", () => {
+        uploadApi(superTenant);
+    });
+    it.only("Upload api spec from the api definition page - tenant user", () => {
+        uploadApi(testTenant);
     });
 });

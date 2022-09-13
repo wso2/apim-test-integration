@@ -16,14 +16,14 @@
  * under the License.
  */
 
-describe("Add scope mapping", () => {
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+import Utils from "@support/utils";
 
-    before(function () {
-        cy.loginToAdmin(carbonUsername, carbonPassword);
-    })
-    it.only("Add scope mapping", () => {
+describe("admin-07 : Add scope mapping", () => {
+    
+    const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
+
+    const addScopeMapping = (usernameLocal, passwordLocal, tenant) => {
+        cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
         const roleName = 'creator';
 
         cy.get('[data-testid="Scope Assignments-child-link"]').click();
@@ -39,6 +39,12 @@ describe("Add scope mapping", () => {
         cy.get(`[data-testid="${roleName}-delete-btn"]`).click();
         cy.get('[aria-labelledby="delete-confirmation"] button.MuiButton-containedPrimary').click();
         cy.get(`[data-testid="${roleName}"]`).should('not.exist');
+    }
+    it.only("Add scope mapping - super admin", () => {
+        addScopeMapping(carbonUsername, carbonPassword, superTenant);
+    });
+    it.only("Add scope mapping - tenant user", () => {
+        addScopeMapping(carbonUsername, carbonPassword, testTenant);
     });
 
 })

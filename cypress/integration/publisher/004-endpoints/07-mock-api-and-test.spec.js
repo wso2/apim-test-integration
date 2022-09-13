@@ -19,23 +19,15 @@ The product is broken. we need to fix the product. This test case is ignored fro
 */
 import Utils from "@support/utils";
 
-describe("Mock the api response and test it", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-004-07 : Mock the api response and test it", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     let testApiID;
-    before(function () {
-        
-    })
 
     /* 
         TODO
     */
-    it("Mock the api response and test it", {
-        retries: {
-          runMode: 3,
-          openMode: 0,
-        },
-      }, () => {
-        cy.loginToPublisher(publisher, password);
+   const mockApiAndTest = (tenant) => {
+    cy.loginToPublisher(publisher, password, tenant);
         cy.visit(`/publisher/apis/create/openapi`);
         cy.get('#open-api-file-select-radio').click();
 
@@ -101,6 +93,22 @@ describe("Mock the api response and test it", () => {
                 })
             })
         });
+   }
+    it("Mock the api response and test it - super admin", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        mockApiAndTest(superTenant);
+    });
+    it("Mock the api response and test it - tenant user", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        mockApiAndTest(testTenant);
     });
     afterEach(() => {
         Utils.deleteAPI(testApiID);

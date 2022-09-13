@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("Add API Categories and assign via publisher portal", () => {
+describe("admin-08 : Add API Categories and assign via publisher portal", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
     let testApiId;

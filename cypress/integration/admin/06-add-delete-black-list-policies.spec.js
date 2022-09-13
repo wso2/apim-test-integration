@@ -16,14 +16,14 @@
  * under the License.
  */
 
-describe("Add deny policies", () => {
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+import Utils from "@support/utils";
 
-    before(function () {
-        cy.loginToAdmin(carbonUsername, carbonPassword);
-    })
-    it.only("Add deny policies", () => {
+describe("admin-06 : Add deny policies", () => {
+    
+    const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
+
+    const addDenyPolicy = (usernameLocal, passwordLocal, tenant) => {
+        cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
         const ipAddress = '127.0.0.1';
         cy.get('[data-testid="Deny Policies-child-link"]').click();
         cy.get('.MuiButton-label').contains('Add Policy').click();
@@ -36,6 +36,14 @@ describe("Add deny policies", () => {
         cy.get(`[data-testid="IP-actions"] svg`).click();
         cy.get('button > span').contains('Delete').click();
         cy.get('#client-snackbar').should('have.text','Deny Policy successfully deleted.');
+    }
+
+    it.only("Add deny policies - super admin", () => {
+        addDenyPolicy(carbonUsername, carbonPassword, superTenant);
+    });
+
+    it.only("Add deny policies - tenant user", () => {
+        addDenyPolicy(carbonUsername, carbonPassword, testTenant);
     });
 
 })

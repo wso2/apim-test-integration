@@ -18,35 +18,34 @@
 
 import Utils from "@support/utils";
 
-describe("Anonymous view apis", () => {
-    const { publisher, developer, password, } = Utils.getUserInfo();
+describe("devportal-002-02 : Subscribe to API via wizard", () => {
+    const { publisher, developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
-    const apiName = Utils.generateName();
-    const apiContext = apiName;
+    let apiName;
+    let apiContext;
     let testApiId;
-    const appName = Utils.generateName();
+    let appName;
+    let activeTenant;
 
-    it.only("Subscribe to API", {
-        retries: {
-          runMode: 3,
-          openMode: 0,
-        },
-      }, () => {
-        cy.loginToPublisher(publisher, password);
+    const subscribeViaWizard = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();
+        apiContext = apiName;
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
                 cy.logoutFromPublisher();
-                cy.loginToDevportal(developer, password);
-                cy.visit(`/devportal/apis?tenant=carbon.super`);
-                cy.url().should('contain', '/apis?tenant=carbon.super');
+                cy.loginToDevportal(developer, password, tenant);
+                cy.visit(`/devportal/apis?tenant=${tenant}`);
+                cy.url().should('contain', `/apis?tenant=${tenant}`);
                  
 
-                cy.visit(`/devportal/apis/${apiId}/overview?tenant=carbon.super`);
+                cy.visit(`/devportal/apis/${apiId}/overview?tenant=${tenant}`);
                 cy.get('#left-menu-credentials').click();
             
                 // Go through the wizard
+                appName = Utils.generateName();
                 cy.get('#start-key-gen-wizard-btn').click();
                 cy.get('#application-name').type(appName);
                 cy.get('#wizard-next-0-btn').click();
@@ -78,9 +77,27 @@ describe("Anonymous view apis", () => {
 
             })
         })
+    }
+    it.only("Subscribe to API - super admin", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        activeTenant = superTenant;
+        subscribeViaWizard(superTenant);
+    })
+    it.only("Subscribe to API - tenant user", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        activeTenant = testTenant;
+        subscribeViaWizard(testTenant);
     })
     afterEach(() => {
-        cy.deleteApp(appName);
+        cy.deleteApp(appName, activeTenant);
         Utils.deleteAPI(testApiId);
     })
 })

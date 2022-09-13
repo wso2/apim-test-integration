@@ -18,17 +18,14 @@
 
 import Utils from "@support/utils";
 
-describe("Landing page", () => {
-    const { publisher, password } = Utils.getUserInfo();
+describe("publisher-000-04 : Landing page API List", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     let testApiId;
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Click and check all cards", () => {
-        cy.visit(`/publisher/apis`);
+    const apiListingCreateApiMenu = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
+            cy.visit(`/publisher/apis`);
             testApiId = apiId;
             cy.get('#itest-create-api-menu-button', { timeout: 30000 }).should('be.visible').click();
 
@@ -70,9 +67,16 @@ describe("Landing page", () => {
                 .invoke('attr', 'href')
                 .should('eq', '/publisher/service-catalog');
         });
+    }
+
+    it.only("Click and check all cards - super admin", () => {
+        apiListingCreateApiMenu(superTenant);
+    });
+    it.only("Click and check all cards - tenant user", () => {
+        apiListingCreateApiMenu(testTenant);
     });
 
-    after(function () {
+    afterEach(function () {
         if (testApiId) {
             Utils.deleteAPI(testApiId);
         }
