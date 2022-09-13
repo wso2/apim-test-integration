@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,34 +16,34 @@
  * under the License.
  */
 class DocumentsPage {
-    getUrl(apiID){
+    static getUrl(apiID){
         return cy.get(`publisher/apis/${apiID}/documents`);
     }
-    getDocumentsHeader(){
+    static getDocumentsHeader(){
         return cy.get('#itest-api-details-documents-head')
     }
-    getAddNewDocumentButton(){
+    static getAddNewDocumentButton(){
         return cy.get('#add-new-document-btn')
     }
-    getNameTextBox(){
+    static getNameTextBox(){
         return cy.get('#doc-name')
     }
-    getSummaryTextBox(){
+    static getSummaryTextBox(){
         return cy.get('#doc-summary')
     }
-    getType_HowToCheckBox(){
+    static getType_HowToCheckBox(){
         return cy.get('input[value="HOWTO"]')
     }
-    getSource_InLineCheckBox(){
+    static getSource_InLineCheckBox(){
         return cy.get('input[value="INLINE"]')
     }
-    getAddDocumentButton(){
+    static getAddDocumentButton(){
         return cy.get('#add-document-btn')
     }
-    getBackToListiningButton(){
+    static getBackToListiningButton(){
         return cy.get('#add-content-back-to-listing-btn')
     }
-    getDocumentNameOfTableRow(tableRowIndex){ // start form 0
+    static getDocumentNameOfTableRow(tableRowIndex){ // start form 0
         return cy.get(`td[data-testid="MuiDataTableBodyCell-1-${tableRowIndex}"]`)
     }
 }

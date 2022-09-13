@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,16 +16,16 @@
  * under the License.
  */
 class ResourcesPage {
-    getUrl(apiID){
+    static getUrl(apiID){
         return `publisher/apis/${apiID}/resources`;
     }
-    getResourcePageHeader(){
+    static getResourcePageHeader(){
         return cy.get('#itest-api-details-resources-head')
     }
-    getSaveRerouceButton(){
+    static getSaveRerouceButton(){
         return cy.get('#resources-save-operations')
     }
-    selectAndAddNewOperation(httpVerb,uriPattern){
+    static selectAndAddNewOperation(httpVerb,uriPattern){
             cy.get('#operation-target').type(uriPattern, {
                 parseSpecialCharSequences: false,
               })
@@ -47,21 +47,21 @@ class ResourcesPage {
             cy.get('#add-operation-button').click()
     }
 
-    getRowOfResource(uriPattern){ // e.g. "/order"
+    static getRowOfResource(uriPattern){ // e.g. "/order"
         return cy.get(`div[aria-labelledby="${uriPattern}"] > div > div > div > div`)
     }
-    getDescriptionTextAreaOfResource(resourceAlis){ // e.g. "post/order"
+    static getDescriptionTextAreaOfResource(resourceAlis){ // e.g. "post/order"
         return cy.get(`div[data-testid="description-${resourceAlis}"] > div > textarea`)
     }
-    getSummaryTextAreaOfResource(resourceAlis){ // e.g. "post/order"
+    static getSummaryTextAreaOfResource(resourceAlis){ // e.g. "post/order"
         return cy.get(`div[data-testid="summary-${resourceAlis}"] > div > textarea`)
     }
-    selectOperationScopeOfResource(resourceAlis,scopeName){ // e.g. ("post/order","order_pizza")
+    static selectOperationScopeOfResource(resourceAlis,scopeName){ // e.g. ("post/order","order_pizza")
         cy.get(`div[id="${resourceAlis}-operation-scope-select"]`).click()
         cy.get(`li[id="${resourceAlis}-operation-scope-${scopeName}"]`).click()
         cy.get('#menu-').trigger('click') // to get back the focus , pages is coverd from this element
     }
-    getSaveButton(){
+    static getSaveButton(){
         return cy.get('button[data-testid="custom-select-save-button"]')
     }
 }

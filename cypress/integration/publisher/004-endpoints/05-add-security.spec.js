@@ -18,14 +18,11 @@
 
 import Utils from "@support/utils";
 
-describe("Add security to the endpoint", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-004-05 : Add security to the endpoint", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Add security to the endpoint", () => {
+    const addSecurity = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         const usernameLocal = 'admin';
         const passwordLocal = 'admin';
@@ -61,5 +58,12 @@ describe("Add security to the endpoint", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Add security to the endpoint - super admin", () => {
+        addSecurity(superTenant);
+    });
+    it.only("Add security to the endpoint - tenant user", () => {
+        addSecurity(testTenant);
     });
 });

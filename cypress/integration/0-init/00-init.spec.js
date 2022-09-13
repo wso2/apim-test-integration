@@ -18,13 +18,22 @@
 
 import Utils from "@support/utils";
 
-describe("Deploy sample api", () => {
-    it.only("Util test to add test users", () => {
-        const { publisher, developer, password, carbonUsername, carbonPassword, tenantUser, } = Utils.getUserInfo();
+describe("init-00 : Prepare test data for execution", () => {
+    it.only("Util test to add test users", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        const { publisher, developer, password, carbonUsername, carbonPassword, tenantUser, testTenant } = Utils.getUserInfo();
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        cy.addNewTenant('wso2.com', 'admin');
-        cy.addNewTenantUser(tenantUser);
+        cy.addNewTenant(testTenant, 'admin');
+        cy.carbonLogout();
+        cy.carbonLogin(carbonUsername, carbonPassword, testTenant);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        cy.carbonLogout();
     });
 });

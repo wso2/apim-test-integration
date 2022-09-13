@@ -18,15 +18,16 @@
 
 import Utils from "@support/utils";
 
-describe("Create a new version of API", () => {
-    const apiName = Utils.generateName();
+describe("publisher-000-01 : Create a new version of API", () => {
+    let apiName;
     const apiVersion = '1.0.0';
     const newVersion = '2.0.0';
-    const { publisher, password} = Utils.getUserInfo();
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     let testApiId;
 
-    it.only("Create a new version of API", () => {
-        cy.loginToPublisher(publisher, password);
+    const createNewVersionOfApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();
         Utils.addAPI({name: apiName, version: apiVersion}).then((apiId) => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/overview`);
@@ -40,6 +41,13 @@ describe("Create a new version of API", () => {
                 cy.get('#itest-api-name-version').contains(`${apiName} :${newVersion}`);
             })
         });
+    }
+
+    it.only("Create a new version of API - super admin", () => {
+        createNewVersionOfApi(superTenant);
+    });
+    it.only("Create a new version of API - tenant user", () => {
+        createNewVersionOfApi(testTenant);
     });
 
     after(function () {

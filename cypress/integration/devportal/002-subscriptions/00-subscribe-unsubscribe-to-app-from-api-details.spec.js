@@ -18,36 +18,32 @@
 
 import Utils from "@support/utils";
 
-describe("Subscribe unsubscribe to application from api details page", () => {
-    const { publisher, developer, password, tenantUser, tenant, } = Utils.getUserInfo();
+describe("devportal-002-00 : Subscribe unsubscribe to application from api details page", () => {
+    const { publisher, developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
-    const apiName = Utils.generateName();
+    let apiName;
     const apiContext = apiName;
     let testApiId;
-    const appName = Utils.generateName();
+    let appName;
     const appDescription = 'app description';
+    let activeTenant;
 
-    it.only("Subscribe and unsubscribe to API from api details page", {
-        retries: {
-          runMode: 3,
-          openMode: 0,
-        },
-      }, () => {
-
-        cy.loginToPublisher(publisher, password);
-
+    const subscribeUnsubscribeToAppFromApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             cy.log("API created " + apiName);
             testApiId = apiId;
             Utils.publishAPI(apiId).then((result) => {
                 cy.log("API published " + result)
                 cy.logoutFromPublisher();
-                cy.loginToDevportal(developer, password);
-                cy.createApp(appName, appDescription);
-                cy.visit(`/devportal/apis?tenant=carbon.super`);
-                cy.url().should('contain', '/apis?tenant=carbon.super');
-                cy.visit(`/devportal/apis/${apiId}/overview?tenant=carbon.super`);
+                cy.loginToDevportal(developer, password, tenant);
+                appName = Utils.generateName();
+                cy.createApp(appName, appDescription, tenant);
+                cy.visit(`/devportal/apis?tenant=${tenant}`);
+                cy.url().should('contain', `/apis?tenant=${tenant}`);
+                cy.visit(`/devportal/apis/${apiId}/overview?tenant=${tenant}`);
                 cy.get('#left-menu-credentials').click();
             
                 // Click and select the new application
@@ -58,10 +54,29 @@ describe("Subscribe unsubscribe to application from api details page", () => {
             
             });
         });
-    })
+    }
+
+    it.only("Subscribe and unsubscribe to API from api details page - super admin", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        activeTenant = superTenant;
+        subscribeUnsubscribeToAppFromApi(superTenant);
+    });
+    it.only("Subscribe and unsubscribe to API from api details page - tenant user", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        activeTenant = testTenant;
+        subscribeUnsubscribeToAppFromApi(testTenant);
+    });
 
     afterEach(() => {
-        cy.deleteApp(appName);
+        cy.deleteApp(appName, activeTenant);
         Utils.deleteAPI(testApiId);
     })
 })

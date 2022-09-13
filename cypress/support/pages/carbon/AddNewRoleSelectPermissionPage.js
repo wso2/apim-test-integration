@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,22 +17,22 @@
  * under the License.
  */
 class AddNewRoleSelectPermissionPage {
-    getUrl(){
+    static getUrl(){
         return "/carbon/role/add-step2.jsp";
     }
-    getpermissionCheckboxOf(permission){
+    static getpermissionCheckboxOf(permission){
         return cy.get(permission);
 
     }
-    getFinishButton(){
+    static getFinishButton(){
         return cy.get('input[value="Finish"]')
     }
 
-    getMessageBoxInfo(){
+    static getMessageBoxInfo(){
         return cy.get('#messagebox-info')
     }
 
-    getMessageBoxOkButton(){
+    static getMessageBoxOkButton(){
         return cy.get('.ui-dialog-buttonset > .ui-button')
     }
 

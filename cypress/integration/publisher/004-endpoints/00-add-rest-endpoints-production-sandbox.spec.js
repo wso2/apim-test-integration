@@ -18,14 +18,12 @@
 
 import Utils from "@support/utils";
 
-describe("Add production and sandbox endpoints for an API", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-004-00 : Add production and sandbox endpoints for an API", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-    it.only("Add production and sandbox endpoints for an API", () => {
+    const addRestEndpointsProductionSandbox = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
@@ -49,5 +47,11 @@ describe("Add production and sandbox endpoints for an API", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+    it.only("Add production and sandbox endpoints for an API - super admin", () => {
+        addRestEndpointsProductionSandbox(superTenant);
+    });
+    it.only("Add production and sandbox endpoints for an API - tenant user", () => {
+        addRestEndpointsProductionSandbox(testTenant);
     });
 });

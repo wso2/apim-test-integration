@@ -18,14 +18,11 @@
 
 import Utils from "@support/utils";
 
-describe("Create new revision and deploy", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-015-00 : Create new revision and deploy", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Create new revision and deploy", () => {
+    const createNewRevisionAndDeployApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPIWithEndpoints({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             // Going to deployments page
@@ -49,5 +46,12 @@ describe("Create new revision and deploy", () => {
             cy.get('button[data-testid="Demote to Created-btn"]').should('exist');
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Create new revision and deploy - super admin", () => {
+        createNewRevisionAndDeployApi(superTenant);
+    });
+    it.only("Create new revision and deploy - tenant user", () => {
+        createNewRevisionAndDeployApi(testTenant);
     });
 });

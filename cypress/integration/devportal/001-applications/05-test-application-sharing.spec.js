@@ -22,7 +22,7 @@ application_sharing_type = "default"
 */
 import Utils from "@support/utils";
 
-describe("Invoke API Product", () => {
+describe("devportal-001-05 : Application Sharing", () => {
     const user1 = 'user1';
     const user2 = 'user2';
     const publisher = 'publisher';

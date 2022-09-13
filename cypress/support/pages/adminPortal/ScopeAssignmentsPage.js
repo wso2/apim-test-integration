@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,21 +17,21 @@
  */
 const userRoles = require('../../../support/screenData/userRoles.json')
 class ScopeAssignmentsPage{
-    getUrl(){
+    static getUrl(){
         return "/admin/settings/scope-mapping";
     }
-    getAddScopeMappingButton(){
+    static getAddScopeMappingButton(){
         return cy.get(".MuiButton-containedPrimary > .MuiButton-label")
     }
-    getAddNewScopeRoleNameTextBox(){
+    static getAddNewScopeRoleNameTextBox(){
         return cy.get("#role-input-field-helper-text")
     }
 
-    getAddNewScopeNextButton(){
+    static getAddNewScopeNextButton(){
         return cy.get(".MuiDialogActions-root > div > div > .MuiButton-containedPrimary")
     }
 
-    selectRoleAlias(mappingRole){
+    static selectRoleAlias(mappingRole){
         cy.get('.MuiAutocomplete-endAdornment > button[aria-label="Open"]').click();
         //cy.get("#role-select-dropdown-option-1").click();
 
@@ -63,24 +63,24 @@ class ScopeAssignmentsPage{
         }
     }
 
-    getAddNewScopeSavetButton(){
+    static getAddNewScopeSavetButton(){
         return cy.get(".MuiDialogActions-root > div > div > .MuiButton-containedPrimary")
     }
 
-    getSearchTextBox(){
+    static getSearchTextBox(){
         return cy.get('input[placeholder="Search by Role Name"]');
     }
 
     // row index start from 0
-    getRolesRecordOfTableRow(rowIndex){
+    static getRolesRecordOfTableRow(rowIndex){
         return cy.get(`#enhanced-table-checkbox-${rowIndex}`).eq(0);
     }
 
-    getDeleteButtonOfTableRow(rowIndex){
+    static getDeleteButtonOfTableRow(rowIndex){
         return cy.get(`#enhanced-table-checkbox-${rowIndex}`).get("span > div > button");
     }
 
-    getDeleteButtonOfScopeAssignmentDialogOfRole(roleName){
+    static getDeleteButtonOfScopeAssignmentDialogOfRole(roleName){
         return cy.get(`#${roleName}`)
     }
     // tbody.MuiTableBody-root > tr.MuiTableRow-root >th.MuiTableCell-alignRight > span > div > button

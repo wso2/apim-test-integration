@@ -16,21 +16,14 @@
 
 import Utils from "@support/utils";
 
-describe("Mock the api response and test it", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-013-01 : Mock the api response and test it", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const productName = Utils.generateName();
     const apiName = Utils.generateName();
     let testApiID;
-    beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it("Mock the api response and test it", {
-        retries: {
-            runMode: 3,
-            openMode: 0,
-        },
-    }, () => {
+    
+    const createProductAndUpdateUnderlineApiSpec = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout});
         cy.get('#open-api-file-select-radio').click();
 
@@ -133,6 +126,23 @@ describe("Mock the api response and test it", () => {
                 });
             });
         });
+    }
+
+    it("Mock the api response and test it - super admin", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        createProductAndUpdateUnderlineApiSpec(superTenant);
+    });
+    it("Mock the api response and test it - tenant user", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        createProductAndUpdateUnderlineApiSpec(testTenant);
     });
     afterEach(() => {
         Utils.deleteAPI(testApiID);

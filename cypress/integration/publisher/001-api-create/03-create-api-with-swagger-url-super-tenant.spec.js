@@ -16,9 +16,9 @@
 
 import Utils from "@support/utils";
 
-describe("Create api with swagger file super tenant", () => {
+describe("publisher-001-03 : Create api with swagger file super tenant", () => {
 
-    const { publisher, password, tenantUser, tenant, } = Utils.getUserInfo();
+    const { publisher, password, tenantUser, testTenant, } = Utils.getUserInfo();
     let testApiID;
     const openApiCreate = (url) => {
         // select the option from the menu item
@@ -79,7 +79,7 @@ describe("Create api with swagger file super tenant", () => {
           openMode: 0,
         },
       }, () => {
-        cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
+        cy.loginToPublisher(`${publisher}@${testTenant}`, password);
         openApiCreate('https://petstore.swagger.io/v2/swagger.json');
     });
 
@@ -89,7 +89,7 @@ describe("Create api with swagger file super tenant", () => {
           openMode: 0,
         },
       }, () => {
-        cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
+        cy.loginToPublisher(`${publisher}@${testTenant}`, password);
         openApiCreate('https://petstore3.swagger.io/api/v3/openapi.json');
     });
 

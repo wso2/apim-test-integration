@@ -18,20 +18,12 @@
 
 import Utils from "@support/utils";
 
-describe("Endpoint testing", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-004-04 : Endpoint testing - Loadbalance", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
 
-    beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Add REST endpoints for production and sandbox endpoints with LOAD balanced", {
-        retries: {
-          runMode: 3,
-          openMode: 0,
-        },
-      }, () => {
+    const addLoadBalance = (tenant) => {
+      cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
@@ -65,5 +57,22 @@ describe("Endpoint testing", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
-    });
+    }
+
+  it.only("Add REST endpoints for production and sandbox endpoints with LOAD balanced - super admin", {
+    retries: {
+      runMode: 3,
+      openMode: 0,
+    },
+  }, () => {
+    addLoadBalance(superTenant);
+  });
+  it.only("Add REST endpoints for production and sandbox endpoints with LOAD balanced - tenant user", {
+    retries: {
+      runMode: 3,
+      openMode: 0,
+    },
+  }, () => {
+    addLoadBalance(testTenant);
+  });
 });

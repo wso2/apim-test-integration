@@ -16,10 +16,24 @@
 
 import Utils from "@support/utils";
 
-describe("Create GraphQl API from file", () => {
-    const {carbonUsername, carbonPassword} = Utils.getUserInfo();
-    it("Create GraphQl API from file", () => {
+describe("publisher-001-05 : Create GraphQl API from file", () => {
+    const {carbonUsername, carbonPassword, testTenant} = Utils.getUserInfo();
+    let testApiId;
+    it("Create GraphQl API from file - supper admin", () => {
         cy.loginToPublisher(carbonUsername, carbonPassword);
-        cy.createGraphqlAPIfromFile("SampleAPI_",'1.0.0','/sampleapi','api_artifacts/schema_graphql.graphql');
+        cy.createGraphqlAPIfromFile("SampleAPI_",'1.0.0','/sampleapi','api_artifacts/schema_graphql.graphql').then((apiId) => {
+            testApiId = apiId;
+        });
     });
+    it("Create GraphQl API from file - tenant user", () => {
+        cy.loginToPublisher(carbonUsername, carbonPassword, testTenant);
+        cy.createGraphqlAPIfromFile("SampleAPI_",'1.0.0','/sampleapi','api_artifacts/schema_graphql.graphql').then((apiId) => {
+            testApiId = apiId;
+        });
+    });
+    afterEach(function () {
+        if (testApiId) {
+            Utils.deleteAPI(testApiId);
+        }
+    })
 })

@@ -18,9 +18,9 @@
 
 import Utils from "@support/utils";
 
-describe("Resource add edit operations", () => {
+describe("publisher-002-00 : Resource add edit operations", () => {
 
-    const { publisher, password, } = Utils.getUserInfo();
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const target = '/test';
     let testApiId;
 
@@ -43,11 +43,10 @@ describe("Resource add edit operations", () => {
 
         cy.get(`#${verb}\\${target}`).should('be.visible');
     }
-
-    it.only("Add new resource", () => {
+    const addNewResource = (tenant) => {
         const apiName = Utils.generateName();
         const apiVersion = '1.0.0';
-        cy.loginToPublisher(publisher, password);
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/resources`);
@@ -81,16 +80,15 @@ describe("Resource add edit operations", () => {
             cy.get(`#delete\\${target}`).should('be.visible');
             cy.get(`#head\\${target}`).should('be.visible');
         });
-    });
-
-    it.only("Add delete query path parameters for resources", () => {
+    }
+    const addDeleteQueryPathParamForResources = (tenant) => {
         const verb = 'get';
         const paramType = 'query';
         const paramName = 'count';
         const paramDataType = 'string';
         const apiName = Utils.generateName();
         const apiVersion = '1.0.0';
-        cy.loginToPublisher(publisher, password);
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             testApiId = apiId;
             addApiAndResource(verb, apiId);
@@ -114,14 +112,14 @@ describe("Resource add edit operations", () => {
             cy.get('#resources-save-operations', { timeout: 30000 });
             cy.get(`#param-list-${paramType}-${paramName}-${paramDataType}`).should('be.visible');
         });
-    });
+    }
 
-    it.only("Add advance throttling policies per resource", () => {
+    const addAdvanceThrottlingPoliciesPerResource = (tenant) => {
         const verb = 'get';
         const rateLimitName = '50KPerMin';
         const apiName = Utils.generateName();
         const apiVersion = '1.0.0';
-        cy.loginToPublisher(publisher, password);
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             testApiId = apiId;
             addApiAndResource(verb, apiId);
@@ -142,14 +140,9 @@ describe("Resource add edit operations", () => {
                 .contains(rateLimitName)
                 .should('be.visible');
         });
-    });
+    }
 
-    it.only("Add and assign scopes for API resources",{
-        retries: {
-          runMode: 3,
-          openMode: 0,
-        },
-      }, () => {
+    const addAndAssignScopesForApiResources = (tenant) => {
         const random_number = Math.floor(Date.now() / 1000);
         const verb = 'post';
         const scopeName = 'test' + random_number;
@@ -157,7 +150,7 @@ describe("Resource add edit operations", () => {
         const role = 'internal/publisher';
         const apiName = Utils.generateName();
         const apiVersion = '1.0.0';
-        cy.loginToPublisher(publisher, password);
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             testApiId = apiId;
             addApiAndResource(verb, apiId);
@@ -169,8 +162,6 @@ describe("Resource add edit operations", () => {
             // Create a local scope
             cy.get('input#name').click({force:true});
             cy.get('input#name').type(scopeName, {force:true});
-
-            cy.wait(1000)
 
             cy.get('#displayName').click();
             cy.get('#displayName').type(scopeName);
@@ -205,6 +196,78 @@ describe("Resource add edit operations", () => {
                 .should('be.visible');
 
         });
+    }
+
+    it.only("Add new resource - super admin",{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addNewResource(superTenant);
+    });
+
+    it.only("Add delete query path parameters for resources - super admin",{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addDeleteQueryPathParamForResources(superTenant);
+    });
+
+    it.only("Add advance throttling policies per resource - super admin",{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addAdvanceThrottlingPoliciesPerResource(superTenant);
+    });
+
+    it.only("Add and assign scopes for API resources - super admin",{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addAndAssignScopesForApiResources(superTenant);
+    });
+
+    it.only("Add new resource - tenant user",{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addNewResource(testTenant);
+    });
+
+    it.only("Add delete query path parameters for resources - tenant user",{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addDeleteQueryPathParamForResources(testTenant);
+    });
+
+    it.only("Add advance throttling policies per resource - tenant user",{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addAdvanceThrottlingPoliciesPerResource(testTenant);
+    });
+
+    it.only("Add and assign scopes for API resources - tenant user",{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addAndAssignScopesForApiResources(testTenant);
     });
 
     afterEach(() => {

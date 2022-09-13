@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,29 +17,29 @@
  * under the License.
  */
 class RolesManagementPage {
-    getUrl(){
+    static getUrl(){
         return "/carbon/role/role-mgt.jsp";
     }
-    getRoleNameTextBox(){
+    static getRoleNameTextBox(){
         return cy.get('input[name="org.wso2.carbon.role.filter"]');
 
     }
-    getSearchRolesButton(){
+    static getSearchRolesButton(){
         return cy.get('input[value="Search Roles"]')
     }
 
-    getDeleteButtonOfRole(roleName){
+    static getDeleteButtonOfRole(roleName){
         return cy.get(`[onClick="deleteUserGroup(\\'${roleName}\\')"]`)
     }
 
-    getDialogYesButton(){
+    static getDialogYesButton(){
         return cy.get('div.ui-dialog-buttonset > button.ui-button').first()
     }
     // there can be multiple dialog boxes if we search and delete
-    getDialogOkButton(index){
+    static getDialogOkButton(index){
         return cy.get('.ui-dialog-buttonpane button').eq(index)
     }
-    getNoMatchingRolesFoundDialogBox_MessageInfoDivSelectorOnly(){
+    static getNoMatchingRolesFoundDialogBox_MessageInfoDivSelectorOnly(){
         return '#messagebox-info'
     }
     

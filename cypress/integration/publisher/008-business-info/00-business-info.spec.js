@@ -18,17 +18,15 @@
 
 import Utils from "@support/utils";
 
-describe("Add business information", () => {
-    const { publisher, password, } = Utils.getUserInfo();
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-    it.only("Add business information", () => {
+describe("publisher-008-00 : Add business information", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
+    const businessInfo = (tenant) => {
         const ownerName = 'Raccoon Panda';
         const ownerEmail = 'raccoon@wso2.com';
         const techOwnerName = 'Big Cat';
         const techOwnerEmail = 'bigcat@wso2.com';
 
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.config().largeTimeout}).click();
@@ -49,5 +47,11 @@ describe("Add business information", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+    it.only("Add business information - super admin", () => {
+        businessInfo(superTenant);
+    });
+    it.only("Add business information - tenant user", () => {
+        businessInfo(testTenant);
     });
 });

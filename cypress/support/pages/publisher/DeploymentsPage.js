@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,14 +16,20 @@
  * under the License.
  */
 class DeploymentsPage {
-    getUrl(apiID){
+    static getUrl(apiID){
         return cy.get(`publisher/apis/${apiID}/deployments`);
     }
     // getLocalScopesHeader(){
     //     return cy.get('#itest-api-details-scopes-onboarding-head')
     // }
-    getDeployButton(){
+    static getDeployButton(){
         return cy.get('#deploy-btn')
+    }
+    static clickDeployAndWaitUntillComplete(){
+        cy.intercept('GET', `**/revisions?query=deployed**`).as('revisions');
+        this.getDeployButton().click();
+        cy.wait('@revisions',{timeout: Cypress.config().largeTimeout}).its('response.statusCode').should('equal', 200)
+        // further you can handle UI tooltip
     }
     
 }

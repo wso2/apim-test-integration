@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,37 +18,37 @@
 import Utils from "@support/utils";
 import PublisherComonPage from './PublisherComonPage';
 class ApisHomePage extends PublisherComonPage {
-    getUrl(){
+    static getUrl(){
         return "/publisher/apis";
     }
-    visitAPIsPage(){
+    static visitAPIsPage(){
         cy.visit(`${Utils.getAppOrigin()}` + this.getUrl())
     }
-    getCreateAPIButton(){
+    static getCreateAPIButton(){
         return cy.get('#itest-create-api-menu-button')
     }
-    getCreateAPIDialog_StartFromScratchLink(){
+    static getCreateAPIDialog_StartFromScratchLink(){
         return cy.get('#itest-id-landing-rest-create-default')
     }
-    getApiNameVersionH1(){
+    static getApiNameVersionH1(){
         return cy.get("#itest-api-name-version")
     }
-    getApiStateDiv(){
+    static getApiStateDiv(){
         return cy.get('div[data-testid="itest-api-state"]')
     }
-    getDeleteButtonOfAPI(apiName){ // e.g PizzaShack1.0.0
+    static getDeleteButtonOfAPI(apiName){ // e.g PizzaShack1.0.0
         return cy.get(`div[data-testid="card-action-${apiName}"] > div:nth-child(2) > div > button[id="itest-id-deleteapi-icon-button"]`)
     }
-    getDeleteAPIDialog_DeletButton(){
+    static getDeleteAPIDialog_DeletButton(){
         return cy.get('#itest-id-deleteconf')
     }
-    getApiLinkOfAPI(apiName){
+    static getApiLinkOfAPI(apiName){
         return cy.get(`a[aria-label="${apiName} Thumbnail"]`)
     }
-    getSearchTestBox(){
+    static getSearchTestBox(){
         return cy.get("#searchQuery")
     }
-    getAllVisibleAPIs_divList(){
+    static getAllVisibleAPIs_divList(){
         return cy.get('div[class^="MuiPaper-root"][data-testid^="card-"]')
     }
 }

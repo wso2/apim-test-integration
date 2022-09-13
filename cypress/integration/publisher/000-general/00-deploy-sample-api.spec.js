@@ -18,19 +18,11 @@
 
 import Utils from "@support/utils";
 
-describe("Deploy sample api", () => {
-    const { publisher, password} = Utils.getUserInfo();
+describe("publisher-000-00 : Deploy sample api", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
-    beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Deploy sample api", {
-        retries: {
-            runMode: 3,
-            openMode: 0,
-        },
-    }, () => {
+    const deploySampleApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         cy.visit(`/publisher/apis`);
         cy.contains('WSO2 API-M v4.0.0');
         cy.wait(5000);
@@ -43,11 +35,28 @@ describe("Deploy sample api", () => {
                 cy.get('#itest-create-api-menu-button').click();
             }
         });
-    cy.get('#itest-id-deploy-sample').click();
-    cy.get('#itest-api-name-version').should('be.visible');
-    cy.url().should('contains', '/overview');
-    cy.get("#itest-api-name-version").contains('PizzaShackAPI');
-    cy.get('#itest-id-deleteapi-icon-button').click();
-    cy.get('#itest-id-deleteconf').click();
+        cy.get('#itest-id-deploy-sample').click();
+        cy.get('#itest-api-name-version').should('be.visible');
+        cy.url().should('contains', '/overview');
+        cy.get("#itest-api-name-version").contains('PizzaShackAPI');
+        cy.get('#itest-id-deleteapi-icon-button').click();
+        cy.get('#itest-id-deleteconf').click();
+    }
+
+    it.only("Deploy sample api - super admin", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        deploySampleApi(superTenant);
+    });
+    it.only("Deploy sample api - tenant user", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        deploySampleApi(testTenant);
     });
 });

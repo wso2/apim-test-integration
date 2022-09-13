@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,28 +16,28 @@
  * under the License.
  */
 class LocalScopesPage {
-    getUrl(apiID){
+    static getUrl(apiID){
         return cy.get(`publisher/apis/${apiID}/scopes`);
     }
-    getLocalScopesHeader(){
+    static getLocalScopesHeader(){
         return cy.get('#itest-api-details-scopes-onboarding-head')
     }
-    getCreateScopesButton(){
+    static getCreateScopesButton(){
         return cy.get('#create-scope-btn')
     }
-    getScopeNameTextBox(){
+    static getScopeNameTextBox(){
         return cy.get('#name')
     }
-    getScopeDisplayNameTextBox(){
+    static getScopeDisplayNameTextBox(){
         return cy.get('#displayName')
     }
-    getScopeDescriptionTextBox(){
+    static getScopeDescriptionTextBox(){
         return cy.get('#description')
     }
-    getRolesTextBox(){
+    static getRolesTextBox(){
         return cy.get('#roles-input')
     }
-    getSaveButton(){
+    static getSaveButton(){
         return cy.get('#scope-save-btn')
     }
     

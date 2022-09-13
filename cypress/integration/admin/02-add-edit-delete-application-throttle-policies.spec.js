@@ -16,14 +16,14 @@
  * under the License.
  */
 
-describe("Add Edit Delete application throttle policies", () => {
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+import Utils from "@support/utils";
 
-    before(function () {
-        cy.loginToAdmin(carbonUsername, carbonPassword);
-    })
-    it.only("Add Edit Delete application throttle policies", () => {
+describe("admin-02 : Add Edit Delete application throttle policies", () => {
+    
+    const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
+
+    const addEditDeleteApplicationThrottlePolicies = (usernameLocal, passwordLocal, tenant) => {
+        cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
         const policyName = '80PerMin';
         cy.get('[data-testid="Application Policies-child-link"]').click();
         cy.get('.MuiButton-label').contains('Add Policy').click();
@@ -48,6 +48,12 @@ describe("Add Edit Delete application throttle policies", () => {
         cy.get(`[data-testid="${policyName}-actions"] > span:nth-child(2)`).click();
         cy.get('button > span').contains('Delete').click();
         cy.get(`[data-testid="${policyName}-actions"]`).should('not.exist');
-    });
+    }
 
+    it.only("Add Edit Delete application throttle policies - super admin", () => {
+        addEditDeleteApplicationThrottlePolicies(carbonUsername, carbonPassword, superTenant);
+    });
+    it.only("Add Edit Delete application throttle policies - tenant user", () => {
+        addEditDeleteApplicationThrottlePolicies(carbonUsername, carbonPassword, testTenant);
+    });
 })

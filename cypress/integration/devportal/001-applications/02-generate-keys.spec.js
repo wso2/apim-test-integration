@@ -16,15 +16,17 @@
 
 import Utils from "@support/utils";
 
-describe("Application tests", () => {
-    const { developer, password } = Utils.getUserInfo();
+describe("devportal-001-02 : Generate keys", () => {
+    const { developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
-    const appName = Utils.generateName();
+    let appName;
     const appDescription = 'Key gen application description';
+    let activeTenant;
 
-    it.only("Generate and update application production and sandbox keys, show hide keys", () => {
-        cy.loginToDevportal(developer, password);
-        cy.createApp(appName, appDescription);
+    const generateKeys = (tenant) => {
+        cy.loginToDevportal(developer, password, tenant);
+        appName = Utils.generateName();
+        cy.createApp(appName, appDescription, tenant);
 
         // Generating keys production
         cy.get('#production-keys-oauth').click();
@@ -69,9 +71,17 @@ describe("Application tests", () => {
         cy.get('#visibility-toggle-btn').click();
         cy.get('#consumer-secret').should('have.attr', 'type', 'text');
         cy.contains('visibility_off').should('be.visible');
+    }
+    it.only("Generate and update application production and sandbox keys, show hide keys - super admin", () => {
+        activeTenant = superTenant;
+        generateKeys(superTenant);
+    })
+    it.only("Generate and update application production and sandbox keys, show hide keys - tenant user", () => {
+        activeTenant = testTenant;
+        generateKeys(testTenant);
     })
 
-    after(() => {
-       cy.deleteApp(appName);
+    afterEach(() => {
+       cy.deleteApp(appName, activeTenant);
     })
 })

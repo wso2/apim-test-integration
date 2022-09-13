@@ -18,18 +18,15 @@
 
 import Utils from "@support/utils";
 
-describe("Check endpoint test button", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-004-02 : Check endpoint test button", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Check endpoint test button", () => {
+    const checkEndpointTestButton = (tenant) => {
         const endpoint200 = 'https://petstore.swagger.io/v2/store/inventory'; // 200 OK
         const endpoint400 = 'https://petstore.swagger.io/v2/store/inventory/7777777'; //404 Not Found
         const endpointUnknown = 'http://bull-8772776363-url.foo123'; // Unknown Host
         const endpointNoProtocol = 'bullproto://'; // unknown protocol: bullproto
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
 
@@ -61,5 +58,12 @@ describe("Check endpoint test button", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Check endpoint test button - super admin", () => {
+        checkEndpointTestButton(superTenant);
+    });
+    it.only("Check endpoint test button - tenant user", () => {
+        checkEndpointTestButton(testTenant);
     });
 });

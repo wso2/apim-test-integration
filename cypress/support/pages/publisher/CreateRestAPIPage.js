@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,28 +17,28 @@
  */
 import Utils from "@support/utils";
 class CreateRestAPIPage {
-    getUrl(){
+    static getUrl(){
         return "/publisher/apis/create/rest";
     }
-    visitAPIsPage(){
+    static visitAPIsPage(){
         cy.visit(`${Utils.getAppOrigin()}` + this.getUrl())
     }
-    getAPINameTextBox(){
+    static getAPINameTextBox(){
         return cy.get('#itest-id-apiname-input')
     }
-    getAPIContextTextBox(){
+    static getAPIContextTextBox(){
         return cy.get('#itest-id-apicontext-input')
     }
-    getAPIVesionTextBox(){
+    static getAPIVesionTextBox(){
         return cy.get('#itest-id-apiversion-input')
     }
-    getAPIEndpointTextBox(){
+    static getAPIEndpointTextBox(){
         return cy.get('#itest-id-apiendpoint-input')
     }
-    getAPICreateButton(){
+    static getAPICreateButton(){
         return cy.get('#itest-create-default-api-button')
     }
-    getAPICreateAndPublishButton(){
+    static getAPICreateAndPublishButton(){
         return cy.get('#itest-id-apicreatedefault-createnpublish')
     }
     

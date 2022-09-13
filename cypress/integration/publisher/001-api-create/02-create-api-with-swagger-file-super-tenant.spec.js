@@ -16,8 +16,8 @@
 
 import Utils from "@support/utils";
 
-describe("Create api with swagger file super tenant", () => {
-    const { publisher, password, tenantUser, tenant, } = Utils.getUserInfo();
+describe("publisher-001-02 : Create api with swagger file super tenant", () => {
+    const { publisher, password, tenantUser, testTenant, } = Utils.getUserInfo();
 
     const createApiFromSwagger = (usernameLocal, passwordLocal) => {
         cy.loginToPublisher(usernameLocal, passwordLocal);
@@ -49,7 +49,7 @@ describe("Create api with swagger file super tenant", () => {
     });
 
     it("Create API from swagger from file - tenant user", () => {
-        createApiFromSwagger(`${tenantUser}@${tenant}`, password);
+        createApiFromSwagger(`${publisher}@${testTenant}`, password);
     });
     
 })

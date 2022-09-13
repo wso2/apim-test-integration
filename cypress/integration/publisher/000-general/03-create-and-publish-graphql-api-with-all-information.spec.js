@@ -17,14 +17,15 @@
 import Utils from "@support/utils";
 
 let apiId;
-describe("Create GraphQl API from file", () => {
-    const username = 'admin';
-    const password = 'admin';
+let activeTenant;
+describe("publisher-000-03 : Create GraphQl API from file", () => {
+    const {superTenant, carbonUsername, carbonPassword} = Utils.getUserInfo();
+    const generatedAPIName = 'StarWars-' + Utils.generateName();
     const filepath = 'api_artifacts/schema_graphql.graphql';
     const modifiedFilepath = 'api_artifacts/modified_schema_graphql.graphql';
     const apiVersion = '1.0.0';
-    const apiContext = "/swapi";
-    const apiName = 'StarWarsAPIGQL';
+    const apiContext = `/${generatedAPIName.toLowerCase()}`;
+    const apiName = generatedAPIName;
     const applicationName = 'Graphql Client App';
     const starWarsQueryRequest = `query{
       human(id:1000){\n
@@ -94,30 +95,32 @@ describe("Create GraphQl API from file", () => {
     const starWarsSubscriptionResponse = `{"data":{"createReview":{"stars":3,"episode":"JEDI","commentary":"Excellent"}}}`;
 
 
-    beforeEach(function () {
+    const createAndPublisherGraphQLApiWithAllInfo = (tenant) => {
         //add role filmsubscriber
-        cy.carbonLogin(username, password);
+        cy.carbonLogin(carbonUsername, carbonPassword, tenant);
         cy.visit('/carbon/role/add-step1.jsp');
         cy.get('input[name="roleName"]').type('FilmSubscriber');
         cy.get('td.buttonRow').find('input').eq(0).click();
-        cy.get('#ygtvcheck2 > .ygtvspacer').click();
-        cy.get('#ygtvcheck34 > .ygtvspacer').click();
-        cy.get('#ygtvcheck48 > .ygtvspacer').click();
+        if (tenant === 'carbon.super') {
+            cy.get('#ygtvcheck2 > .ygtvspacer').click();  // Applications
+            cy.get('#ygtvcheck34 > .ygtvspacer').click(); // Governance
+            cy.get('#ygtvcheck48 > .ygtvspacer').click(); // Login
+        } else {
+            cy.get('#ygtvcheck257 > .ygtvspacer').click();  // Applications
+            cy.get('#ygtvcheck19 > .ygtvspacer').click();   // Governance
+            cy.get('#ygtvcheck33 > .ygtvspacer').click();   // Login
+        }
         cy.get('td.buttonRow').find('input').eq(1).click();
         cy.get('div.ui-dialog.ui-draggable.ui-resizable > div.ui-dialog-buttonpane > button', {timeout: 4000}).click();
 
         cy.carbonLogout();
 
-        cy.loginToPublisher(username, password);
+        cy.loginToPublisher(carbonUsername, carbonPassword, tenant);
         cy.on('uncaught:exception', (err, runnable) => {
             if (err.message.includes('applicationId is not provided') || err.message.includes('validateDescription is not a function')) {
                 return false
             }
         });
-
-    })
-
-    it("Verify GraphQl API Capabilities", () => {
 
         //create a graphql API
         cy.createGraphqlAPIfromFile(apiName, apiVersion, apiContext, filepath).then(value => {
@@ -176,7 +179,7 @@ describe("Create GraphQl API from file", () => {
 
                                     //visit dev portal and view API
                                     cy.logoutFromPublisher();
-                                    cy.loginToDevportal(username, password);
+                                    cy.loginToDevportal(carbonUsername, carbonPassword, tenant);
 
                                     // create an application
                                     cy.createApplication(applicationName, "50PerMin", "Sample Description");
@@ -207,7 +210,7 @@ describe("Create GraphQl API from file", () => {
                                     cy.wait('@getToken', {timeout: Cypress.config().largeTimeout}).its('response.statusCode').should('eq', 200);
 
                                     cy.get('[aria-label="Query Editor"]').type(starWarsQueryRequest);
-                                    cy.intercept('POST', 'https://localhost:8243/swapi/1.0.0').as('swQuery')
+                                    cy.intercept('POST', `https://localhost:8243/${apiContext}/1.0.0`).as('swQuery')
                                     cy.get('.topBar').get('.execute-button-wrap').get('button.execute-button').click();
 
                                     cy.wait('@swQuery').its('response.body').should('deep.equal', starWarsQueryResponse)
@@ -230,6 +233,8 @@ describe("Create GraphQl API from file", () => {
                                         expect(res).property('status').to.equal(200);
                                         expect(res).property('type').to.equal('websocket');
                                     }).as("switchProtocol");
+                                    cy.deleteApplication(applicationName);
+                                    cy.logoutFromDevportal();
 
                                 });
 
@@ -238,13 +243,17 @@ describe("Create GraphQl API from file", () => {
             }
         );
 
+    }
+
+    it("Verify GraphQl API Capabilities - super admin", () => {
+        activeTenant = superTenant;
+        createAndPublisherGraphQLApiWithAllInfo(superTenant);
+
     });
 
 
-    after(function () {
-        cy.deleteApplication(applicationName);
-        cy.logoutFromDevportal();
-        cy.loginToPublisher(username, password);
+    afterEach(function () {
+        cy.loginToPublisher(carbonUsername, carbonPassword, activeTenant);
         cy.log("app id " + apiId);
         // Test is done. Now delete the api
         if (apiId != null) {

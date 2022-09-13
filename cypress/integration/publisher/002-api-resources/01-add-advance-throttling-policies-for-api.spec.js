@@ -18,17 +18,15 @@
 
 import Utils from "@support/utils";
 
-describe("Add advanced throttling policies", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-002-01 : Add advanced throttling policies", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
-    const apiName = Utils.generateName();
+    let apiName
     const apiVersion = '1.0.0';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Add Authorization Header for the api", () => {
+    const addAuthorizationHeaderForApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/resources`);
 
@@ -44,5 +42,12 @@ describe("Add advanced throttling policies", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Add Authorization Header for the api - super admin", () => {
+        addAuthorizationHeaderForApi(superTenant);
+    });
+    it.only("Add Authorization Header for the api - tenant user", () => {
+        addAuthorizationHeaderForApi(testTenant);
     });
 });

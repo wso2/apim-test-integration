@@ -18,18 +18,15 @@
 
 import Utils from "@support/utils";
 
-describe("Endpoint testing", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-004-06 : Endpoint testing - import delete certificate", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Add REST endpoints for production and sandbox endpoints with failover", () => {
+    const importDeleteCertificate = (tenant) => {
         const random_number = Math.floor(Date.now() / 1000);
         const testAlias = Utils.generateName();
         const endpoint = `https://petstore.swagger.io/v2/store/inventory/${random_number}`;
 
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.config().largeTimeout}).click();
@@ -82,5 +79,12 @@ describe("Endpoint testing", () => {
                 Utils.deleteAPI(apiId);
             });
         });
+    }
+
+    it.only("Add REST endpoints for production and sandbox endpoints with failover - super admin", () => {
+        importDeleteCertificate(superTenant);
+    });
+    it.only("Add REST endpoints for production and sandbox endpoints with failover - tenant user", () => {
+        importDeleteCertificate(testTenant);
     });
 });

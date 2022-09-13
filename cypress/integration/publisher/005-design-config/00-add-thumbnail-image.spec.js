@@ -21,21 +21,14 @@ The product is broken. we need to fix the product. This test case is ignored fro
 */
 import Utils from "@support/utils";
 
-describe("Upload thumbnail", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-005-00 : Upload thumbnail", () => {
+    const { publisher, password, superTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
     let testApiID;
 
-    beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-    it.only("Upload thumbnail",{
-        retries: {
-            runMode: 3,
-            openMode: 0,
-        },
-    }, () => {
+    const addThumbnailImage = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             testApiID = apiId;
@@ -61,6 +54,14 @@ describe("Upload thumbnail", () => {
                     expect($img[0].naturalWidth).to.be.greaterThan(0)
                 })
         });
+    }
+    it.only("Upload thumbnail - super admin",{
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        addThumbnailImage(superTenant);
     });
     afterEach(() => {
         Utils.deleteAPI(testApiID);

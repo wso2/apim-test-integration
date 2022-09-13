@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,47 +16,54 @@
  * under the License.
  */
 class APIBasicInfoPage {
-    getUrl(apiID){
+    static getUrl(apiID){
         return `publisher/apis/${apiID}/configuration`;
     }
-    getTagsTextBox(){
+    static getTagsTextBox(){
         return cy.get('#tags')
     }
-    getDefaultVersionYesRadio(){
+    static getDefaultVersionYesRadio(){
         return cy.get('input[name="defaultVersion"][value="true"]')
     }
-    getDefaultVersionNoRadio(){
+    static getDefaultVersionNoRadio(){
         return cy.get('input[name="defaultVersion"][value="false"]')
     }
-    getThirdPartyYesRadio(){
+    static getThirdPartyYesRadio(){
         return cy.get('input[name="advertised"][value="true"]')
     }
-    getThirdPartyNoRadio(){
+    static getThirdPartyNoRadio(){
         return cy.get('input[name="advertised"][value="false"]')
     }
-    getSaveButton(){
+    static getSaveButton(){
         return cy.get('#design-config-save-btn')
     }
-    getUpdateToolTip(){
+    static getUpdateToolTip(){
         return cy.get('div[role="status"][aria-live="polite"]')
     }
-    getEditDescriptionButton(){
+    static getEditDescriptionButton(){
         return cy.get('#edit-api-thumbnail-btn + div > button')
     }
-    getEditThumbnailButton(){
+    static getEditThumbnailButton(){
         return cy.get('#edit-api-thumbnail-btn > button')
     }
-    getThumbnailUploadButton(){
+    static getThumbnailUploadButton(){
         return cy.get('#edit-api-thumbnail-upload-btn')
     }
-    getDescriptionTextArea(){
+    static getDescriptionTextArea(){
         return cy.get('#itest-description-textfield')
     }
-    getUpdateContectButton(){
+    static getUpdateContectButton(){
         return cy.get('div[role="dialog"] > header > div > div > div:nth-child(2) > button')
     }
-    getThumbnailFileUpload(){
+    static getThumbnailFileUpload(){
         return cy.get('input[type="file"]')
+    }
+
+    // Actions
+    static editDescriptionAndUpdateContent(description){
+        this.getEditDescriptionButton().should('be.visible').should("have.text","Edit description").click({force: true})
+        this.getDescriptionTextArea().type(description)
+        this.getUpdateContectButton().click()
     }
 }
 export default APIBasicInfoPage;

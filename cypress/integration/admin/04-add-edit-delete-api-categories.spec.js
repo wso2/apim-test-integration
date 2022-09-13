@@ -16,14 +16,14 @@
  * under the License.
  */
 
-describe("Add Edit Delete api categories", () => {
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+import Utils from "@support/utils";
 
-    before(function () {
-        cy.loginToAdmin(carbonUsername, carbonPassword);
-    })
-    it.only("Add Edit Delete api categories", () => {
+describe("admin-04 : Add Edit Delete api categories", () => {
+    
+    const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
+
+    const addEditDeleteApiCategories = (usernameLocal, passwordLocal, tenant) => {
+        cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
         const categoryName = 'Finance';
         cy.get('[data-testid="API Categories"]', {timeout: Cypress.config().largeTimeout}).click();
         cy.get('.MuiButton-label').contains('Add API Category').click();
@@ -46,6 +46,14 @@ describe("Add Edit Delete api categories", () => {
         cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > span:nth-child(2)').click();
         cy.get('button > span').contains('Delete').click();
         cy.get('#client-snackbar').should('have.text','API Category deleted successfully');
+    }
+
+    it.only("Add Edit Delete api categories - super admin", () => {
+        addEditDeleteApiCategories(carbonUsername, carbonPassword, superTenant);
+    });
+
+    it.only("Add Edit Delete api categories - tenant user", () => {
+        addEditDeleteApiCategories(carbonUsername, carbonPassword, testTenant);
     });
 
 })

@@ -19,14 +19,11 @@
 import Utils from "@support/utils";
 const YAML = require('yamljs')
 
-describe("Download swagger", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-009-01 : Download swagger", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Download swagger", () => {
+    const downloadSwagger = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
@@ -53,5 +50,12 @@ describe("Download swagger", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Download swagger - super admin", () => {
+        downloadSwagger(superTenant);
+    });
+    it.only("Download swagger - tenant user", () => {
+        downloadSwagger(testTenant);
     });
 });

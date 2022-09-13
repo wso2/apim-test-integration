@@ -18,26 +18,18 @@
 
 import Utils from "@support/utils";
 
-describe("Endpoint testing", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-004-03 : Endpoint testing - Failover", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
 
-    beforeEach(function () {
-         // todo need to remove this check after `console.err(err)` -> `console.err(err)` in Endpoints.jsx
+    const addFailOver = (tenant) => {
+        // todo need to remove this check after `console.err(err)` -> `console.err(err)` in Endpoints.jsx
         Cypress.on('uncaught:exception', (err, runnable) => {
             // returning false here prevents Cypress from
             // failing the test
             return false
         });
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Add REST endpoints for production and sandbox endpoints with failover", {
-        retries: {
-          runMode: 3,
-          openMode: 0,
-        },
-      }, () => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.config().largeTimeout}).click();
@@ -72,6 +64,22 @@ describe("Endpoint testing", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
 
+    it.only("Add REST endpoints for production and sandbox endpoints with failover - super admin", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addFailOver(superTenant);
+    });
+    it.only("Add REST endpoints for production and sandbox endpoints with failover - tenant user", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        addFailOver(testTenant);
     });
 });

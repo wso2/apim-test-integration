@@ -18,16 +18,13 @@
 
 import Utils from "@support/utils";
 
-describe("Save and publish API", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-011-00 : Save and publish API", () => {
+    const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Save and publish API", () => {
+    const saveAndPublishApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
@@ -60,5 +57,11 @@ describe("Save and publish API", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+    it.only("Save and publish API - super admin", () => {
+        saveAndPublishApi(superTenant);
+    });
+    it.only("Save and publish API - tenant user", () => {
+        saveAndPublishApi(testTenant);
     });
 });

@@ -18,18 +18,16 @@
 
 import Utils from "@support/utils";
 
-describe("Runtime configuration", () => {
-    const { publisher, password, } = Utils.getUserInfo();
-    const apiName = Utils.generateName();
+describe("publisher-003-04 : Runtime configuration-ssl", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
+    let apiName;
     const apiVersion = '1.0.0';
 
-    beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Enable mutual ssl and upload cert", () => {
+    const enableMutualSSLandUploadCert = (tenant) => {
         const random_number = Math.floor(Date.now() / 1000);
         const alias = `alias${random_number}`;
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
@@ -60,5 +58,12 @@ describe("Runtime configuration", () => {
                 Utils.deleteAPI(apiId);
             })
         });
+    }
+
+    it.only("Enable mutual ssl and upload cert - super admin", () => {
+        enableMutualSSLandUploadCert(superTenant);
+    });
+    it.only("Enable mutual ssl and upload cert - tenant user", () => {
+        enableMutualSSLandUploadCert(testTenant);
     });
 });

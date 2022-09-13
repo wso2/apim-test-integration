@@ -18,17 +18,15 @@
 
 import Utils from "@support/utils";
 
-describe("Runtime configuration", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+describe("publisher-003-00 : Runtime configuration-Authorization Header ", () => {
+    const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
-    const apiName = Utils.generateName();
+    let apiName;
     const apiVersion = '1.0.0';
 
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Add Authorization Header for the api", () => {
+    const addAuthorizationHeaderForTheApi = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();;
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             const customAuthHeader = '-custom';
             cy.visit(`/publisher/apis/${apiId}/runtime-configuration`);
@@ -40,5 +38,12 @@ describe("Runtime configuration", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    }
+
+    it.only("Add Authorization Header for the api - super admin", () => {
+        addAuthorizationHeaderForTheApi(superTenant);
+    });
+    it.only("Add Authorization Header for the api - tenant user", () => {
+        addAuthorizationHeaderForTheApi(testTenant);
     });
 });

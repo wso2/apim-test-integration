@@ -16,16 +16,19 @@
 
 import Utils from "@support/utils";
 
-describe("Tryout API invocations", () => {
-    const { publisher, developer, password, } = Utils.getUserInfo();
+describe("devportal-003-00 : Tryout API invocations from swagger console", () => {
+    const { publisher, developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
-    const apiName = Utils.generateName();
-    const apiContext = apiName;
+    let apiName;
+    let apiContext;
     let testApiId;
-    const appName = Utils.generateName();
-    it.only("Tryout API invocations from swagger console", () => {
-        cy.loginToPublisher(publisher, password);
+    let appName;
+    let activeTenant;
+    const tryoutApiInvocationFromSwaggerConsole = (tenant) => {
+        cy.loginToPublisher(publisher, password, tenant);
+        apiName = Utils.generateName();
+        apiContext = apiName;
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext, endpoint: 'https://petstore.swagger.io/v2/swagger.json' }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
@@ -34,13 +37,14 @@ describe("Tryout API invocations", () => {
                 cy.wait(3000);
                 cy.contains('Deployments');
                 cy.logoutFromPublisher();
-                cy.loginToDevportal(developer, password);
+                cy.loginToDevportal(developer, password, tenant);
 
                 Cypress.on('uncaught:exception', () => false);
 
                 // Create an app and subscribe
-                cy.createApp(appName, 'application description');
-                cy.visit(`/devportal/apis/${apiId}/credentials?tenant=carbon.super`);
+                appName = Utils.generateName();
+                cy.createApp(appName, 'application description', tenant);
+                cy.visit(`/devportal/apis/${apiId}/credentials?tenant=${tenant}`);
 
                 // Click and select the new application
                 cy.get('#application-subscribe', {timeout: 30000});
@@ -76,10 +80,18 @@ describe("Tryout API invocations", () => {
                 });
             })
         });
+    }
+    it.only("Tryout API invocations from swagger console - super admin", () => {
+        activeTenant = superTenant; 
+        tryoutApiInvocationFromSwaggerConsole(superTenant);
+    });
+    it.only("Tryout API invocations from swagger console - tenant user", () => {
+        activeTenant = testTenant;
+        tryoutApiInvocationFromSwaggerConsole(testTenant);
     });
 
     after(() => {
-        cy.deleteApp(appName);
+        cy.deleteApp(appName, activeTenant);
         Utils.deleteAPI(testApiId);
     })
 });

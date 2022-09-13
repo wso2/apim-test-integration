@@ -18,8 +18,8 @@
 
 import Utils from "@support/utils";
 
-describe("Login logout from publisher as supper tenant", () => {
-    const { password, carbonUsername, carbonPassword, tenantUser, tenant, } = Utils.getUserInfo();
+describe("publisher-001-01 : Login logout from publisher as supper tenant", () => {
+    const { password, carbonUsername, carbonPassword, tenantUser, testTenant, } = Utils.getUserInfo();
 
     it.only("Login and logout from publisher", () => {
         cy.loginToPublisher(carbonUsername, carbonPassword);
@@ -31,7 +31,7 @@ describe("Login logout from publisher as supper tenant", () => {
     })
 
     it.only("Login and logout from publisher - tenant user", () => {
-        cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
+        cy.loginToPublisher(carbonUsername, carbonPassword, testTenant);
         cy.visit(`/publisher/apis`).then(() => {
             cy.get('#profile-menu-btn').click();
             cy.get('#itest-logout').click();

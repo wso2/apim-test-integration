@@ -16,14 +16,14 @@
  * under the License.
  */
 
-describe("Add Edit Delete subscription throttle policies", () => {
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+import Utils from "@support/utils";
 
-    before(function () {
-        cy.loginToAdmin(carbonUsername, carbonPassword);
-    })
-    it.only("Add Edit Delete subscription throttle policies", () => {
+describe("admin-03 : Add Edit Delete subscription throttle policies", () => {
+    
+    const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
+
+    const addEditDeleteSubscriptionThrottlePolicies = (usernameLocal, passwordLocal, tenant) => {
+        cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
         const policyName = 'Platinum';
         cy.get('[data-testid="Subscription Policies-child-link"]').click();
         cy.get('.MuiButton-label').contains('Add Policy').click();
@@ -50,6 +50,13 @@ describe("Add Edit Delete subscription throttle policies", () => {
         cy.get(`[data-testid="${policyName}-actions"] > span:nth-child(2)`).click();
         cy.get('button > span').contains('Delete').click();
         cy.get('#client-snackbar').should('have.text','Subscription Rate Limiting Policy successfully deleted.');
+    }
+
+    it.only("Add Edit Delete subscription throttle policies - super admin", () => {
+        addEditDeleteSubscriptionThrottlePolicies(carbonUsername, carbonPassword, superTenant);
     });
 
+    it.only("Add Edit Delete subscription throttle policies - tenant user", () => {
+        addEditDeleteSubscriptionThrottlePolicies(carbonUsername, carbonPassword, testTenant);
+    });
 })
