@@ -8,7 +8,7 @@ const ID = '';
 const SECRET = '';
 
 // The name of the bucket that you have created
-const BUCKET_NAME = 'apim-3.2.0-ui-testing';
+const BUCKET_NAME = 'apim-ui-testing';
 var secretAccessKey = process.env.S3_SECRET_KEY;
 var accessKeyId = process.env.S3_ACCESS_KEY;
 var testGridEmailPWD = process.env.TESTGRID_EMAIL_PASSWORD;
@@ -43,8 +43,8 @@ const uploadFile = (fileName, destination, contentType) => {
 };
 
 const sendMail = () => {
-  var mochawesomeUploadLocation = `https://s3.us-east-2.amazonaws.com/apim-3.2.0-ui-testing/410-result/mochawesome-bundle-${timestamp}.html `
-  var screenshotUploadLocation = `https://s3.us-east-2.amazonaws.com/apim-3.2.0-ui-testing/410-result/screenshots-${timestamp}.zip `
+  var mochawesomeUploadLocation = `https://s3.us-east-2.amazonaws.com/${BUCKET_NAME}/400-result/mochawesome-bundle-${timestamp}.html `
+  var screenshotUploadLocation = `https://s3.us-east-2.amazonaws.com/${BUCKET_NAME}/400-result/screenshots-${timestamp}.zip `
   var content = `Click on ${mochawesomeUploadLocation} to view the complete test report. Screenshots available in ${screenshotUploadLocation}`;
   var transporter = nodemailer.createTransport({
     host: 'tygra.wso2.com',
@@ -57,8 +57,8 @@ const sendMail = () => {
 
   var mailOptions = {
     from: "TestGrid Team <testgrid@wso2.com>",
-    to: "prasanna@wso2.com,vimukthi@wso2.com,rosens@wso2.com,nandika@wso2.com,dhanushka@wso2.com,bathiya@wso2.com",
-    subject: `WSO2 APIM 4.1.0 UI TESTS`,
+    to: "prasanna@wso2.com,vimukthi@wso2.com,rosens@wso2.com,nandika@wso2.com,dhanushka@wso2.com,bathiya@wso2.com,chamikas@wso2.com",
+    subject: `WSO2 APIM 4.0.0 UI TESTS`,
     html: content
   }
   transporter.sendMail(mailOptions, function (error, info) {
@@ -86,9 +86,9 @@ function zipDirectory(sourceDir, outPath) {
   });
 }
 
-uploadFile('./cypress/reports/html/mochawesome-bundle.html', `410-result/mochawesome-bundle-${timestamp}.html`, "text/html");
+uploadFile('./cypress/reports/html/mochawesome-bundle.html', `400-result/mochawesome-bundle-${timestamp}.html`, "text/html");
 var zipFileOutputLocation = `./cypress/screenshots-${timestamp}.zip`;
 zipDirectory('./cypress/screenshots', zipFileOutputLocation).then(()=>{
-  uploadFile(zipFileOutputLocation, `410-result/screenshots-${timestamp}.zip`, "application/zip")
+  uploadFile(zipFileOutputLocation, `400-result/screenshots-${timestamp}.zip`, "application/zip")
 });
 sendMail();
