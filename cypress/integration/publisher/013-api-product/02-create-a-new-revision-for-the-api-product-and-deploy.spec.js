@@ -83,7 +83,7 @@ describe("publisher-013-02 : Mock the api response and test it", () => {
                     // Deploying
                     cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
 
-                    cy.get(`#itest-id-deleteapi-icon-button`).click();
+                    cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
                     cy.get(`#itest-id-deleteconf`).click();
                 })
 
