@@ -53,6 +53,7 @@ describe("devportal-002-01 : Subscribe unsubscribe to app from application view 
                     cy.get('[aria-labelledby="simple-dialog-title"]').find('input[placeholder="Search APIs"]').click().type(apiName+"{enter}");
                     cy.contains('1-1 of 1'); 
                     cy.get(`#policy-subscribe-btn-${apiId}`).contains('Subscribe').click();
+                        cy.wait(15000)
                         cy.get('button[aria-label="close"]').click();
 
                         // check if the subscription exists
