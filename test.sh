@@ -91,6 +91,9 @@ echo $BASE_URL
 
 export CYPRESS_BASE_URL=${BASE_URL}
 echo $CYPRESS_BASE_URL;
+# This is a defensive fix ensure Cypress base URL's port is correct
+export CYPRESS_BASE_URL=`echo $CYPRESS_BASE_URL | sed "s|8243|9443|g"`
+echo $CYPRESS_BASE_URL;
 
 ######
 export DEBIAN_FRONTEND=noninteractive
