@@ -83,8 +83,6 @@ else
     exit 1;
 fi;
 
-echo "Details : $dbDriver $driverUrl $dbType";
-
 
 # Download DB scripts from S3 bucket.
 mkdir "${db_engine}"
@@ -93,16 +91,22 @@ aws s3 cp "s3://test-grid-apim/profile-automation/apim/${product_version}/${db_e
 # Update kube config file.
 aws eks update-kubeconfig --region ${EKS_CLUSTER_REGION} --name ${EKS_CLUSTER_NAME} || { echo 'Failed to update cluster kube config.';  exit 1; }
 
+# Scale node group with one EC2 instance.
+eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
+
+# Install nginx ingress controller
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml || { echo "failed to install nginx ingress controller." ; exit 1 ; }
+
 # Delete Nginx admission if it exists.
 kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo "WARNING : Failed to delete nginx admission."
 
-# Scale node group with one EC2 instance.
-eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
+# Create fargate profile
+eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
 
 # Extract DB port and DB host name detail.
 dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCPort`].OutputValue' --output text | xargs)
 dbHost=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCConnectionString`].OutputValue' --output text | xargs)
-echo "db details DB port : $dbPort, DB host : $dbHost"
+echo "Db details DB port : $dbPort, DB host : $dbHost"
 
 if [ "${db_engine}" = "postgres" ];
     then 
@@ -124,9 +128,6 @@ else
     echo "The specified DB engine not supported.";
     exit 1;
 fi;
-
-echo "Details : $dbDriver $driverUrl $dbType";
-
 
 
 # Validate DB Port.
@@ -155,18 +156,29 @@ kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.
 helm repo add wso2 https://helm.wso2.com && helm repo update ||  { echo 'Error while adding WSO2 helm repository to helm.';  exit 1; }
 helm dependency build "kubernetes-apim/${path_to_helm_folder}" ||  { echo 'Error while building helm folder : kubernetes-apim/${path_to_helm_folder}.';  exit 1; }
 helm install apim "kubernetes-apim/${path_to_helm_folder}" \
-    --set wso2.deployment.am.db.hostname="$dbHost" \
-    --set wso2.deployment.am.db.port="$dbPort" \
-    --set wso2.deployment.am.db.type="$dbType" \
-    --set wso2.deployment.am.db.driver="$dbDriver" \
-    --set wso2.deployment.am.db.driver_url="$driverUrl" \
-    --set wso2.deployment.am.db.apim.username="$dbUserNameAPIM" \
-    --set wso2.deployment.am.db.apim_shared.username="$dbUserNameAPIMShared" \
-    --set wso2.deployment.am.db.apim.password="$dbPasswordAPIM" \
-    --set wso2.deployment.am.db.apim_shared.password="$dbPasswordAPIMShared" \
-    --set wso2.deployment.am.db.apim.url="$dbAPIMUrl" \
-    --set wso2.deployment.am.db.apim_shared.url="$dbAPIMSharedUrl" \
-    --set wso2.deployment.dependencies.db="$db_engine" \
+    --set wso2.deployment.am.cp.db.hostname="$dbHost" \
+    --set wso2.deployment.am.cp.db.port="$dbPort" \
+    --set wso2.deployment.am.cp.db.type="$dbType" \
+    --set wso2.deployment.am.cp.db.driver="$dbDriver" \
+    --set wso2.deployment.am.cp.db.driver_url="$driverUrl" \
+    --set wso2.deployment.am.cp.db.apim.username="$dbUserNameAPIM" \
+    --set wso2.deployment.am.cp.db.apim_shared.username="$dbUserNameAPIMShared" \
+    --set wso2.deployment.am.cp.db.apim.password="$dbPasswordAPIM" \
+    --set wso2.deployment.am.cp.db.apim_shared.password="$dbPasswordAPIMShared" \
+    --set wso2.deployment.am.cp.db.apim.url="$dbAPIMUrl" \
+    --set wso2.deployment.am.cp.db.apim_shared.url="$dbAPIMSharedUrl" \
+    --set wso2.deployment.dependencies.cluster_mysql=false \
+    --set wso2.deployment.am.trafficmanager.livenessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.am.trafficmanager.readinessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.am.cp.startupProbe.initialDelaySeconds=200 \
+    --set wso2.deployment.am.cp.readinessProbe.initialDelaySeconds=200 \
+    --set wso2.deployment.am.startupProbe.initialDelaySeconds=200 \
+    --set wso2.deployment.am.startupProbe.periodSeconds=10 \
+    --set wso2.deployment.am.readinessProbe.initialDelaySeconds=200 \
+    --set wso2.deployment.dependencies.nfsServerProvisioner=false \
+    --set wso2.deployment.mi.replicas=0 \
+    --namespace "${kubernetes_namespace}" --create-namespace \
     ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
 
 cd "$workingdir"
+
