@@ -1,6 +1,6 @@
 const fs = require('fs');
 const AWS = require('aws-sdk');
-
+const archiver = require('archiver');
 var nodemailer = require('nodemailer');
 
 // Enter copied or downloaded access ID and secret key here
@@ -8,64 +8,86 @@ const ID = '';
 const SECRET = '';
 
 // The name of the bucket that you have created
-const BUCKET_NAME = 'apim-3.2.0-ui-testing';
+const BUCKET_NAME = 'apim-ui-testing';
 var secretAccessKey = process.env.S3_SECRET_KEY;
 var accessKeyId = process.env.S3_ACCESS_KEY;
-var testPlanId = process.env.TEST_PLAN_ID;
 var testGridEmailPWD = process.env.TESTGRID_EMAIL_PASSWORD;
-
 
 const s3 = new AWS.S3({
   accessKeyId: accessKeyId,
   secretAccessKey: secretAccessKey
 });
 
-const uploadFile = (fileName) => {
+var timestamp = new Date() / 1000;
+
+const uploadFile = (fileName, destination, contentType) => {
   // Read content from the file
   const fileContent = fs.readFileSync(fileName);
-
   // Setting up S3 upload parameters
   const params = {
       Bucket: BUCKET_NAME,
-      Key: 'mochawesome-bundle-' + testPlanId + '.html', // File name you want to save as in S3
+      Key: destination, // File name you want to save as in S3
       Body: fileContent,
       ACL: 'public-read',
-      ContentType : "text/html"
+      ContentType : contentType
   };
-
   // Uploading files to the bucket
   s3.upload(params, function(err, data) {
       if (err) {
           // throw err;
           console.log(`File uploaded Error to AWS s3 bucket.`);
       }
-      console.log(`File uploaded successfully. ${data.Location}`);
-
-      var content = `Click on ${data.Location} to view the complete test report`;
-      var transporter = nodemailer.createTransport({
-        host: 'tygra.wso2.com',
-        port: '2587',
-        auth: {
-          user: 'testgrid',
-          pass: testGridEmailPWD
-        }
-      });
-
-      var mailOptions = {
-          from: "TestGrid Team <testgrid@wso2.com>",
-          to: "prasanna@wso2.com,vimukthi@wso2.com,rosens@wso2.com,nandika@wso2.com,integration-builder@wso2.com",
-          subject: `WSO2 APIM 3.2.0 UI TESTS ${testPlanId}`,
-          html: content
-      }
-
-
-      transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Email sent: ' + info.response);
-        }
-      });
+      console.log(`File uploaded successfully. ${data.Location}`);   
   });
 };
-uploadFile('./cypress/reports/html/mochawesome-bundle-' + testPlanId + '.html');
+
+const sendMail = () => {
+  var mochawesomeUploadLocation = `https://s3.us-east-2.amazonaws.com/${BUCKET_NAME}/320-result/mochawesome-bundle-${timestamp}.html `
+  var screenshotUploadLocation = `https://s3.us-east-2.amazonaws.com/${BUCKET_NAME}/320-result/screenshots-${timestamp}.zip `
+  var content = `Click on ${mochawesomeUploadLocation} to view the complete test report. Screenshots available in ${screenshotUploadLocation}`;
+  var transporter = nodemailer.createTransport({
+    host: 'tygra.wso2.com',
+    port: '2587',
+    auth: {
+      user: 'testgrid',
+      pass: testGridEmailPWD
+    }
+  });
+
+  var mailOptions = {
+    from: "TestGrid Team <testgrid@wso2.com>",
+    to: "prasanna@wso2.com,vimukthi@wso2.com,rosens@wso2.com,nandika@wso2.com,dhanushka@wso2.com,bathiya@wso2.com,chamikas@wso2.com",
+    subject: `WSO2 APIM 3.2.0 UI TESTS`,
+    html: content
+  }
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
+
+function zipDirectory(sourceDir, outPath) {
+  const archive = archiver('zip', { zlib: { level: 9 }});
+  const stream = fs.createWriteStream(outPath);
+
+  return new Promise((resolve, reject) => {
+    archive
+      .directory(sourceDir, false)
+      .on('error', err => reject(err))
+      .pipe(stream)
+    ;
+
+    stream.on('close', () => resolve());
+    archive.finalize();
+  });
+}
+
+uploadFile('./cypress/reports/html/mochawesome-bundle.html', `320-result/mochawesome-bundle-${timestamp}.html`, "text/html");
+var zipFileOutputLocation = `./cypress/screenshots-${timestamp}.zip`;
+zipDirectory('./cypress/screenshots', zipFileOutputLocation).then(()=>{
+  uploadFile(zipFileOutputLocation, `400-result/screenshots-${timestamp}.zip`, "application/zip")
+});
+sendMail();
