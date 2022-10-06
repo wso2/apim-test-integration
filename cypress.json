@@ -1,8 +1,7 @@
 {
     "chromeWebSecurity": false,
-    "pageLoadTimeout": 100000,
-    "defaultCommandTimeout": 100000,
-    "largeTimeout": 100000,
+    "pageLoadTimeout": 250000,
+    "defaultCommandTimeout": 250000,
     "baseUrl": "https://localhost:9443",
     "screenshotsFolder": "cypress/screenshots",
     "screenshotOnRunFailure":true,
@@ -19,9 +18,5 @@
         "reportPageTitle": "custom-title"
       }
     },
-    "video": false,
-    "scrollBehavior" : "nearest",
-    "e2e": {
-      "excludeSpecPattern": "**/*.skip.js"
-    }
-  }
+    "video": false
+}

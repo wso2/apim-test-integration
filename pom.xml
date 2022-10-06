@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.wso2.carbon.apim</groupId>
   <artifactId>sample.project</artifactId>
-  <version>4.1.0</version>
+  <version>1.0.0</version>
   <dependencies>		
 		<dependency>
 			<groupId>org.testng</groupId>
