@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: gleeful-tap
+  title: newapi1665030859
   version: 1.0.0
 servers:
   - url: /
@@ -76,7 +76,6 @@ components:
         implicit:
           authorizationUrl: 'https://test.com'
           scopes: {}
-x-wso2-auth-header: Authorization
 x-wso2-cors:
   corsConfigurationEnabled: false
   accessControlAllowOrigins:
@@ -88,7 +87,7 @@ x-wso2-cors:
     - Content-Type
     - SOAPAction
     - apikey
-    - Internal-Key
+    - testKey
   accessControlAllowMethods:
     - GET
     - PUT
@@ -96,7 +95,15 @@ x-wso2-cors:
     - DELETE
     - PATCH
     - OPTIONS
-x-wso2-basePath: /gleeful_tap/1.0.0
+x-wso2-production-endpoints:
+  urls:
+    - 'https://apis.wso2.com/sample1665030863'
+  type: http
+x-wso2-sandbox-endpoints:
+  urls:
+    - 'https://apis.wso2.com/sample1665030863'
+  type: http
+x-wso2-basePath: /sample_context_1665030863/1.0.0
 x-wso2-transports:
   - http
   - https

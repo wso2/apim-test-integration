@@ -1,11 +1,13 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "title" : "unaware-distance",
+    "title" : "anonymousApi",
     "version" : "2.0.0"
   },
   "servers" : [ {
-    "url" : "http:///unaware-distance/2.0.0"
+    "url" : "https://localhost:8243/anonymous29797/2.0.0"
+  }, {
+    "url" : "http://localhost:8280/anonymous29797/2.0.0"
   } ],
   "security" : [ {
     "default" : [ ]
@@ -80,7 +82,7 @@
         "type" : "oauth2",
         "flows" : {
           "implicit" : {
-            "authorizationUrl" : "/authorize",
+            "authorizationUrl" : "https://localhost:8243/authorize",
             "scopes" : { }
           }
         }
