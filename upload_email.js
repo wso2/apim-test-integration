@@ -88,6 +88,6 @@ function zipDirectory(sourceDir, outPath) {
 uploadFile('./cypress/reports/html/mochawesome-bundle.html', `320-result/mochawesome-bundle-${timestamp}.html`, "text/html");
 var zipFileOutputLocation = `./cypress/screenshots-${timestamp}.zip`;
 zipDirectory('./cypress/screenshots', zipFileOutputLocation).then(()=>{
-  uploadFile(zipFileOutputLocation, `400-result/screenshots-${timestamp}.zip`, "application/zip")
+  uploadFile(zipFileOutputLocation, `320-result/screenshots-${timestamp}.zip`, "application/zip")
 });
 sendMail();
