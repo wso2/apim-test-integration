@@ -5,6 +5,7 @@ set -o xtrace
 
 HOME=`pwd`
 TEST_SCRIPT=test.sh
+MVNSTATE=1
 
 function usage()
 {
@@ -73,6 +74,8 @@ function get_prop {
     echo $prop
 }
 
+cat ${INPUT_DIR}/deployment.properties
+
 PRODUCT_VERSION=$(get_prop 'ProductVersion')
 
 if [[ -z "$PRODUCT_VERSION" ]]
@@ -83,6 +86,14 @@ then
 else
     PRODUCT_VERSION="-$PRODUCT_VERSION"
 fi
+BASE_URL=$(get_prop 'GatewayHttpsUrl')
+echo $BASE_URL
+
+export CYPRESS_BASE_URL=${BASE_URL}
+echo $CYPRESS_BASE_URL;
+# This is a defensive fix ensure Cypress base URL's port is correct
+export CYPRESS_BASE_URL=`echo $CYPRESS_BASE_URL | sed "s|8243|9443|g"`
+echo $CYPRESS_BASE_URL;
 
 ######
 export DEBIAN_FRONTEND=noninteractive
@@ -90,6 +101,8 @@ sudo apt-get update -y
 sleep 300
 sudo killall apt apt-get dpkg
 sudo dpkg --configure -a
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+chmod 644 /usr/share/keyrings/nodesource.gpg
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 npm -v
 if [[ $? -ne 0 ]]
@@ -109,7 +122,7 @@ sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npx /usr/bin/npx
 sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y
 export LC_CTYPE="en_US.UTF-8"
 cd $HOME
-npm install --save-dev cypress@9.1.1
+npm install cypress
 npm install --save-dev cypress-file-upload
 npm install --save  nodemailer
 npm install --save require-text
@@ -117,53 +130,34 @@ npm install styliner
 npm i --save-dev cypress-mochawesome-reporter
 npm i --save-dev mocha-junit-reporter
 npm i --save-dev cypress-multi-reporters
-VAR=`grep "PublisherUrl" ../../../../data-bucket/deployment.properties |cut -d'=' -f2`
-VAR2=${VAR//[\\]}
-export CYPRESS_BASE_URL=${VAR2//\/publisher}
+npm i babel-plugin-module-resolver
 
-VAR3=`grep "s3secretKey" ../../../../data-bucket/deployment.properties |cut -d'=' -f2`
-export S3_SECRET_KEY=${VAR3}
-VAR4=`grep "s3accessKey" ../../../../data-bucket/deployment.properties |cut -d'=' -f2`
-export S3_ACCESS_KEY=${VAR4}
 
-VAR5=`grep "TEST_PLAN_ID" ../../../../data-bucket/deployment.properties |cut -d'=' -f2`
-export TEST_PLAN_ID=${VAR5}
-
-VAR6=`grep "TESTGRID_EMAIL_PASSWORD" ../../../../data-bucket/deployment.properties | head -1 | cut -d'=' -f2`
-export TESTGRID_EMAIL_PASSWORD=${VAR6}
+export S3_SECRET_KEY=$(get_prop 's3secretKey')
+export S3_ACCESS_KEY=$(get_prop 's3accessKey')
+export TESTGRID_EMAIL_PASSWORD=$(get_prop 'testgridEmailPassword')
 
 npm install --save-dev cypress-multi-reporters mocha-junit-reporter
 npm install --save-dev mochawesome mochawesome-merge mochawesome-report-generator
 npm install --save-dev mocha
+npm install --save-dev @cypress/browserify-preprocessor
+npm install archiver
+npm install yamljs
 npm install junit-report-merger --save-dev
 npm i --save aws-sdk
 npm run delete:reportFolderHTML
 npm run delete:reportFolderJUnit
 npm run delete:reportFolderReport
 npm run pre-test
-#sleep 5000
+nohup Xvfb :99 > /dev/null 2>&1 &
+export DISPLAY=:99
 npm run test
+MVNSTATE=$?
+pkill Xvfb
 npm run report:merge
 npm run report:generate
-mv  ./cypress/reports/html/mochawesome-bundle.html  ./cypress/reports/html/mochawesome-bundle-${TEST_PLAN_ID}.html
 node ./upload_email
 
 ######
 
-mvn clean install
-
-echo `pwd`
-#=============== Copy Surefire Reports ===========================================
-
-echo "Copying surefire-reports to ${OUTPUT_DIR}/scenarios"
-mkdir -p ${OUTPUT_DIR}/scenarios
-mv ${OUTPUT_DIR}/scenarios/target/* ${OUTPUT_DIR}/scenarios/
-find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios \;
-find . -name "aggregate-surefire-report" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios \;
-
-#=============== Code Coverage Report Generation ===========================================
-
-echo "Generating Scenario Code Coverage Reports"
-source ${HOME}/code-coverage/code-coverage.sh
-
-generate_code_coverage ${INPUT_DIR} ${OUTPUT_DIR}
+exit $MVNSTATE
