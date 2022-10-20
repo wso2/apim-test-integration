@@ -8,6 +8,8 @@
     "url": "git://github.com/wso2/apim-apps.git"
   },
   "scripts": {
+    "test": "cypress run --spec **/*.spec.js",
+    "test:local": "./test.local.sh",
     "test:gui": "cypress run --headed > cypress/reports/summary.txt",
     "delete:reportFolderHTML": "rm -rf cypress/reports/html/.jsons/*",
     "delete:reportFolderJUnit": "rm -rf cypress/reports/junit/*",
