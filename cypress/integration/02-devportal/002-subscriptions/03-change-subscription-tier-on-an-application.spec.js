@@ -14,7 +14,7 @@
  * under the License.
  */
 
-describe("Change subscription tier of an application", () => {
+describe("devportal-002-03 : Verify authorized user can change subscription tier of an application", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const developer = 'developer';
     const publisher = 'publisher';
@@ -30,7 +30,7 @@ describe("Change subscription tier of an application", () => {
         //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
-    it.only("Change subscription tier", () => {
+    it.only("Authorized user updates subscription tier", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();

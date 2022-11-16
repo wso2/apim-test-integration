@@ -1,5 +1,5 @@
 
-describe("creating document", () => {
+describe("publisher-012-00 : Verify an authorized user can create an inline document for the API", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -11,7 +11,7 @@ describe("creating document", () => {
 
     })
 
-    it.only("Creating inline document", () => {
+    it.only("Authorized user creates an inline document", () => {
         const documentName = 'api document';
         const documentSummery = 'api document summery';
         cy.loginToPublisher(publisher, password);

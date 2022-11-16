@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Create api with swagger file super tenant", () => {
+describe("publisher-001-02 : Verify creating an api with swagger file", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -45,7 +45,7 @@ describe("Create api with swagger file super tenant", () => {
         // validate
         cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 }).contains('1.0.5');
     }
-    it("Create API from swagger from file - supper admin", () => {
+    it("Verify super tenant user can create API from swagger file", () => {
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
 
@@ -59,7 +59,7 @@ describe("Create api with swagger file super tenant", () => {
         cy.carbonLogout();
     });
 
-    it("Create API from swagger from file - tenant user", () => {
+    it("Verify tenant user can create API from swagger from file", () => {
         const tenant = 'wso2.com';
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewTenantUser(tenantUser);

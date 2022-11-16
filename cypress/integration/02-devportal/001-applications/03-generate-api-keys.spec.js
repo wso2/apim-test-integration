@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Application tests", () => {
+describe("devportal-001-03 : Verify an authorized user can generate API keys", () => {
     const appName = 'keygenapplication' + Math.floor(Date.now() / 1000);
     const appDescription = 'Key gen application description';
     const developer = 'developer';
@@ -32,7 +32,7 @@ describe("Application tests", () => {
         cy.get('#access-token').should('not.be.empty');
         cy.get('[data-testid="generate-api-keys-close-btn"]').click();
     }
-    it.only("Generate API Keys", () => {
+    it.only("Generate API Keys with none and IP address restrictions", () => {
         cy.loginToDevportal(developer, password);
         cy.visit('/devportal/applications/create?tenant=carbon.super');
 

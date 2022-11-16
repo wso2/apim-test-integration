@@ -1,5 +1,5 @@
 
-describe("Deploy sample api", () => {
+describe("publisher-000-00 : Verify authorized user can deploy sample api in publisher portal", () => {
     const publisher = 'publisher';
     const developer = 'developer';
     const password = 'test123';
@@ -15,7 +15,7 @@ describe("Deploy sample api", () => {
         //cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Util test to add test users", () => {
+    it.only("Verify admin user can add test users", () => {
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
@@ -23,7 +23,7 @@ describe("Deploy sample api", () => {
         cy.carbonLogout();
     });
 
-    it.only("Deploy sample api", () => {
+    it.only("Verify admin user can deploy sample api", () => {
         cy.loginToPublisher(publisher, password);
         cy.deploySampleAPI();
     });

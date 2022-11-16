@@ -1,5 +1,5 @@
 
-describe("Add business information", () => {
+describe("publisher-008-00 : Verify authorized user can add business information for an AP", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -12,7 +12,7 @@ describe("Add business information", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Add business information", () => {
+    it.only("Authorized adds business information for an API", () => {
         const ownerName = 'Raccoon Panda';
         const ownerEmail = 'raccoon@wso2.com';
         const techOwnerName = 'Big Cat';

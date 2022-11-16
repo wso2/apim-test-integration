@@ -17,12 +17,12 @@
  * under the License.
  */
 
-describe("Login logout from publisher as supper tenant", () => {
+describe("publisher-001-01 : Verify an authorized user can perform login and logout successfully in publisher", () => {
     const tenantUser = `tenant${Math.floor(Date.now() / 1000)}`
     const carbonUsername = 'admin'
     const carbonPassword = 'admin'
 
-    it.only("Login and logout from publisher", () => {
+    it.only("Verify super user can login and logout successfully from publisher", () => {
         cy.loginToPublisher(carbonUsername, carbonPassword);
         cy.get('[data-testid="api-table-view"]').then(() => {
             cy.get('[data-testid="logout-menu-dropdown"]').click();
@@ -31,7 +31,7 @@ describe("Login logout from publisher as supper tenant", () => {
         })
     })
 
-    it.only("Login and logout from publisher - tenant user", () => {
+    it.only("Verify tenant user can login and logout successfully from publisher", () => {
         const tenant = 'wso2.com';
         const tenantAdminUsername = 'admin';
         const tenantAdminPassword = 'admin';

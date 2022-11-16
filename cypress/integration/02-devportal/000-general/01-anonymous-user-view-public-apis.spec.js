@@ -17,7 +17,7 @@
  * under the License.
  */
 
-describe("Anonymous view apis", () => {
+describe("devportal-000-01 : Verify anonymous user can view public apis", () => {
     const developer = 'developer';
     const publisher = 'publisher';
     const password = 'test123';
@@ -43,7 +43,7 @@ describe("Anonymous view apis", () => {
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();
     })
-    it.only("Anonymous view apis", () => {
+    it.only("Authorized user view APIs in devportal", () => {
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/logout?referrer=/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
@@ -80,7 +80,7 @@ describe("Anonymous view apis", () => {
         });
     })
 
-    it.only("Download swagger", () => {
+    it.only("Verify authorized user can download swagger file", () => {
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
         cy.wait(1000);
@@ -97,7 +97,7 @@ describe("Anonymous view apis", () => {
         cy.readFile(downloadedFilename).its('info.title').should('eq', apiName);
     })
 
-    it.only("Download client sdks", () => {
+    it.only("Verify authorized user can download client sdks", () => {
         cy.loginToDevportal(developer, password);
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');

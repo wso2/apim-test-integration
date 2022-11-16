@@ -17,14 +17,14 @@
  * under the License.
  */
 
-describe("Add scope mapping", () => {
+describe("admin-07 : Verify admin user can add scope assignments to user roles", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add scope mapping", () => {
+    it.only("Admin user assign scopes to user roles", () => {
         const roleName = 'creator';
 
         cy.get('[data-testid="Scope Assignments-child-link"]').click();

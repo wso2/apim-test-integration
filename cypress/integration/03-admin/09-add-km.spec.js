@@ -17,14 +17,14 @@
  * under the License.
  */
 
-describe("Add key manager", () => {
+describe("admin-09 : Verify admin user can add key manager", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add key manager", () => {
+    it.only("admin-09 : Add key manager configurations", () => {
         const km = 'myAuth0';
         const wellKnowUrl = 'https://my-tenant.us.auth0.com/.well-known/openid-configuration';
         const clientId = 'test';

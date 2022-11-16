@@ -1,5 +1,5 @@
 
-describe("Endpoint testing", () => {
+describe("publisher-004-03 : Verify authorized user can add failover configurations for REST API endpoints ", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -10,7 +10,7 @@ describe("Endpoint testing", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Add REST endpoints for production and sandbox endpoints with failover", () => {
+    it.only("authorized user add REST endpoints for production and sandbox endpoints with failover", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         cy.loginToPublisher(publisher, password);
         cy.createAPIWithoutEndpoint();

@@ -1,5 +1,5 @@
 
-describe("Create a new version of API", () => {
+describe("publisher-000-01 : Verify an authorized user can create a new version of API", () => {
     const apiName = 'newapi' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.0';
     const newVersion = '2.0.0';
@@ -12,7 +12,7 @@ describe("Create a new version of API", () => {
         //cy.carbonLogin(carbonUsername, carbonPassword);
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
-    it.only("Create a new version of API", () => {
+    it.only("An authorized user can create a new version of API", () => {
         cy.loginToPublisher(publisher, password);
 
         cy.createAPIByRestAPIDesign(apiName, apiVersion);

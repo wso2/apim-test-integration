@@ -1,5 +1,5 @@
 
-describe("Check endpoint test button", () => {
+describe("publisher-004-02 : Verify endpoint test button indicate the correct status", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -10,7 +10,7 @@ describe("Check endpoint test button", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Check endpoint test button", () => {
+    it.only("Authorized user checks that endpoint test button indicates the correct status ", () => {
         const endpoint200 = 'https://petstore.swagger.io/v2/store/inventory'; // 200 OK
         const endpoint400 = 'https://petstore.swagger.io/v2/store/inventory/7777777'; //404 Not Found
         const endpointUnknown = 'http://bull-8772776363-url.foo123'; // Unknown Host

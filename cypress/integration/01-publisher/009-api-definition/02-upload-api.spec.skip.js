@@ -14,7 +14,7 @@
  * under the License.
  */
 
-describe("Upload api spec from the api definition page", () => {
+describe("publisher-009-02 : Verify authorized user can upload api spec from the api definition page", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -22,13 +22,16 @@ describe("Upload api spec from the api definition page", () => {
     const apiName = 'newapi' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.0';
 
+
+    
+
     before(function () {
         //cy.carbonLogin(carbonUsername, carbonPassword);
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
 
     })
 
-    it.only("Upload api spec from the api definition page", () => {
+    it.only("Authirzed user uploads api spec from the api definition page", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemAPIdefinition"]').click();

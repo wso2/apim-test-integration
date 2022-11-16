@@ -1,5 +1,5 @@
 
-describe("Runtime configuration", () => {
+describe("publisher-003-02 : Verify authorized user can enable response chaching under runtime configuration", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -11,7 +11,7 @@ describe("Runtime configuration", () => {
         //cy.carbonLogin(carbonUsername, carbonPassword);
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Authorized user enables runtime configurations", () => {
         const customAuthHeader = '-custom';
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);

@@ -1,5 +1,5 @@
 
-describe("Lifecycle changes", () => {
+describe("publisher-011-01 : Verify authorized user can change lifecycle status of an API", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -13,7 +13,7 @@ describe("Lifecycle changes", () => {
 
     })
 
-    it.only("Block demote retire api", () => {
+    it.only("Authorized user updates lifecycle status", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemsubscriptions"]').click();

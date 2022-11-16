@@ -1,5 +1,5 @@
 
-describe("Endpoint testing", () => {
+describe("publisher-004-04 : Verify authorized user can add endpoints with loadbalanced configuration for REST API endpoints", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -10,7 +10,7 @@ describe("Endpoint testing", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Add REST endpoints for production and sandbox endpoints with LOAD balanced", () => {
+    it.only("Authorized user adds REST endpoints for production and sandbox endpoints with Load balanced", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         cy.loginToPublisher(publisher, password);
         cy.createAPIWithoutEndpoint();

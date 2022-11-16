@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Create api with swagger file super tenant", () => {
+describe("publisher-001-03 : Verify authorized user can create api with URL of swagger the file", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -95,25 +95,25 @@ describe("Create api with swagger file super tenant", () => {
         });
     }
 
-    it("Create API from swagger from file openapi 2", () => {
+    it("Verify user can create API from swagger from file openapi 2 version", () => {
         cy.loginToPublisher(publisher, password);
         cy.wait(3000);
         openApi2Create();
     });
 
-    it("Create API from swagger from file openapi 3", () => {
+    it("Verify user can create API from swagger from file openapi 3 version", () => {
         cy.loginToPublisher(publisher, password);
         cy.wait(3000);
         openApi3Create();
     });
 
-    it("Create API from swagger from file openapi 2 - tenant user", () => {
+    it("Verify tenant user can create API from swagger from file openapi 2", () => {
         cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
         cy.wait(3000);
         openApi2Create();
     });
 
-    it("Create API from swagger from file openapi 3 - tenant user", () => {
+    it("Verify tenant user can create API from swagger from file openapi 3", () => {
         cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
         cy.wait(3000);
         openApi3Create();

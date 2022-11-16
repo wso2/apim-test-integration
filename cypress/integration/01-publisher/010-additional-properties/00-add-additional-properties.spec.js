@@ -1,5 +1,5 @@
 
-describe("Add additional properties", () => {
+describe("publisher-010-00 : Verify authorized user can add additional properties for API", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -13,7 +13,7 @@ describe("Add additional properties", () => {
 
     })
 
-    it.only("Add additional properties", () => {
+    it.only("Authorized user adds additional properties for the API", () => {
         const prop = 'prop1';
         const propVal = 'prop1-val';
 

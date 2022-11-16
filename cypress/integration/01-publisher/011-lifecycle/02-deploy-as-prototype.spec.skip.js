@@ -1,5 +1,5 @@
 
-describe("Deploy as prototype", () => {
+describe("publisher-011-02 : Verify an authorized user can deploy an API as prototype", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -11,7 +11,7 @@ describe("Deploy as prototype", () => {
 
     })
 
-    it.only("Deploy as prototype", () => {
+    it.only("Authorized user deploys API as prototype", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         cy.loginToPublisher(publisher, password);
         cy.createAPIWithoutEndpoint();

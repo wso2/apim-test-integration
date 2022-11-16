@@ -1,5 +1,5 @@
 
-describe("Runtime configuration", () => {
+describe("publisher-003-05 : Verify authorized user can enable and upload certificate under runtime configuration", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -12,7 +12,7 @@ describe("Runtime configuration", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Enable mutual ssl and upload cert", () => {
+    it.only("Authorized user enable mutual ssl and upload cert", () => {
         cy.loginToPublisher(publisher, password);
         const random_number = Math.floor(Date.now() / 1000);
         const alias = `alias${random_number}`;

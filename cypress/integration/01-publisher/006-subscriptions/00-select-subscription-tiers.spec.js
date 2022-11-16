@@ -1,5 +1,5 @@
 
-describe("Select subscription tiers for the API", () => {
+describe("publisher-006-00 : Verify authorized user can select subscription tiers for the API", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -12,7 +12,7 @@ describe("Select subscription tiers for the API", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Select subscription tiers for the API", () => {
+    it.only("Authorized user selects subscription tiers for the API", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemsubscriptions"]').click();

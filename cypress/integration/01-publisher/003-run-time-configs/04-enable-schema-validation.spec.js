@@ -1,5 +1,5 @@
 
-describe("Runtime configuration", () => {
+describe("publisher-003-04 : Verify authirzed user can enable schema validation under runtime configuration", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -12,7 +12,7 @@ describe("Runtime configuration", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("User enable schema validation for the api", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();

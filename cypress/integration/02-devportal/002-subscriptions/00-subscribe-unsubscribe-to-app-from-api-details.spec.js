@@ -17,7 +17,7 @@
  * under the License.
  */
 
-describe("Subscribe unsubscribe to application from api details page", () => {
+describe("devportal-002-00 : Verify authorized user can Subscribe and unsubscribe to API from api details page", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const appDescription = 'app description';
     const developer = 'developer';

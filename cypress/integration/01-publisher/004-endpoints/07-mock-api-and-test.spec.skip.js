@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Mock the api response and test it", () => {
+describe("publisher-004-07 : Verify authroized user can test the API with a mock implementation", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -24,7 +24,7 @@ describe("Mock the api response and test it", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it("Mock the api response and test it", () => {
+    it("Authorized user mock the api response and test it", () => {
         cy.loginToPublisher(publisher, password);
         cy.visit(`/publisher/apis`);
         // select the option from the menu item

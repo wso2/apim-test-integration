@@ -1,5 +1,5 @@
 
-describe("Add Authorization Header for the api", () => {
+describe("publisher-004-00 : Verify authorized user can add prodcution and sandbox endpoints for an rest API", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -9,7 +9,7 @@ describe("Add Authorization Header for the api", () => {
         //cy.carbonLogin(carbonUsername, carbonPassword);
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Authorized user adds sandbox and production endpoints", () => {
         cy.loginToPublisher(publisher, password);
         cy.wait(2000);
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';

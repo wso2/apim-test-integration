@@ -1,5 +1,5 @@
 
-describe("Endpoint testing", () => {
+describe("publisher-004-06 : Verify authorized user can import and delete certificates", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -10,7 +10,7 @@ describe("Endpoint testing", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Add REST endpoints for production and sandbox endpoints with failover", () => {
+    it.only("Authorized user upload the and delete certificate in general endpoint configurations", () => {
         const random_number = Math.floor(Date.now() / 1000);
         const testAlias = `endpointCert`;
         const endpoint = `https://petstore.swagger.io/v2/store/inventory/${random_number}`;

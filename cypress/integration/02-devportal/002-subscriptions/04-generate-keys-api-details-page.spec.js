@@ -17,7 +17,7 @@
  * under the License.
  */
 
-describe("Generate keys from api details page", () => {
+describe("devportal-002-04  : Verify an authorized user can generate application keys from api details page", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const developer = 'developer';
     const publisher = 'publisher';
@@ -33,7 +33,7 @@ describe("Generate keys from api details page", () => {
         //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
-    it.only("Generate keys from api details page", () => {
+    it.only("Generating application keys from api details page", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-describe("Subscription blocking", () => {
+describe("publisher-006-01 : Verify authorized useer can block the subscription to an API to disable the access", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const appDescription = 'app description';
     const developer = 'developer';
@@ -35,7 +35,7 @@ describe("Subscription blocking", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
     
-    it.only("Subscribe and unsubscribe to API from api details page", () => {
+    it.only("Authorized user block the subscription to an API", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();

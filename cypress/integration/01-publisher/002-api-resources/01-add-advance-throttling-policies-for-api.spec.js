@@ -1,5 +1,5 @@
 
-describe("Add advanced throttling policies", () => {
+describe("publisher-002-01 : Verify authorized user can add advanced throttling policies", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -13,7 +13,7 @@ describe("Add advanced throttling policies", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Verify adding authorization header for the api", () => {
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemresources"]').click();
 
