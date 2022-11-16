@@ -17,7 +17,7 @@
  * under the License.
  */
 
-describe("Make api the default version", () => {
+describe("publisher-005-01 : Verify authorized user can make the api the default version", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -29,7 +29,7 @@ describe("Make api the default version", () => {
         //cy.carbonLogin(carbonUsername, carbonPassword);
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Authorized user makes the api the default version", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemDesignConfigurations"]').click();

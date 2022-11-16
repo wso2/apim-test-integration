@@ -1,5 +1,5 @@
 
-describe("Add production sandbox endpoints for SOAP", () => {
+describe("publisher-004-01 : Verify authorized user can add production sandbox endpoints for SOAP API", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -10,7 +10,7 @@ describe("Add production sandbox endpoints for SOAP", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Add production sandbox endpoints for SOAP", () => {
+    it.only("Authrized user adds production and sandbox endpoints for SOAP", () => {
         const endpoint = 'https://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php?wsdl';
         cy.loginToPublisher(publisher, password);
         cy.createAPIWithoutEndpoint();

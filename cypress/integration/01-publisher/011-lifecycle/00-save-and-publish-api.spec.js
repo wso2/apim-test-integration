@@ -1,5 +1,5 @@
 
-describe("Save and publish API", () => {
+describe("publisher-011-00 : Verify authorized user can save and publish API", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -13,7 +13,7 @@ describe("Save and publish API", () => {
         //cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Save and publish API", () => {
+    it.only("Authorized user save and publish API", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemsubscriptions"]').click();

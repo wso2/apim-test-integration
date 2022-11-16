@@ -1,5 +1,5 @@
 
-describe("Runtime configuration", () => {
+describe("publisher-003-06 : Verify authorized user can configure application level security under runtime configuration", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -13,7 +13,7 @@ describe("Runtime configuration", () => {
     })
 
 
-    it.only("OAuth2 and api key security spec", () => {
+    it.only("Authorized user configures OAuth2 and api key security", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();

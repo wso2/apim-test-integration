@@ -17,14 +17,14 @@
  * under the License.
  */
 
-describe("Add Edit Delete advance throttle policies", () => {
+describe("admin-01 : Verify authorized user can perform CRUD operations in advance throttle policies", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add Edit Delete advance throttle policies", () => {
+    it.only("Authorized user perform Add-Edit-Delete advance throttle policies", () => {
         const policyName = '030PerMin';
         cy.get('[data-testid="Advanced Policies-child-link"]').click();
         cy.get('.MuiButton-label').contains('Add New Policy').click();

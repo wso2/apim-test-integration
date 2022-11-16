@@ -17,14 +17,14 @@
  * under the License.
  */
 
-describe("Add Edit Delete subscription throttle policies", () => {
+describe("admin-03 : Verify admin user can perform CRUD operations in subscription throttle policies", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add Edit Delete subscription throttle policies", () => {
+    it.only("Verify admin user can Add-Edit-Delete subscription throttle policies", () => {
         const policyName = 'Platinum';
         cy.get('[data-testid="Subscription Policies-child-link"]').click();
         cy.get('.MuiButton-label').contains('Add Policy').click();

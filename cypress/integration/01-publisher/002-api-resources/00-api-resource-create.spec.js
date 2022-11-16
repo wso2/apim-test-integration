@@ -1,7 +1,7 @@
 import { after } from "mocha"
 
 
-describe("Resource add edit operations", () => {
+describe("publisher-002-00 : Verify an authorized user can perform CRUD operations in resources", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -17,7 +17,7 @@ describe("Resource add edit operations", () => {
         //cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Add new resource", () => {
+    it.only("Verify an authorized user can add new api resource", () => {
         const apiName = 'newapi' + Math.floor(Date.now() / 1000);
         const apiVersion = '1.0.0';
         cy.loginToPublisher(publisher, password);
@@ -74,7 +74,7 @@ describe("Resource add edit operations", () => {
 
         cy.get(`[data-testid="operation-${target}-${verb}"]`).should('be.visible');
     }
-    it.only("Add delete query path parameters for resources", () => {
+    it.only("Verify an authorized user can add delete query path parameters for resources", () => {
         const verb = 'get';
         const paramType = 'query';
         const paramName = 'count';
@@ -110,7 +110,7 @@ describe("Resource add edit operations", () => {
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
     });
 
-    it.only("Add advance throttling policies per resource", () => {
+    it.only("Verify authorized user can add advance throttling policies per resource", () => {
         const verb = 'get';
         const rateLimitName = '50KPerMin';
         const apiName = 'newapi' + Math.floor(Date.now() / 1000);
@@ -140,7 +140,7 @@ describe("Resource add edit operations", () => {
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
     });
 
-    it.only("Add and assign scopes for API resources", () => {
+    it.only("Verify authorized user can add and assign scopes for API resources", () => {
         const random_number = Math.floor(Date.now() / 1000);
         const verb = 'post';
         const scopeName = 'test' + random_number;

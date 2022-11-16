@@ -1,5 +1,5 @@
 
-describe("Runtime configuration", () => {
+describe("publisher-003-00 : Verify authorized user can add authorization header under the runtime configurations", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -13,7 +13,7 @@ describe("Runtime configuration", () => {
     })
 
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Authroized user add authorization header for the api", () => {
         const customAuthHeader = '-custom';
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);

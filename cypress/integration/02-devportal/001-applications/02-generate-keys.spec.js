@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Application tests", () => {
+describe("devportal-001-02 : Verify an authorized user can generate sandbox and production application keys", () => {
     const appName = 'keygenapplication' + Math.floor(Date.now() / 1000);
     const appDescription = 'Key gen application description';
     const developer = 'developer';

@@ -1,5 +1,5 @@
 
-describe("Select gateway environments", () => {
+describe("publisher-007-00 : Verify authorized user can select gateway environments", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -13,7 +13,7 @@ describe("Select gateway environments", () => {
 
     });
 
-    it.only("Select gateway environments", () => {
+    it.only("Authorized user selects gateway environments", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemenvironments"]').click();

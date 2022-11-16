@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Mock the api response and test it", () => {
+describe("publisher-013-01 : Verify an authorized user can create an API product and update undeline API", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -28,7 +28,7 @@ describe("Mock the api response and test it", () => {
 
     })
 
-    it("Mock the api response and test it", () => {
+    it("Authorize user creates an API product and update undeline API ", () => {
 
         cy.loginToPublisher(publisher, password);
 

@@ -17,14 +17,14 @@
  * under the License.
  */
 
-describe("Add deny policies", () => {
+describe("admin-06 - Verify admin user can add and delete deny policies", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add deny policies", () => {
+    it.only("Verify admin user can add and delete deny policies", () => {
         const ipAddress = '127.0.0.1';
         cy.get('[data-testid="Deny Policies-child-link"]').click();
         cy.get('.MuiButton-label').contains('Add Policy').click();

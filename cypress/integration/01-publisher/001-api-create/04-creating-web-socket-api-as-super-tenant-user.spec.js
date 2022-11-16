@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Create websocket api - super tenant", () => {
+describe("publisher-001-04 : Verify authorized user can create a websocket api", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -55,12 +55,12 @@ describe("Create websocket api - super tenant", () => {
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
     }
-    it("Create websocket API from url", () => {
+    it("Verify authorized user can create websocket API from url", () => {
         cy.loginToPublisher(publisher, password);
         websocketApiCreate();
     });
 
-    it("Create websocket API from url - tenant user", () => {
+    it("Verify tenant user can create websocket API from url", () => {
         const tenant = 'wso2.com';
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewTenantUser(tenantUser);

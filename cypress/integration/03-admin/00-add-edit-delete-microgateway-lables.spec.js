@@ -17,14 +17,14 @@
  * under the License.
  */
 
-describe("Add Edit Delete Microgateway lables", () => {
+describe("admin-00 : Verify authorized user can perform CRUD operations in Microgateway lables", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add Edit Delete Microgateway lables", () => {
+    it.only("Authorized user add edit and delete Microgateway lables", () => {
         cy.get('[data-testid="Gateways-link"]').click();
         cy.get('.MuiButton-label').contains('Add Gateway Label').click();
         cy.get('input[name="name"]').type('MARKETING_STORE');

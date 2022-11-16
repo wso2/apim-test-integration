@@ -17,14 +17,14 @@
  * under the License.
  */
 
-describe("Add custom throttle policies", () => {
+describe("admin-05 - Verify admin user can perform CRUD operations in custom throttle policies", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add custom throttle policies", () => {
+    it.only("Verify admin user can add-edit-delete custom throttle policies", () => {
         const policyName = '5reqPerMin';
         const secondDesc = 'For an Admin users allow 5 requests per minute';
         cy.get('[data-testid="Custom Policies-child-link"]').click();

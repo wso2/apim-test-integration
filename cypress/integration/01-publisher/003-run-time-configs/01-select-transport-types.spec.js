@@ -1,5 +1,5 @@
 
-describe("Runtime configuration", () => {
+describe("publisher-003-01 : Verify authorized user can select trnasport types under runtime configuration", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -13,7 +13,7 @@ describe("Runtime configuration", () => {
     })
 
 
-    it.only("Select transport type", () => {
+    it.only("Authorized user selects a transport type", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.wait(2000);

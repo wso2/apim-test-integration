@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Create GraphQl API from file", () => {
+describe("publisher-001-05 : Verify authorized user can create GraphQl API from importing the file", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -24,7 +24,7 @@ describe("Create GraphQl API from file", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it("Create GraphQl API from file", () => {
+    it("User can Create a GraphQl API from uploading the file", () => {
         cy.loginToPublisher(publisher, password);
         const random_number = Math.floor(Date.now() / 1000);
         const randomName = `sample_api_${random_number}`;

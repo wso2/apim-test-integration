@@ -17,7 +17,7 @@
  * under the License.
  */
 
-describe("Anonymous view apis", () => {
+describe("devportal-002-01 : Verify authorized user can subscribe, unsubscribe to API from application view", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const appDescription = 'app description';
     const developer = 'developer';
@@ -35,7 +35,7 @@ describe("Anonymous view apis", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Subscribe unsubscribe to app from application view", () => {
+    it.only("Subscribe unsubscribe to API from application view", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();

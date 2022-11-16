@@ -1,7 +1,7 @@
 
 const YAML = require('yamljs')
 
-describe("Download swagger", () => {
+describe("publisher-009-01 : Verify authorized user can download swagger definition", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -15,7 +15,7 @@ describe("Download swagger", () => {
 
     })
 
-    it.only("Download swagger", () => {
+    it.only("Authorized user can download swagger definition", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemAPIdefinition"]').click();

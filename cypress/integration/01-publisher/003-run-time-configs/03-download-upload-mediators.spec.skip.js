@@ -1,5 +1,5 @@
 
-describe("Runtime configuration", () => {
+describe("publisher-003-03 : Verify authorized user can download/upload mediators in runtime configuration", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -48,7 +48,7 @@ describe("Runtime configuration", () => {
             cy.contains(fileName).should('exist');
         });
     }
-    it.only("Download mediation policies for In Flow, Out Flow, Fault Flow", () => {
+    it.only("User download and upload mediation policies for In Flow, Out Flow, Fault Flow", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();

@@ -1,5 +1,5 @@
 
-describe("Api Definition", () => {
+describe("publisher-009-00 : Verify authorized user can download API definition file", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -12,7 +12,7 @@ describe("Api Definition", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Download api", () => {
+    it.only("Authorized user can download API definition file", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemAPIdefinition"]').click();

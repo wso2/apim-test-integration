@@ -17,7 +17,7 @@
  * under the License.
  */
 
-describe("Add API Categories and assign via publisher portal", () => {
+describe("admin-08 : Verify creating API Category and assign to a API via publisher portal", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
     const apiName = 'newapi' + Math.floor(Date.now() / 1000);
@@ -26,7 +26,7 @@ describe("Add API Categories and assign via publisher portal", () => {
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it("Add API Categories and assign via publisher portal", () => {
+    it("Admin user create API Categories and assign via publisher portal", () => {
         const category = 'Weather';
         const categoryDescription = 'Weather related apis';
 

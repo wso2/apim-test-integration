@@ -13,7 +13,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Application tests", () => {
+describe("devportal-001-01 : Verify creating an JWT token based application in devloper portal", () => {
     const appName = 'jwtapplication' + Math.floor(Date.now() / 1000);
     const appDescription = 'JWT application description';
     const developer = 'developer';
@@ -25,7 +25,7 @@ describe("Application tests", () => {
         //cy.carbonLogin(carbonUsername, carbonPassword);
         //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
     })
-    it.only("Add Applications for JWT token Type", () => {
+    it.only("Create JWT token based application in developer portal", () => {
         cy.loginToDevportal();
         cy.createApp(appName, appDescription);
     })

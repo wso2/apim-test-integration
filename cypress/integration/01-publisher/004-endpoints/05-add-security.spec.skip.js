@@ -1,5 +1,5 @@
 
-describe("Add security to the endpoint", () => {
+describe("publisher-004-05 : Verify authorized user can add security to the endpoint", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -10,7 +10,7 @@ describe("Add security to the endpoint", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Add security to the endpoint", () => {
+    it.only("Authorized user adds endpoint security for the API", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         const usernameLocal = 'admin';
         const passwordLocal = 'admin';

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-describe("Anonymous view apis", () => {
+describe("devportal-002-02 : Verify authorized user can Subscribe to an API via Subscription & Key Generation Wizard ", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const developer = 'developer';
     const publisher = 'publisher';
@@ -35,7 +35,7 @@ describe("Anonymous view apis", () => {
     })
 
 
-    it.only("Subscribe to API", () => {
+    it.only("Subscribe to API via Subscription & Key Generation Wizard ", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();

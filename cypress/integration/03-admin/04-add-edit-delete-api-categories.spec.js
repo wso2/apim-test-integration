@@ -17,14 +17,14 @@
  * under the License.
  */
 
-describe("Add Edit Delete api categories", () => {
+describe("admin-04 : Verify admin user can perform CRUD operations in api categories", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add Edit Delete api categories", () => {
+    it.only("Verify admin user can Add-Edit-Delete api categories", () => {
         const categoryName = 'Finance';
         cy.get('[data-testid="API Categories-link"]').click();
         cy.get('.MuiButton-label').contains('Add API Category').click();

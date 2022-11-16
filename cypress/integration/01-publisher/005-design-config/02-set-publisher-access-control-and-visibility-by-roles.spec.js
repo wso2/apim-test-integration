@@ -19,7 +19,7 @@
  */
 
 
-describe("Set publisher access control and visibility by roles", () => {
+describe("publisher-005-02 : Verify adding restrictions for publisher access control and visibility by user roles", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -32,7 +32,7 @@ describe("Set publisher access control and visibility by roles", () => {
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
-    it.only("Set role based API Store visibility and access control for the api", () => {
+    it.only("Authorized user configures user role based API Store visibility and access control for the api", () => {
         const role = 'internal/everyone';
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-describe("Login logout from devportal", () => {
+describe("devportal-000-02 : Verify a user can perform login and logout in devportal", () => {
     const developer = 'developer';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -27,7 +27,7 @@ describe("Login logout from devportal", () => {
         //cy.carbonLogin(carbonUsername, carbonPassword);
         //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
     })
-    it.only("Login logout from devportal", () => {
+    it.only("User can login and logout from devportal", () => {
         cy.loginToDevportal(developer, password);
         cy.wait(3000);
         cy.logoutFromDevportal();
