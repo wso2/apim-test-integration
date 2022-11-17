@@ -162,6 +162,7 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     const apiName = name ? name : `sample_api_${random_number}`;
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
+    cy.wait(2000);
     cy.visit(`/publisher/apis`);
     cy.wait(5000);
     cy.get('[data-testid="itest-id-createapi"]', { timeout: 30000 });

@@ -14,6 +14,7 @@ describe("publisher-003-03 : Verify authorized user can download/upload mediator
     })
 
     const downloadMediator = (type) => {
+        cy.wait(2000);
         cy.get(`[data-testid="mediation-edit-${type}"]`).click();
         cy.get('[data-testid="mediation-policy-global"]').click();
 
@@ -30,6 +31,7 @@ describe("publisher-003-03 : Verify authorized user can download/upload mediator
         })
     }
     const uploadMediator = (type) => {
+        cy.wait(2000);
         cy.get(`[data-testid="mediation-edit-${type}"]`).click();
         cy.get('[data-testid="mediation-policy-custom"]').click();
 
@@ -51,6 +53,7 @@ describe("publisher-003-03 : Verify authorized user can download/upload mediator
     it.only("User download and upload mediation policies for In Flow, Out Flow, Fault Flow", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
+        cy.wait(2000);
         cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();
 
         //Downloading

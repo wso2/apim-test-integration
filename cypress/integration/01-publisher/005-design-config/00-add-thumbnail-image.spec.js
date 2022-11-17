@@ -14,6 +14,7 @@ describe("publisher-005-00 : Verify an authorized user can upload thumbnail imag
     it.only("Authorized user uploads thumbnail image to API", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
+        cy.wait(3000);
         cy.get('[data-testid="left-menu-itemDesignConfigurations"]').click();
         cy.get('[data-testid="edit-api-thumbnail-btn"]').click();
         cy.get('[data-testid="edit-api-thumbnail-upload"]').click();
