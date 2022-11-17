@@ -37,6 +37,7 @@ describe("devportal-002-04  : Verify an authorized user can generate application
         cy.loginToPublisher(publisher, password);
         cy.wait(5000);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
+        cy.wait(2000);
         cy.logoutFromPublisher();
         cy.wait(5000);
         cy.loginToDevportal(developer, password);
@@ -75,6 +76,7 @@ describe("devportal-002-04  : Verify an authorized user can generate application
 
         // Delete api
         cy.logoutFromDevportal();
+        cy.wait(2000);
         cy.loginToPublisher(publisher, password);
         cy.deleteApi(apiName, apiVersion);
 

@@ -16,6 +16,7 @@ describe("publisher-004-06 : Verify authorized user can import and delete certif
         const endpoint = `https://petstore.swagger.io/v2/store/inventory/${random_number}`;
 
         cy.loginToPublisher(publisher, password);
+        cy.wait(4000);
         cy.createAPIWithoutEndpoint();
         cy.get('[data-testid="left-menu-itemendpoints"]').click();
         cy.get('[data-testid="http__rest_endpoint-start"]').click();

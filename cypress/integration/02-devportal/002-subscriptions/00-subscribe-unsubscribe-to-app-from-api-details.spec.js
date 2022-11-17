@@ -37,8 +37,10 @@ describe("devportal-002-00 : Verify authorized user can Subscribe and unsubscrib
     
     it.only("Subscribe and unsubscribe to API from api details page", () => {
         cy.loginToPublisher(publisher, password);
+        cy.wait(4000);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();
+        cy.wait(2000);
         cy.loginToDevportal(developer, password);
         cy.createApp(appName, appDescription);
         cy.visit('/devportal/apis?tenant=carbon.super');

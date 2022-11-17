@@ -13,7 +13,9 @@ describe("publisher-004-04 : Verify authorized user can add endpoints with loadb
     it.only("Authorized user adds REST endpoints for production and sandbox endpoints with Load balanced", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         cy.loginToPublisher(publisher, password);
+        cy.wait(4000);
         cy.createAPIWithoutEndpoint();
+        cy.wait(2000);
         cy.get('[data-testid="left-menu-itemendpoints"]').click();
         cy.get('[data-testid="http__rest_endpoint-start"]').click();
 
