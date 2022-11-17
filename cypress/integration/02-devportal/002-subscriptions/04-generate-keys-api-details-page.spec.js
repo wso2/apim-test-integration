@@ -35,9 +35,10 @@ describe("devportal-002-04  : Verify an authorized user can generate application
     })
     it.only("Generating application keys from api details page", () => {
         cy.loginToPublisher(publisher, password);
+        cy.wait(5000);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();
-        cy.wait(2000);
+        cy.wait(5000);
         cy.loginToDevportal(developer, password);
 
         // Create an app and subscribe
