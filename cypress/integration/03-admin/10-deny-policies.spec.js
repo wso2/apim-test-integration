@@ -36,7 +36,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     const carbonPassword = 'admin';
 
      /*---------------------------------------------------------------------
-    |  Author:  <<Your Name>>
+    | 
     |  Test Scenario:  create an API to use to try-out and verify Deny policy 
     |  - Go to publisher and create an API by importing petstore swagger_2.0 and publish
     |  - Go to devportal , create an app and subscribe the API
@@ -90,7 +90,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     })
 
  /*---------------------------------------------------------------------
-    |  Author:  <<Your Name>>
+    | 
     |  Test Scenario:  Verify Deny policy at API Context level 
     |  - Go to Admin and add Deny policy at context level for above created API 
     |  - Go to devportal and Try-out the API
@@ -120,7 +120,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     });
 
      /*---------------------------------------------------------------------
-    |  Author:  <<Your Name>>
+    |  
     |  Test Scenario:  Verify Deny policy at application level 
     |  - Go to Admin and add Deny policy at context level for above created API 
     |  - Go to devportal and Try-out the API
@@ -149,7 +149,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     });
 
      /*---------------------------------------------------------------------
-    |  Author:  <<Your Name>>
+    |  
     |  Test Scenario:  Verify Deny policy at User level 
     |  - Go to Admin and add Deny policy at context level for above created API 
     |  - Go to devportal and Try-out the API
