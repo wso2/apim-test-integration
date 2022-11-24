@@ -31,11 +31,13 @@ Cypress.Commands.add('portalLogin', (username = 'admin', password = 'admin', por
         cy.visit(`${portal}`);
     }
     cy.url().should('contain', `/authenticationendpoint/login.do`);
+    cy.wait(3000);
     cy.get('#usernameUserInput').click();
     cy.get('#usernameUserInput').type(username);
     cy.get('#password').type(password);
     cy.get('#loginForm').submit();
     cy.url().should('contain', `${portal}`);
+    cy.wait(2000);
 })
 
 Cypress.Commands.add('loginToPublisher', (username, password) => {
