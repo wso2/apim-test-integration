@@ -18,10 +18,10 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-000-02 : Login logout from devportal", () => {
+describe("devportal-000-02 : Verify athorized user can perform login and logout in devportal", () => {
     const { developer, password, testTenant, superTenant } = Utils.getUserInfo();
 
-    it.only("Login logout from devportal - super admin", {
+    it.only("Verify admin user can perform login and logout in devportal", {
         retries: {
           runMode: 3,
           openMode: 0,
@@ -31,7 +31,7 @@ describe("devportal-000-02 : Login logout from devportal", () => {
         cy.logoutFromDevportal();
     });
 
-    it.only("Login logout from devportal - tenant user", {
+    it.only("Verify tenant user can perform login and logout in devportal", {
         retries: {
           runMode: 3,
           openMode: 0,

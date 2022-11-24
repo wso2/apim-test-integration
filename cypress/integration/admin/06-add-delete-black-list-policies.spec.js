@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("admin-06 : Add deny policies", () => {
+describe("admin-06 - Verify authorized user can add and delete deny policiess", () => {
     
     const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
 
@@ -38,11 +38,11 @@ describe("admin-06 : Add deny policies", () => {
         cy.get('#client-snackbar').should('have.text','Deny Policy successfully deleted.');
     }
 
-    it.only("Add deny policies - super admin", () => {
+    it.only("Verify admin user can add and delete deny policiess", () => {
         addDenyPolicy(carbonUsername, carbonPassword, superTenant);
     });
 
-    it.only("Add deny policies - tenant user", () => {
+    it.only("Verify tenant user can add and delete deny policiess", () => {
         addDenyPolicy(carbonUsername, carbonPassword, testTenant);
     });
 

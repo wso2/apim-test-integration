@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-006-01 : Subscription blocking", () => {
+describe("publisher-006-01 : Verify authorized user can block the subscription to an API to disable the access", () => {
 
 
     const { publisher, password, developer, superTenant } = Utils.getUserInfo();

@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-000-01 : Create a new version of API", () => {
+describe("publisher-000-01 : Verify an authorized user can create a new version of API", () => {
     let apiName;
     const apiVersion = '1.0.0';
     const newVersion = '2.0.0';
@@ -43,10 +43,10 @@ describe("publisher-000-01 : Create a new version of API", () => {
         });
     }
 
-    it.only("Create a new version of API - super admin", () => {
+    it.only("An authorized admin can create a new version of API", () => {
         createNewVersionOfApi(superTenant);
     });
-    it.only("Create a new version of API - tenant user", () => {
+    it.only("An tenant user can create a new version of API", () => {
         createNewVersionOfApi(testTenant);
     });
 

@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-014-00 : Adding comment", () => {
+describe("publisher-014-00 : Verify authorized user can add comments to API", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const addCommentToApi = (tenant) => {
@@ -41,10 +41,10 @@ describe("publisher-014-00 : Adding comment", () => {
         });
     }
 
-    it.only("Adding comments per API - super admin", () => {
+    it.only("Verify admin user can add comments to AP", () => {
         addCommentToApi(superTenant);
     });
-    it.only("Adding comments per API - tenant user", () => {
+    it.only("Verify tenant user can add comments to AP", () => {
         addCommentToApi(testTenant);
     });
 });

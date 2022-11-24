@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-004-05 : Add security to the endpoint", () => {
+describe("publisher-004-05 : Verify authorized user can add security to the endpoint", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const addSecurity = (tenant) => {
@@ -60,10 +60,10 @@ describe("publisher-004-05 : Add security to the endpoint", () => {
         });
     }
 
-    it.only("Add security to the endpoint - super admin", () => {
+    it.only("Verify admin user can add security to the endpoint", () => {
         addSecurity(superTenant);
     });
-    it.only("Add security to the endpoint - tenant user", () => {
+    it.only("Verify tenant user can add security to the endpoint", () => {
         addSecurity(testTenant);
     });
 });

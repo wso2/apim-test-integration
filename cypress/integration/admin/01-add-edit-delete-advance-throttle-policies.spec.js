@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("admin-01 : Add Edit Delete advance throttle policies", () => {
+describe("admin-01 : Verify authorized user can perform CRUD operations in advance throttle policies", () => {
 
     const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
 
@@ -48,10 +48,10 @@ describe("admin-01 : Add Edit Delete advance throttle policies", () => {
         cy.get('button > span').contains('Delete').click();
         cy.get('table tr td a').contains(policyName).should('not.exist');
     }
-    it.only("Add Edit Delete advance throttle policies - super admin", () => {
+    it.only("Verify admin user can perform CRUD operations in advance throttle policies", () => {
         addEditDeleteAdvancedThrottlePolicies(carbonUsername, carbonPassword, superTenant);
     });
-    it.only("Add Edit Delete advance throttle policies - tenant user", () => {
+    it.only("Verify tenant user can perform CRUD operations in advance throttle policies", () => {
         addEditDeleteAdvancedThrottlePolicies(carbonUsername, carbonPassword, testTenant);
     });
 })

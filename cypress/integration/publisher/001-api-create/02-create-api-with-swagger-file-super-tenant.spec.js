@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-001-02 : Create api with swagger file super tenant", () => {
+describe("publisher-001-02 : Verify authorized user can create an api with swagger file", () => {
     const { publisher, password, tenantUser, testTenant, } = Utils.getUserInfo();
 
     const createApiFromSwagger = (usernameLocal, passwordLocal) => {
@@ -44,11 +44,11 @@ describe("publisher-001-02 : Create api with swagger file super tenant", () => {
             Utils.deleteAPI(apiId);
         })
     }
-    it("Create API from swagger from file - supper admin", () => {
+    it("Verify super tenant user can create API from swagger file", () => {
         createApiFromSwagger(publisher, password);
     });
 
-    it("Create API from swagger from file - tenant user", () => {
+    it("Verify tenant user can create API from swagger file", () => {
         createApiFromSwagger(`${publisher}@${testTenant}`, password);
     });
     

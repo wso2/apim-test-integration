@@ -16,16 +16,16 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-001-05 : Create GraphQl API from file", () => {
+describe("publisher-001-05 : Verify authorized user can create GraphQl API from importing the file", () => {
     const {carbonUsername, carbonPassword, testTenant} = Utils.getUserInfo();
     let testApiId;
-    it("Create GraphQl API from file - supper admin", () => {
+    it("Verify admin user can Create a GraphQl API from uploading the file", () => {
         cy.loginToPublisher(carbonUsername, carbonPassword);
         cy.createGraphqlAPIfromFile("SampleAPI_",'1.0.0','/sampleapi','api_artifacts/schema_graphql.graphql').then((apiId) => {
             testApiId = apiId;
         });
     });
-    it("Create GraphQl API from file - tenant user", () => {
+    it("Verify tenant user can Create a GraphQl API from uploading the file", () => {
         cy.loginToPublisher(carbonUsername, carbonPassword, testTenant);
         cy.createGraphqlAPIfromFile("SampleAPI_",'1.0.0','/sampleapi','api_artifacts/schema_graphql.graphql').then((apiId) => {
             testApiId = apiId;

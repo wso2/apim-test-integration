@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-010-00 : Add additional properties", () => {
+describe("publisher-010-00 : Verify authorized user can add additional properties for API", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -55,10 +55,10 @@ describe("publisher-010-00 : Add additional properties", () => {
         });
     }
 
-    it.only("Add additional properties - super admin", () => {
+    it.only("Verify admin user can add additional properties for API", () => {
         addAdditionalProperties(superTenant);
     });
-    it.only("Add additional properties - tenant user", () => {
+    it.only("Verify tenant user can add additional properties for API", () => {
         addAdditionalProperties(testTenant);
     });
 });

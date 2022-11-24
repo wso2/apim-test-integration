@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-011-01 : Lifecycle changes", () => {
+describe("publisher-011-01 : Verify authorized user can change lifecycle status of an API", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -105,7 +105,7 @@ describe("publisher-011-01 : Lifecycle changes", () => {
             cy.get('button[data-testid="Retire-btn"]', {timeout: Cypress.config().largeTimeout}).click();   
         });
     }
-    it.only("Block demote retire api - super admin", {
+    it.only("Verify admin user can change lifecycle status of an API", {
         retries: {
           runMode: 3,
           openMode: 0,
@@ -113,7 +113,7 @@ describe("publisher-011-01 : Lifecycle changes", () => {
       }, () => {
         blockDemoteToCreatedDepricatedApi(superTenant);
     });
-    it.only("Block demote retire api - tenant user", {
+    it.only("Verify tenant user can change lifecycle status of an API", {
         retries: {
           runMode: 3,
           openMode: 0,

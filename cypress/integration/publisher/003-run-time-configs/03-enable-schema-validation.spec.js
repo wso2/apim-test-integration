@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-003-03 : Runtime configuration-schema validation", () => {
+describe("publisher-003-04 : Verify authirzed user can enable schema validation under runtime configuration", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     let apiName;
     const apiVersion = '1.0.0';
@@ -39,10 +39,10 @@ describe("publisher-003-03 : Runtime configuration-schema validation", () => {
         });
     }
 
-    it.only("Enable schema validation - super admin", () => {
+    it.only("Verify admin user can enable schema validation", () => {
         enableSchemaValidation(superTenant);
     });
-    it.only("Enable schema validation - tenant user", () => {
+    it.only("Verify tenant user can enable schema validation", () => {
         enableSchemaValidation(testTenant);
     });
 });

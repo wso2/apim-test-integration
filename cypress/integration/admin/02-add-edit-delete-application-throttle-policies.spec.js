@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("admin-02 : Add Edit Delete application throttle policies", () => {
+describe("admin-02 : Verify authorized user can perform CRUD operations in application throttle policies", () => {
     
     const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
 
@@ -50,10 +50,10 @@ describe("admin-02 : Add Edit Delete application throttle policies", () => {
         cy.get(`[data-testid="${policyName}-actions"]`).should('not.exist');
     }
 
-    it.only("Add Edit Delete application throttle policies - super admin", () => {
+    it.only("Verify admin user can perform CRUD operations in application throttle policies", () => {
         addEditDeleteApplicationThrottlePolicies(carbonUsername, carbonPassword, superTenant);
     });
-    it.only("Add Edit Delete application throttle policies - tenant user", () => {
+    it.only("Verify tenant user can perform CRUD operations in application throttle policies", () => {
         addEditDeleteApplicationThrottlePolicies(carbonUsername, carbonPassword, testTenant);
     });
 })

@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-009-02 : Upload api spec from the api definition page", () => {
+describe("publisher-009-02 : Verify authorized user can upload api spec from the api definition page", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -50,10 +50,10 @@ describe("publisher-009-02 : Upload api spec from the api definition page", () =
             Utils.deleteAPI(apiId);
         });
     }
-    it.only("Upload api spec from the api definition page - super admin", () => {
+    it.only("Verify admin user can upload api spec from the api definition page", () => {
         uploadApi(superTenant);
     });
-    it.only("Upload api spec from the api definition page - tenant user", () => {
+    it.only("Verify tenant user can upload api spec from the api definition page", () => {
         uploadApi(testTenant);
     });
 });

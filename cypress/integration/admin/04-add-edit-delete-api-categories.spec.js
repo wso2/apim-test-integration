@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("admin-04 : Add Edit Delete api categories", () => {
+describe("admin-04 : Verify authorized user can perform CRUD operations in api categories", () => {
     
     const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
 

@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("admin-03 : Add Edit Delete subscription throttle policies", () => {
+describe("admin-03 : Verify authorized user can perform CRUD operations in subscription throttle policies", () => {
     
     const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
 
@@ -52,11 +52,11 @@ describe("admin-03 : Add Edit Delete subscription throttle policies", () => {
         cy.get('#client-snackbar').should('have.text','Subscription Rate Limiting Policy successfully deleted.');
     }
 
-    it.only("Add Edit Delete subscription throttle policies - super admin", () => {
+    it.only("Verify admin user can perform CRUD operations in subscription throttle policies", () => {
         addEditDeleteSubscriptionThrottlePolicies(carbonUsername, carbonPassword, superTenant);
     });
 
-    it.only("Add Edit Delete subscription throttle policies - tenant user", () => {
+    it.only("Verify tenant user can perform CRUD operations in subscription throttle policies", () => {
         addEditDeleteSubscriptionThrottlePolicies(carbonUsername, carbonPassword, testTenant);
     });
 })

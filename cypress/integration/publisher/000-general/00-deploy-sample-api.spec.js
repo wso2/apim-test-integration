@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-000-00 : Deploy sample api", () => {
+describe("publisher-000-00 : Verify authorized user can deploy sample api in publisher portal", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
     const deploySampleApi = (tenant) => {
@@ -43,7 +43,7 @@ describe("publisher-000-00 : Deploy sample api", () => {
         cy.get('#itest-id-deleteconf').click();
     }
 
-    it.only("Deploy sample api - super admin", {
+    it.only("Verify admin user can add test users", {
         retries: {
             runMode: 3,
             openMode: 0,
@@ -51,7 +51,7 @@ describe("publisher-000-00 : Deploy sample api", () => {
     }, () => {
         deploySampleApi(superTenant);
     });
-    it.only("Deploy sample api - tenant user", {
+    it.only("Verify tenant user can deploy sample api", {
         retries: {
             runMode: 3,
             openMode: 0,

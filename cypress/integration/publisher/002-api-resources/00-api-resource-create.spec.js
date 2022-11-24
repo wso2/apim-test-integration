@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-002-00 : Resource add edit operations", () => {
+describe("publisher-002-00 : Verify an authorized user can perform CRUD operations in resources", () => {
 
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const target = '/test';
@@ -198,7 +198,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
         });
     }
 
-    it.only("Add new resource - super admin",{
+    it.only("Verify admin user can add new resource for the API",{
         retries: {
           runMode: 3,
           openMode: 0,
@@ -207,7 +207,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
         addNewResource(superTenant);
     });
 
-    it.only("Add delete query path parameters for resources - super admin",{
+    it.only("Verify admin user can add delete query path parameters for resources",{
         retries: {
           runMode: 3,
           openMode: 0,
@@ -216,7 +216,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
         addDeleteQueryPathParamForResources(superTenant);
     });
 
-    it.only("Add advance throttling policies per resource - super admin",{
+    it.only("Verify admin user can add advance throttling policies per resource",{
         retries: {
           runMode: 3,
           openMode: 0,
@@ -225,7 +225,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
         addAdvanceThrottlingPoliciesPerResource(superTenant);
     });
 
-    it.only("Add and assign scopes for API resources - super admin",{
+    it.only("Verify admin user can add and assign scopes for API resources",{
         retries: {
           runMode: 3,
           openMode: 0,
@@ -234,7 +234,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
         addAndAssignScopesForApiResources(superTenant);
     });
 
-    it.only("Add new resource - tenant user",{
+    it.only("Verify tenant user can add new resource for the API",{
         retries: {
           runMode: 3,
           openMode: 0,
@@ -243,7 +243,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
         addNewResource(testTenant);
     });
 
-    it.only("Add delete query path parameters for resources - tenant user",{
+    it.only("Verify tenant user can add delete query path parameters for resources",{
         retries: {
           runMode: 3,
           openMode: 0,
@@ -252,7 +252,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
         addDeleteQueryPathParamForResources(testTenant);
     });
 
-    it.only("Add advance throttling policies per resource - tenant user",{
+    it.only("Verify tenant user can add advance throttling policies per resourcer",{
         retries: {
           runMode: 3,
           openMode: 0,
@@ -261,7 +261,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
         addAdvanceThrottlingPoliciesPerResource(testTenant);
     });
 
-    it.only("Add and assign scopes for API resources - tenant user",{
+    it.only("Verify tenant user can add and assign scopes for API resources",{
         retries: {
           runMode: 3,
           openMode: 0,

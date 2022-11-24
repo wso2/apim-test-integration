@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-001-02 : Generate keys", () => {
+describe("devportal-001-02 : Verify an authorized user can generate sandbox and production application keys", () => {
     const { developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     let appName;
@@ -72,11 +72,11 @@ describe("devportal-001-02 : Generate keys", () => {
         cy.get('#consumer-secret').should('have.attr', 'type', 'text');
         cy.contains('visibility_off').should('be.visible');
     }
-    it.only("Generate and update application production and sandbox keys, show hide keys - super admin", () => {
+    it.only("Verify admin user can generate and update application production and sandbox keys, show hide keys", () => {
         activeTenant = superTenant;
         generateKeys(superTenant);
     })
-    it.only("Generate and update application production and sandbox keys, show hide keys - tenant user", () => {
+    it.only("Verify tenant user can generate and update application production and sandbox keys, show hide keys", () => {
         activeTenant = testTenant;
         generateKeys(testTenant);
     })

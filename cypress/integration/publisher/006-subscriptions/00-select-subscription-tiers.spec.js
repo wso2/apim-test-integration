@@ -19,7 +19,7 @@
 import Utils from "@support/utils";
 
 
-describe("publisher-006-00 : Select subscription tiers for the API", () => {
+describe("publisher-006-00 : Verify authorized user can select subscription tiers for the API", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -42,10 +42,10 @@ describe("publisher-006-00 : Select subscription tiers for the API", () => {
         });
     }
 
-    it.only("Select subscription tiers for the API - super admin", () => {
+    it.only("Super admin user selects subscription tiers for the API", () => {
         selectSubscriptionTiers(superTenant);
     });
-    it.only("Select subscription tiers for the API - tenant user", () => {
+    it.only("Tenant user selects subscription tiers for the API", () => {
         selectSubscriptionTiers(testTenant);
     });
 });

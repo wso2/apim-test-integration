@@ -22,7 +22,7 @@ application_sharing_type = "default"
 */
 import Utils from "@support/utils";
 
-describe("devportal-001-05 : Application Sharing", () => {
+describe("devportal-001-05 : Verify an appplication can be shared with multiple users", () => {
     const user1 = 'user1';
     const user2 = 'user2';
     const publisher = 'publisher';
@@ -42,7 +42,7 @@ describe("devportal-001-05 : Application Sharing", () => {
     
     })
 
-    it("Test Application Sharing", {
+    it("Test application sharing with multiple users", {
         retries: {
             runMode: 3,
             openMode: 0,

@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-004-04 : Endpoint testing - Loadbalance", () => {
+describe("publisher-004-04 : Verify authorized user can add endpoints with loadbalanced configuration for REST API endpointse", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
 
@@ -59,7 +59,7 @@ describe("publisher-004-04 : Endpoint testing - Loadbalance", () => {
         });
     }
 
-  it.only("Add REST endpoints for production and sandbox endpoints with LOAD balanced - super admin", {
+  it.only("Admin user add REST endpoints for production and sandbox endpoints with Load balanced", {
     retries: {
       runMode: 3,
       openMode: 0,
@@ -67,7 +67,7 @@ describe("publisher-004-04 : Endpoint testing - Loadbalance", () => {
   }, () => {
     addLoadBalance(superTenant);
   });
-  it.only("Add REST endpoints for production and sandbox endpoints with LOAD balanced - tenant user", {
+  it.only("Tenant user adds REST endpoints for production and sandbox endpoints with Load balanced", {
     retries: {
       runMode: 3,
       openMode: 0,

@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("admin-07 : Add scope mapping", () => {
+describe("admin-07 : Verify authorized user can add scope assignments to user roles", () => {
     
     const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
 
@@ -40,10 +40,10 @@ describe("admin-07 : Add scope mapping", () => {
         cy.get('[aria-labelledby="delete-confirmation"] button.MuiButton-containedPrimary').click();
         cy.get(`[data-testid="${roleName}"]`).should('not.exist');
     }
-    it.only("Add scope mapping - super admin", () => {
+    it.only("Verify admin user can add scope assignments to user roles", () => {
         addScopeMapping(carbonUsername, carbonPassword, superTenant);
     });
-    it.only("Add scope mapping - tenant user", () => {
+    it.only("Verify tenant user can add scope assignments to user roles", () => {
         addScopeMapping(carbonUsername, carbonPassword, testTenant);
     });
 
