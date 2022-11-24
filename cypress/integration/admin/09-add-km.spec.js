@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("admin-09 : Add key manager", () => {
+describe("admin-09 : Verify authorized user can add key manager", () => {
     
     const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
 
@@ -58,10 +58,10 @@ describe("admin-09 : Add key manager", () => {
         cy.get('button > span').contains('Delete').click();
         cy.get('td > div').contains(km).should('not.exist');
     }
-    it.only("Add key manager - super admin", () => {
+    it.only("Verify admin user can add key manager", () => {
         addKeyManager(carbonUsername, carbonPassword, superTenant);
     });
-    it.only("Add key manager - tenant user", () => {
+    it.only("Verify tenant user can add key manager", () => {
         addKeyManager(carbonUsername, carbonPassword, testTenant);
     });
 

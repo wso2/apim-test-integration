@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-002-02 : Subscribe to API via wizard", () => {
+describe("devportal-002-02 : Verify authorized user can Subscribe to an API via subscription & Key Generation Wizard", () => {
     const { publisher, developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
@@ -78,7 +78,7 @@ describe("devportal-002-02 : Subscribe to API via wizard", () => {
             })
         })
     }
-    it.only("Subscribe to API - super admin", {
+    it.only("Verify admin user can subscribe to an API via Subscription & Key Generation Wizard", {
         retries: {
           runMode: 3,
           openMode: 0,
@@ -87,7 +87,7 @@ describe("devportal-002-02 : Subscribe to API via wizard", () => {
         activeTenant = superTenant;
         subscribeViaWizard(superTenant);
     })
-    it.only("Subscribe to API - tenant user", {
+    it.only("Verify tenant user can subscribe to an API via Subscription & Key Generation Wizard", {
         retries: {
           runMode: 3,
           openMode: 0,

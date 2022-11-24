@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-015-01 : Undeploy new revision", () => {
+describe("publisher-015-01 : Verify authorized user can undeploy new revison of API", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
     const undeployNewRevision = (tenant) => {
@@ -42,7 +42,7 @@ describe("publisher-015-01 : Undeploy new revision", () => {
         });
     }
 
-    it.only("Create new revision and undeploy - super admin", {
+    it.only("Verify admin user can undeploy new revison of API", {
         retries: {
           runMode: 3,
           openMode: 0,
@@ -50,7 +50,7 @@ describe("publisher-015-01 : Undeploy new revision", () => {
       }, () => {
         undeployNewRevision(superTenant);
     });
-    it.only("Create new revision and undeploy - tenant user", {
+    it.only("Verify tenant user can undeploy new revison of API", {
         retries: {
           runMode: 3,
           openMode: 0,

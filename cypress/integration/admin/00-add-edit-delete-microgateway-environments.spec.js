@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("admin-00 : Add Edit Delete Microgateway Environments", () => {
+describe("admin-00 : Verify authorized user can perform CRUD operations in Microgateway lables", () => {
 
     const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
 
@@ -54,11 +54,11 @@ describe("admin-00 : Add Edit Delete Microgateway Environments", () => {
         cy.get('#client-snackbar').should('have.text','Gateway Environment deleted successfully');
     }
 
-    it.only("Add Edit Delete Microgateway Environments - super admin", () => {
+    it.only("Verify admin user can perform CRUD operations in Microgateway lables", () => {
         addEditDeleteMicrogatewayEnvironment(carbonUsername, carbonPassword, superTenant);
     });
 
-    it.only("Add Edit Delete Microgateway Environments - tenant user", () => {
+    it.only("Verify tenant user can perform CRUD operations in Microgateway lables", () => {
         addEditDeleteMicrogatewayEnvironment(carbonUsername, carbonPassword, testTenant)
     });
 

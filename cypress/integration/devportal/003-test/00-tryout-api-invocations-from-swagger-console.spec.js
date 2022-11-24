@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-003-00 : Tryout API invocations from swagger console", () => {
+describe("devportal-003-00 : Verify authorized user can invoke API from swagger console", () => {
     const { publisher, developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
@@ -81,11 +81,11 @@ describe("devportal-003-00 : Tryout API invocations from swagger console", () =>
             })
         });
     }
-    it.only("Tryout API invocations from swagger console - super admin", () => {
+    it.only("Verify admin user can invoke API from swagger console", () => {
         activeTenant = superTenant; 
         tryoutApiInvocationFromSwaggerConsole(superTenant);
     });
-    it.only("Tryout API invocations from swagger console - tenant user", () => {
+    it.only("Verify tenant user can invoke API from swagger console", () => {
         activeTenant = testTenant;
         tryoutApiInvocationFromSwaggerConsole(testTenant);
     });

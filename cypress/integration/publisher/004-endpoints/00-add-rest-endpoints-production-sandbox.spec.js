@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-004-00 : Add production and sandbox endpoints for an API", () => {
+describe("publisher-004-00 : Verify authorized user can add prodcution and sandbox endpoints for an rest API", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
 
@@ -48,10 +48,10 @@ describe("publisher-004-00 : Add production and sandbox endpoints for an API", (
             Utils.deleteAPI(apiId);
         });
     }
-    it.only("Add production and sandbox endpoints for an API - super admin", () => {
+    it.only("Verify admin user can add production and sandbox endpoints for an API", () => {
         addRestEndpointsProductionSandbox(superTenant);
     });
-    it.only("Add production and sandbox endpoints for an API - tenant user", () => {
+    it.only("Verify tenant user can add production and sandbox endpoints for an API", () => {
         addRestEndpointsProductionSandbox(testTenant);
     });
 });

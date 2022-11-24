@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-008-00 : Add business information", () => {
+describe("publisher-008-00 : Verify authorized user can add business information for an API", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const businessInfo = (tenant) => {
         const ownerName = 'Raccoon Panda';
@@ -48,10 +48,10 @@ describe("publisher-008-00 : Add business information", () => {
             Utils.deleteAPI(apiId);
         });
     }
-    it.only("Add business information - super admin", () => {
+    it.only("Admin user can add business information for an API", () => {
         businessInfo(superTenant);
     });
-    it.only("Add business information - tenant user", () => {
+    it.only("Tenant user can add business information for an API", () => {
         businessInfo(testTenant);
     });
 });

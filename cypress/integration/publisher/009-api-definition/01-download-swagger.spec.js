@@ -19,7 +19,7 @@
 import Utils from "@support/utils";
 const YAML = require('yamljs')
 
-describe("publisher-009-01 : Download swagger", () => {
+describe("publisher-009-01 : Verify authorized user can download swagger definition", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
     const downloadSwagger = (tenant) => {
@@ -52,10 +52,10 @@ describe("publisher-009-01 : Download swagger", () => {
         });
     }
 
-    it.only("Download swagger - super admin", () => {
+    it.only("Verify admin user can download swagger definition", () => {
         downloadSwagger(superTenant);
     });
-    it.only("Download swagger - tenant user", () => {
+    it.only("Verify tenant user can download swagger definition", () => {
         downloadSwagger(testTenant);
     });
 });

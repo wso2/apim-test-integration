@@ -16,14 +16,14 @@
  * under the License.
  */
 
-describe("admin-05 : Add custom throttle policies", () => {
+describe("admin-05 - Verify admin user can perform CRUD operations in custom throttle policies", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
     beforeEach(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add custom throttle policies",{
+    it.only("Verify admin user can add-edit-delete custom throttle policies",{
         retries: {
           runMode: 3,
           openMode: 0,

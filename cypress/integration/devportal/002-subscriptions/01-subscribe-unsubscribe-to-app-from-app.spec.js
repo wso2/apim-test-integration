@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-002-01 : Subscribe unsubscribe to app from application view ", () => {
+describe("devportal-002-01 : Verify authorized user can subscribe, unsubscribe to API from application view", () => {
     const { publisher, developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
@@ -81,11 +81,11 @@ describe("devportal-002-01 : Subscribe unsubscribe to app from application view 
             });
         })
     }
-    it.only("Subscribe unsubscribe to app from application view - super admin", () => {
+    it.only("Verify admin user can subscribe, unsubscribe to API from application view", () => {
         activeTenant = superTenant;
         subscribeUnsubscribeToAppFromApp(superTenant);
     })
-    it.only("Subscribe unsubscribe to app from application view - tenant user", () => {
+    it.only("Verify tenant user can subscribe, unsubscribe to API from application view", () => {
         activeTenant = testTenant;
         subscribeUnsubscribeToAppFromApp(testTenant);
     })

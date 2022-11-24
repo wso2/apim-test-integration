@@ -17,7 +17,7 @@
  */
 import Utils from "@support/utils";
 
-describe("publisher-003-05 : Runtime configuration - OAuth2 and api key security", () => {
+describe("publisher-003-06 : Verify authorized user can configure application level security under runtime configuration", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     let apiName;
     const apiVersion = '1.0.0';
@@ -45,10 +45,10 @@ describe("publisher-003-05 : Runtime configuration - OAuth2 and api key security
         });
     }
 
-    it.only("OAuth2 and api key security spec - super admin", () => {
+    it.only("Verify admin user can configure OAuth2 and api key security", () => {
         oauth2AndApiKeySecuritySpec(superTenant);
     });
-    it.only("OAuth2 and api key security spec - tenant user", () => {
+    it.only("Verify tenants user can configure OAuth2 and api key security", () => {
         oauth2AndApiKeySecuritySpec(testTenant);
     });
 });

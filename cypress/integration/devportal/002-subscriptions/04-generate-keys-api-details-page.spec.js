@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-002-04 : Generate keys from api details page", () => {
+describe("devportal-002-04  : Verify an authorized user can generate application keys from api details page", () => {
     const { publisher, developer, password, superTenant, testTenant} = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
@@ -61,11 +61,11 @@ describe("devportal-002-04 : Generate keys from api details page", () => {
             })
         })
     }
-    it.only("Generate keys from api details page - super admin", () => { 
+    it.only("Verify an admin user can generate application keys from api details page", () => { 
         activeTenant = superTenant;  
         generateKeysApiDetailsPage(superTenant);
     })
-    it.only("Generate keys from api details page - tenant user", () => {   
+    it.only("Verify an tenant user can generate application keys from api details pager", () => {   
         activeTenant = testTenant;
         generateKeysApiDetailsPage(testTenant);
     })

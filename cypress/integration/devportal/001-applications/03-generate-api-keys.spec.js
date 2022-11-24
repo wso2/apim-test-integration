@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-001-03 : Generate API Keys", () => {
+describe("devportal-001-03 : Verify an authorized user can generate API keys", () => {
     const { developer, password, superTenant, testTenant } = Utils.getUserInfo();
     let appName;
     let activeTenant;
@@ -59,11 +59,11 @@ describe("devportal-001-03 : Generate API Keys", () => {
 
         checkIfKeyExists();
     }
-    it.only("Generate API Keys - super admin", () => {
+    it.only("Verify admin user can generate API keys", () => {
         activeTenant = superTenant;
         generateApiKeys(superTenant)
     })
-    it.only("Generate API Keys - tenant user", () => {
+    it.only("Verify tenant user can generate API keys", () => {
         activeTenant = testTenant;
         generateApiKeys(testTenant)
     })

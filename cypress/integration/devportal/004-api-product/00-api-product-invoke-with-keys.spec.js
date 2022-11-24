@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-004-00 : Invoke API Product with keys", () => {
+describe("devportal-004-00 : Verify authorized user can invoke API Product using OAuth and API keys", () => {
     const { publisher, developer, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
@@ -220,7 +220,7 @@ describe("devportal-004-00 : Invoke API Product with keys", () => {
             });
         });
     }
-    it("Invoke API Product using Oauth 2 and API Key - super admin", {
+    it("Verify admin user can invoke API Product using OAuth and API keys", {
         retries: {
             runMode: 3,
             openMode: 0,
@@ -229,7 +229,7 @@ describe("devportal-004-00 : Invoke API Product with keys", () => {
         apiProductInvokeWithKeys(superTenant);
 
     });
-    it("Invoke API Product using Oauth 2 and API Key - tenant user", {
+    it("Verify tenant user can invoke API Product using OAuth and API keys", {
         retries: {
             runMode: 3,
             openMode: 0,

@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-009-00 : Api Definition - Download API", () => {
+describe("publisher-009-00 : Verify authorized user can download API definition file", () => {
     const { publisher, password,  superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -43,10 +43,10 @@ describe("publisher-009-00 : Api Definition - Download API", () => {
         });
     }
 
-    it.only("Download api - super admin", () => {
+    it.only("Verify admin user can download API definition file", () => {
         downloadApi(superTenant);
     });
-    it.only("Download api - tenant user", () => {
+    it.only("Verify tenant user can download API definition file", () => {
         downloadApi(testTenant);
     });
 });

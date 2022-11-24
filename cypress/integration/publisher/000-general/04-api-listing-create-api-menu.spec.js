@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-000-04 : Landing page API List", () => {
+describe("publisher-000-04 : Verify the links under create API menu item ", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     let testApiId;
 
@@ -69,10 +69,10 @@ describe("publisher-000-04 : Landing page API List", () => {
         });
     }
 
-    it.only("Click and check all cards - super admin", () => {
+    it.only("Admin user verifies the links of menu items in Create API list", () => {
         apiListingCreateApiMenu(superTenant);
     });
-    it.only("Click and check all cards - tenant user", () => {
+    it.only("Tenant user verifies the links of menu items in Create API list", () => {
         apiListingCreateApiMenu(testTenant);
     });
 

@@ -19,7 +19,7 @@ The product is broken. we need to fix the product. This test case is ignored fro
 */
 import Utils from "@support/utils";
 
-describe("publisher-004-07 : Mock the api response and test it", () => {
+describe("publisher-004-07 : Verify authroized user can test the API with a mock implementation", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     let testApiID;
 
@@ -94,7 +94,7 @@ describe("publisher-004-07 : Mock the api response and test it", () => {
             })
         });
    }
-    it("Mock the api response and test it - super admin", {
+    it("Verify admin user can test the API with a mock implementation", {
         retries: {
           runMode: 3,
           openMode: 0,
@@ -102,7 +102,7 @@ describe("publisher-004-07 : Mock the api response and test it", () => {
       }, () => {
         mockApiAndTest(superTenant);
     });
-    it("Mock the api response and test it - tenant user", {
+    it("Verify tenant user can test the API with a mock implementation", {
         retries: {
           runMode: 3,
           openMode: 0,

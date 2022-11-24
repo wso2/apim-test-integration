@@ -16,13 +16,13 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-001-01 : Application tests", () => {
+describe("devportal-001-01 : Verify creating an JWT token based application in devloper portal", () => {
     const { developer, password } = Utils.getUserInfo();
 
     let appName;
     const appDescription = 'JWT application description';
 
-    it.only("Add Applications for JWT token Type", () => {
+    it.only("Create JWT token based application in developer portal", () => {
         appName = Utils.generateName();
         cy.loginToDevportal(developer, password);
         cy.createApp(appName, appDescription);

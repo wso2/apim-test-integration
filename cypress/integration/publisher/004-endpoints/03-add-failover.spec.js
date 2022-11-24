@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-004-03 : Endpoint testing - Failover", () => {
+describe("publisher-004-03 : Verify authorized user can add failover configurations for REST API endpoints", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
 
@@ -66,7 +66,7 @@ describe("publisher-004-03 : Endpoint testing - Failover", () => {
         });
     }
 
-    it.only("Add REST endpoints for production and sandbox endpoints with failover - super admin", {
+    it.only("Admin user adds REST endpoints for production and sandbox endpoints with failover", {
         retries: {
           runMode: 3,
           openMode: 0,
@@ -74,7 +74,7 @@ describe("publisher-004-03 : Endpoint testing - Failover", () => {
       }, () => {
         addFailOver(superTenant);
     });
-    it.only("Add REST endpoints for production and sandbox endpoints with failover - tenant user", {
+    it.only("Tenant user adds REST endpoints for production and sandbox endpoints with failover", {
         retries: {
           runMode: 3,
           openMode: 0,

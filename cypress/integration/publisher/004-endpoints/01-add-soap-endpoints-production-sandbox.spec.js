@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-004-01 : Add production sandbox endpoints for SOAP", () => {
+describe("publisher-004-01 : Verify authorized user can add production sandbox endpoints for SOAP API", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const endpoint = 'https://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php?wsdl';
 
@@ -49,10 +49,10 @@ describe("publisher-004-01 : Add production sandbox endpoints for SOAP", () => {
             Utils.deleteAPI(apiId);
         });
     }
-    it.only("Add production sandbox endpoints for SOAP - super admin", () => {
+    it.only("Verify admin user adds production and sandbox endpoints for SOAP", () => {
         addSoapEndpointProductionSandbox(superTenant);
     });
-    it.only("Add production sandbox endpoints for SOAP - tenant user", () => {
+    it.only("Verify tenant user adds production sandbox endpoints for SOAP", () => {
         addSoapEndpointProductionSandbox(testTenant);
     });
 });

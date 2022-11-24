@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-015-00 : Create new revision and deploy", () => {
+describe("publisher-015-00 : Verify auhtorized user can create a new revision and deploy the API", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
     const createNewRevisionAndDeployApi = (tenant) => {
@@ -48,10 +48,10 @@ describe("publisher-015-00 : Create new revision and deploy", () => {
         });
     }
 
-    it.only("Create new revision and deploy - super admin", () => {
+    it.only("Verify admin user can create a new revision and deploy the API", () => {
         createNewRevisionAndDeployApi(superTenant);
     });
-    it.only("Create new revision and deploy - tenant user", () => {
+    it.only("Verify tenant user can create a new revision and deploy the API", () => {
         createNewRevisionAndDeployApi(testTenant);
     });
 });
