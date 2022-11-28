@@ -16,6 +16,7 @@
  * under the License.
  */
 import PublisherComonPage from "../pages/publisher/PublisherComonPage";
+import DevportalComonPage from "../pages/devportal/DevportalComonPage";
 
 class Apis {
     static createAPIFromPetstoreSwagger2AndPublish(apiName,apiContext,apiVersion,businessPlan){
@@ -102,6 +103,27 @@ class Apis {
         cy.intercept('DELETE','**/publisher/v1/apis/**').as('deleteAPI'); 
         cy.get('[data-testid="itest-id-deleteconf"]').click();
         cy.wait('@deleteAPI', { requestTimeout: 30000 });
+    }
+
+    /*
+        e.g. tenant = "carbon.super"
+    */
+    static searchAndGetAPIFromDevportal(apiName,tenant){
+        cy.visit(`/devportal/apis?tenant=${tenant}`);
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        cy.url().should('contain', '/apis?tenant=carbon.super');
+        cy.get('#searchQuery').clear().type(apiName).type('{enter}')
+        cy.wait(3000)
+        cy.get(`[title="${apiName}"]`, { timeout: 30000 });
+        cy.get(`[title="${apiName}"]`).click();
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+    }
+
+    static subscribeToapplication(appName){
+        cy.get('#application-subscribe').click();
+        cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
+        cy.get(`[data-testid="subscribe-to-api-btn"]`).click();
+        cy.get(`[data-testid="subscription-table"] td`).contains(appName).should('exist');
     }
 
 }
