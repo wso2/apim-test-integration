@@ -19,7 +19,7 @@ import PublisherComonPage from "../pages/publisher/PublisherComonPage";
 import DevportalComonPage from "../pages/devportal/DevportalComonPage";
 
 class Apis {
-    static createAPIFromPetstoreSwagger2AndPublish(apiName,apiContext,apiVersion,businessPlan){
+    static createAPIFromPetstoreSwagger2AndPublish(fileName,apiName,apiContext,apiVersion,businessPlan){
         cy.visit(`/publisher/apis`);
         PublisherComonPage.waitUntillLoadingComponentsExit();
         // select the option from the menu item
@@ -29,7 +29,7 @@ class Apis {
     
         // upload the swagger
         cy.get('[data-testid="browse-to-upload-btn"]').then(function () {
-            const filepath = 'api_artifacts/petstore_swagger_2.0_without-scopes.json'
+            const filepath = `api_artifacts/${fileName}`
             cy.get('input[type="file"]').attachFile(filepath)
         });
     
@@ -117,6 +117,16 @@ class Apis {
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
         DevportalComonPage.waitUntillLoadingComponentsExit();
+    }
+
+    static searchAndGetAPIFromPublisher(apiName){
+        cy.visit('publisher/apis');
+        PublisherComonPage.waitUntillLoadingComponentsExit();
+        cy.get('#searchQuery').clear().type(apiName).type('{enter}')
+        cy.wait(3000)
+        cy.get(`[title="${apiName}"]`, { timeout: 30000 });
+        cy.get(`[title="${apiName}"]`).click();
+        PublisherComonPage.waitUntillLoadingComponentsExit();
     }
 
     static subscribeToapplication(appName){

@@ -34,6 +34,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
+    const swaggerFileName = "petstore_swagger_2.0_without-scopes.json";
 
      /*---------------------------------------------------------------------
     | 
@@ -48,7 +49,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     before("Create API, publish and verify portal invocation(try-out)",function () {
         cy.loginToPublisher(publisher, password);
         PublisherComonPage.waitUntillLoadingComponentsExit();
-        Apis.createAPIFromPetstoreSwagger2AndPublish(apiName,apiContext,apiVersion,"")
+        Apis.createAPIFromPetstoreSwagger2AndPublish(swaggerFileName,apiName,apiContext,apiVersion,"")
 
         cy.logoutFromPublisher();
         cy.loginToDevportal(developer, password);
