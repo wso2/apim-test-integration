@@ -23,10 +23,10 @@ import AdminRateLimitingPolicies from "../../support/functions/AdminRateLimiting
 
 
 describe("admin-10 : Verify functionalities of deny policies", () => {
-    const apiName = 'changeTierApi' + Math.floor(Date.now() / 1000);
+    const apiName = 'DenyPolicyTest' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.5';
     const random_number = Math.floor(Date.now() / 1000);
-    const appName = 'testapp' + random_number;
+    const appName = 'DenyPolicyApp' + random_number;
     const apiContext = `/api_${random_number}`
     const appDescription = 'change tier app description';
     const developer = 'developer';
@@ -34,6 +34,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
+    const swaggerFileName = "petstore_swagger_2.0_without-scopes.json";
 
      /*---------------------------------------------------------------------
     | 
@@ -48,7 +49,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     before("Create API, publish and verify portal invocation(try-out)",function () {
         cy.loginToPublisher(publisher, password);
         PublisherComonPage.waitUntillLoadingComponentsExit();
-        Apis.createAPIFromPetstoreSwagger2AndPublish(apiName,apiContext,apiVersion,"")
+        Apis.createAPIFromPetstoreSwagger2AndPublish(swaggerFileName,apiName,apiContext,apiVersion,"")
 
         cy.logoutFromPublisher();
         cy.loginToDevportal(developer, password);
