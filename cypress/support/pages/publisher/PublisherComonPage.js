@@ -26,5 +26,9 @@ class PublisherComonPage {
         cy.get('#apim-loader > span',{timeout:25000}).should('not.exist');
     }
 
+    static waitUntillProgressComponentsExit(){
+        cy.get('div[role="progressbar"]',{timeout:25000}).should('not.exist');
+    }
+
 }
 export default PublisherComonPage;
