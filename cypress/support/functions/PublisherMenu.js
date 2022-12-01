@@ -24,6 +24,12 @@ class PublisherMenu {
         cy.wait('@subscriptions', { requestTimeout: 30000 });
         cy.get('h2[class*="MuiTypography-root"]').eq(0).contains("Business Plans");
     }
+    static goToLifecycle(){
+        cy.intercept('**/apis/**/lifecycle-history').as('lifecycleHistory');
+        cy.get('[data-testid="left-menu-itemlifecycle"]').click();
+        cy.wait('@lifecycleHistory', { requestTimeout: 30000 });
+        cy.get('h2[class*="MuiTypography-root"]').eq(0).contains("Lifecycle");
+    }
 
 }
 export default PublisherMenu;

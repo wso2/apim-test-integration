@@ -42,15 +42,17 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
 
      /*---------------------------------------------------------------------
     | 
-    |  Test Scenario:  create an API from "petstore_swagger_2.0_store-only.json""
-    |  - Generate token and veirfy it invocation (if manual testing try postman or curl)
-    |  - Go to Publisher > subscription of api and click on Unblock all
-    |  - Invoke api with same token and vieryf it denined 
-    |  Assertions:
-    |        should get 401 with response body
-    |       Body should contain message code "900907" and message "The requested API is temporarily blocked"
+    |  Test Scenario:  create an API (with GET resource ) from "petstore_swagger_2.0_store-only.json""
+    |  - Generate token and veirfy it invocation with GET method (if manual testing try postman or curl)
+    |  - Go to Publisher > Lifecycle of api and click on Block
+    |  - Invoke api with same token with GET method and vieryf it denined 
+    |  - Invoke api with same token with POST method and vieryf it denined 
+    |  In both cases Assertions should be:
+    |       should get 503 status code with response body
+    |       <am:code>700700</am:code>
+    |       <am:message>API blocked</am:message>
     *-------------------------------------------------------------------*/
-    it("Verify If rest API is blocked from subscription in publisher portal and user should not able to access it ",function () {
+    it("Verify Invoking a blocked API using a HTTP method other than the  methods present in the API",function () {
         cy.loginToPublisher(publisher, password);
         PublisherComonPage.waitUntillLoadingComponentsExit();
         Apis.createAPIFromPetstoreSwagger2AndPublish(swaggerFileName,apiName,apiContext,apiVersion,"")
@@ -77,6 +79,8 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                 cy.get('div[aria-labelledby="responsive-dialog-title"] > div:nth-child(3) > button:nth-child(1)').contains("Generate").click()  //({force: true})
                 cy.wait(8000)
                 cy.get('#access-token').should('exist');
+
+                 // invoke api externally before blocking and verify sucessfull invocation
                 cy.get('#access-token').invoke('val').then((token) => {
                     const accessToken=token;
                     cy.log("Captured access token")
@@ -99,15 +103,12 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                       cy.logoutFromDevportal()
                       cy.wait(10000)
               
+                      // go to publisher and block api
                       cy.loginToPublisher(publisher, password);
                       PublisherComonPage.waitUntillLoadingComponentsExit();
                       Apis.searchAndGetAPIFromPublisher(apiName);
-                      PublisherMenu.goToSubscriptions();
-
-                      cy.intercept('**/subscriptions/block-subscription?**').as('blockSubscription');
-                      cy.get('#MUIDataTableBodyRow-0 > td:nth-child(10) > dev > button:nth-child(2)').click() // click block all
-                      cy.wait('@blockSubscription', { requestTimeout: 30000 });
-                      cy.wait(10000)
+                      PublisherMenu.goToLifecycle();
+                      Apis.clickBlockAPIOnLIfecycleInPublisher();
 
                       // invoke api externally after sbuscription is blocked
                       cy.request({
@@ -118,42 +119,48 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                           'authorization': 'Bearer ' + accessToken
                         }
                       }).then( ({ status }) => {
-                        expect(status).to.eq(401)
+                        expect(status).to.eq(503)
                       }).then( ({ body }) => {
                         cy.log(body.toString());
-                        expect(body.includes("900907")).to.be.true;
-                        expect(body.includes("The requested API is temporarily blocked")).to.be.true;
+                        expect(body.includes("700700")).to.be.true; // <am:code>700700</am:code>
+                        expect(body.includes("API blocked")).to.be.true; //<am:message>API blocked</am:message>
+                      })
+                      cy.wait(3000)
+                      // invoke api with POST externally after sbuscription is blocked
+                      cy.request({
+                        method: 'POST', 
+                        url: requestURL,
+                        failOnStatusCode: false,
+                        headers: {
+                          'authorization': 'Bearer ' + accessToken
+                        }
+                      }).then( ({ status }) => {
+                        expect(status).to.eq(503)
+                      }).then( ({ body }) => {
+                        cy.log(body.toString());
+                        expect(body.includes("700700")).to.be.true; // <am:code>700700</am:code>
+                        expect(body.includes("API blocked")).to.be.true; //<am:message>API blocked</am:message>
                       })
                 });
-
- 
     })
     
-    it("After block : Cleanup created test data",function () {
-      cy.log("Clean created data")
-    })
     /*
       this should go to a after hook , due to an issue in cypress if test failed in above it block then after block is not execute properly
     */
-    after("After block : Cleanup created test data",function () {
+    it("After block : Cleanup created test data",function () {
 
       cy.loginToPublisher(publisher, password);
       PublisherComonPage.waitUntillLoadingComponentsExit();
       Apis.searchAndGetAPIFromPublisher(apiName);
-      PublisherMenu.goToSubscriptions();
-
-          // unblock Sbuscription
-        // cy.wait(10000)
-        cy.get('#MUIDataTableBodyRow-0 > td:nth-child(10) > dev > button:nth-child(3)').click() // click unblock                
-        cy.logoutFromPublisher();
-        cy.wait(7000)
+      PublisherMenu.goToLifecycle();
+      Apis.clickRePublishAPIOnLIfecycleInPublisher();
 
         // Unsubscribe from devportal 
         cy.loginToDevportal(developer, password);
         DevportalComonPage.waitUntillLoadingComponentsExit();
         Apis.searchAndGetAPIFromDevportal(apiName,tenant)
         DeveloperMenu.goToSubscriptions()
-        cy.get('#DefaultApplication-UN').click()
+        Apis.clickUnsubscribOnApplcation(appName)
 
         cy.logoutFromDevportal()
         DevportalComonPage.waitUntillLoadingComponentsExit()
