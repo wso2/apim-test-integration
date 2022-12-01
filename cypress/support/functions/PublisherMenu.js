@@ -15,20 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-class PublisherComonPage {
-    static getUrl(apiID){
-        return `publisher`;
-    }
-    static getToolTip(){
-        return cy.get('div[role="status"][aria-live="polite"]')
-    }
-    static waitUntillLoadingComponentsExit(){
-        cy.get('#apim-loader > span',{timeout:25000}).should('not.exist');
-    }
+import PublisherComonPage from "../pages/publisher/PublisherComonPage";
+class PublisherMenu {
 
-    static waitUntillProgressComponentsExit(){
-        cy.get('div[role="progressbar"]',{timeout:25000}).should('not.exist');
+    static goToSubscriptions(){
+        cy.get('[data-testid="left-menu-itemsubscriptions"]').click();
+        cy.intercept('**/am/publisher/v1/subscriptions/**/subscriber-info').as('subscriptions');
+        cy.wait('@subscriptions', { requestTimeout: 30000 });
+        cy.get('h2[class*="MuiTypography-root"]').eq(0).contains("Business Plans");
     }
 
 }
-export default PublisherComonPage;
+export default PublisherMenu;

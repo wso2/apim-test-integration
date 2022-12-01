@@ -15,20 +15,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-class PublisherComonPage {
-    static getUrl(apiID){
-        return `publisher`;
+import DevportalComonPage from "../pages/devportal/DevportalComonPage";
+class DeveloperMenu {
+
+    static goToSubscriptions(){
+        cy.get('[data-testid="left-menu-credentials"]').click();
+        cy.get('h2[class*="MuiTypography-root"]').contains("Subscriptions");
     }
-    static getToolTip(){
-        return cy.get('div[role="status"][aria-live="polite"]')
-    }
-    static waitUntillLoadingComponentsExit(){
-        cy.get('#apim-loader > span',{timeout:25000}).should('not.exist');
+    static goToTryOut(){
+        cy.intercept('**/oauth-keys').as('oauthKeys');
+        cy.get('[data-testid="left-menu-test"]').click();
+        cy.wait('@oauthKeys');
+        DevportalComonPage.waitUntillLoadingComponentsExit();
     }
 
-    static waitUntillProgressComponentsExit(){
-        cy.get('div[role="progressbar"]',{timeout:25000}).should('not.exist');
-    }
 
 }
-export default PublisherComonPage;
+export default DeveloperMenu;
