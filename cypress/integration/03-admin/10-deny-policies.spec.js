@@ -85,137 +85,137 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         cy.get('tr[class="response"] > td.response-col_status').contains('200').should('exist');
         cy.contains("totvs1")
 
-        //temp check to prod url
-        cy.log(Cypress.config().baseUrl)
+        // //temp check to prod url
+        // cy.log(Cypress.config().baseUrl)
 
-        cy.get('div[class="request-url"] > pre[class="microlight"]').invoke('text').then((requestURL) => {
-            const geturl = requestURL;
-            cy.log(geturl);
-            expect(geturl).to.have.string('true');
-        });
+        // cy.get('div[class="request-url"] > pre[class="microlight"]').invoke('text').then((requestURL) => {
+        //     const geturl = requestURL;
+        //     cy.log(geturl);
+        //     expect(geturl).to.have.string('true');
+        // });
 
         cy.logoutFromDevportal()
         cy.wait(10000)
         
     })
 
-//  /*---------------------------------------------------------------------
-//     | 
-//     |  Test Scenario:  Verify Deny policy at API Context level 
-//     |  - Go to Admin and add Deny policy at context level for above created API 
-//     |  - Go to devportal and Try-out the API
-//     |  - Verify API cannot Invoke due to Deny Policy and getting expected error code 
-//     |  Assertions:
-//     |        should get 403 status code with
-//     |        "code": 900805,
-//     |        "message": "Message blocked",
-//     |        "description": "You have been blocked from accessing the resource"
-//     |
-//     *-------------------------------------------------------------------*/
-//     it("Verify Deny policy at API Context level ", () => {
-//         var apiContextDenyValue = `${apiContext}/${apiVersion}`;
+ /*---------------------------------------------------------------------
+    | 
+    |  Test Scenario:  Verify Deny policy at API Context level 
+    |  - Go to Admin and add Deny policy at context level for above created API 
+    |  - Go to devportal and Try-out the API
+    |  - Verify API cannot Invoke due to Deny Policy and getting expected error code 
+    |  Assertions:
+    |        should get 403 status code with
+    |        "code": 900805,
+    |        "message": "Message blocked",
+    |        "description": "You have been blocked from accessing the resource"
+    |
+    *-------------------------------------------------------------------*/
+    it("Verify Deny policy at API Context level ", () => {
+        var apiContextDenyValue = `${apiContext}/${apiVersion}`;
 
-//         // Log in to Admin and create Deny Policy at API Context
-//         cy.loginToAdmin(carbonUsername, carbonPassword);
-//         AdminComonPage.waitUntillLoadingComponentsExit()
-//         AdminMenu.goToDenyPoliciesByURL();
-//         AdminRateLimitingPolicies.deleteAllDenyPoliocies()
-//         AdminRateLimitingPolicies.Denypolicies_AddAPIContextPolicy(apiContextDenyValue)
-//         AdminMenu.goToLogoutURL()
-//         cy.wait(200000)// for testing only
-//         goToDevpoertalAndVerifyIncoationIsBlocked();
+        // Log in to Admin and create Deny Policy at API Context
+        cy.loginToAdmin(carbonUsername, carbonPassword);
+        AdminComonPage.waitUntillLoadingComponentsExit()
+        AdminMenu.goToDenyPoliciesByURL();
+        AdminRateLimitingPolicies.deleteAllDenyPoliocies()
+        AdminRateLimitingPolicies.Denypolicies_AddAPIContextPolicy(apiContextDenyValue)
+        AdminMenu.goToLogoutURL()
+        cy.wait(200000)// for testing only
+        goToDevpoertalAndVerifyIncoationIsBlocked();
 
-//         cy.logoutFromDevportal()
-//         cy.wait(10000)
-//     });
+        cy.logoutFromDevportal()
+        cy.wait(10000)
+    });
 
-//      /*---------------------------------------------------------------------
-//     |  
-//     |  Test Scenario:  Verify Deny policy at application level 
-//     |  - Go to Admin and add Deny policy at context level for above created API 
-//     |  - Go to devportal and Try-out the API
-//     |  - Verify API cannot Invoke due to Deny Policy and getting expected error code 
-//     |  Assertions:
-//     |        should get 403 status code with
-//     |        "code": 900805,
-//     |        "message": "Message blocked",
-//     |        "description": "You have been blocked from accessing the resource"
-//     |
-//     *-------------------------------------------------------------------*/
-//     it("Verify Deny policy at Application level ", () => {
-//         var applicationDenyValue = `${developer}:${appName}`
-//         cy.loginToAdmin(carbonUsername, carbonPassword);
-//         AdminComonPage.waitUntillLoadingComponentsExit()
-//         AdminMenu.goToDenyPoliciesByURL();
-//         AdminRateLimitingPolicies.deleteAllDenyPoliocies()
-//         AdminRateLimitingPolicies.Denypolicies_AddApplicationPolicy(applicationDenyValue)
-//         AdminMenu.goToLogoutURL()
+     /*---------------------------------------------------------------------
+    |  
+    |  Test Scenario:  Verify Deny policy at application level 
+    |  - Go to Admin and add Deny policy at context level for above created API 
+    |  - Go to devportal and Try-out the API
+    |  - Verify API cannot Invoke due to Deny Policy and getting expected error code 
+    |  Assertions:
+    |        should get 403 status code with
+    |        "code": 900805,
+    |        "message": "Message blocked",
+    |        "description": "You have been blocked from accessing the resource"
+    |
+    *-------------------------------------------------------------------*/
+    it("Verify Deny policy at Application level ", () => {
+        var applicationDenyValue = `${developer}:${appName}`
+        cy.loginToAdmin(carbonUsername, carbonPassword);
+        AdminComonPage.waitUntillLoadingComponentsExit()
+        AdminMenu.goToDenyPoliciesByURL();
+        AdminRateLimitingPolicies.deleteAllDenyPoliocies()
+        AdminRateLimitingPolicies.Denypolicies_AddApplicationPolicy(applicationDenyValue)
+        AdminMenu.goToLogoutURL()
         
-//         goToDevpoertalAndVerifyIncoationIsBlocked();
+        goToDevpoertalAndVerifyIncoationIsBlocked();
 
 
-//         cy.logoutFromDevportal()
-//         cy.wait(10000)
-//     });
+        cy.logoutFromDevportal()
+        cy.wait(10000)
+    });
 
-//      /*---------------------------------------------------------------------
-//     |  
-//     |  Test Scenario:  Verify Deny policy at User level 
-//     |  - Go to Admin and add Deny policy at context level for above created API 
-//     |  - Go to devportal and Try-out the API
-//     |  - Verify API cannot Invoke due to Deny Policy and getting expected error code 
-//     |  Assertions:
-//     |        should get 403 status code with
-//     |        "code": 900805,
-//     |        "message": "Message blocked",
-//     |        "description": "You have been blocked from accessing the resource"
-//     |
-//     *-------------------------------------------------------------------*/
-//     it("Verify Deny policy at User level ", () => {
-//         cy.loginToAdmin(carbonUsername, carbonPassword);
-//         AdminComonPage.waitUntillLoadingComponentsExit()
-//         AdminMenu.goToDenyPoliciesByURL();
-//         AdminRateLimitingPolicies.deleteAllDenyPoliocies()
-//         AdminRateLimitingPolicies.Denypolicies_AddUserPolicy(developer)
-//         AdminMenu.goToLogoutURL()
+     /*---------------------------------------------------------------------
+    |  
+    |  Test Scenario:  Verify Deny policy at User level 
+    |  - Go to Admin and add Deny policy at context level for above created API 
+    |  - Go to devportal and Try-out the API
+    |  - Verify API cannot Invoke due to Deny Policy and getting expected error code 
+    |  Assertions:
+    |        should get 403 status code with
+    |        "code": 900805,
+    |        "message": "Message blocked",
+    |        "description": "You have been blocked from accessing the resource"
+    |
+    *-------------------------------------------------------------------*/
+    it("Verify Deny policy at User level ", () => {
+        cy.loginToAdmin(carbonUsername, carbonPassword);
+        AdminComonPage.waitUntillLoadingComponentsExit()
+        AdminMenu.goToDenyPoliciesByURL();
+        AdminRateLimitingPolicies.deleteAllDenyPoliocies()
+        AdminRateLimitingPolicies.Denypolicies_AddUserPolicy(developer)
+        AdminMenu.goToLogoutURL()
 
-//         goToDevpoertalAndVerifyIncoationIsBlocked();   
+        goToDevpoertalAndVerifyIncoationIsBlocked();   
 
-//         cy.logoutFromDevportal()
-//         cy.wait(10000)
-//     });
+        cy.logoutFromDevportal()
+        cy.wait(10000)
+    });
 
     it("After Block : clen created test data", () => {
         cy.log("Cleaning data")
     });
 
-    // after(function () {
-    //     // Delete any deny Policy from Admin
-    //     cy.loginToAdmin(carbonUsername, carbonPassword);
-    //     AdminComonPage.waitUntillLoadingComponentsExit()
-    //     AdminMenu.goToDenyPoliciesByURL();
-    //     AdminRateLimitingPolicies.deleteAllDenyPoliocies()
-    //     AdminMenu.goToLogoutURL()
-    //     cy.wait(5000)
+    after(function () {
+        // Delete any deny Policy from Admin
+        cy.loginToAdmin(carbonUsername, carbonPassword);
+        AdminComonPage.waitUntillLoadingComponentsExit()
+        AdminMenu.goToDenyPoliciesByURL();
+        AdminRateLimitingPolicies.deleteAllDenyPoliocies()
+        AdminMenu.goToLogoutURL()
+        cy.wait(5000)
 
-    //     // Delete the application from devportal
-    //     cy.loginToDevportal(developer, password);
-    //     DevportalComonPage.waitUntillLoadingComponentsExit();
-    //     cy.visit('/devportal/applications?tenant=carbon.super');
-    //     DevportalComonPage.waitUntillLoadingComponentsExit();
-    //     cy.wait(3000)
+        // Delete the application from devportal
+        cy.loginToDevportal(developer, password);
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        cy.visit('/devportal/applications?tenant=carbon.super');
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        cy.wait(3000)
 
-    //     cy.get(`[data-testid="delete-${appName}-btn"]`, { timeout: 30000 });
-    //     cy.get(`[data-testid="delete-${appName}-btn"]`).click();
-    //     cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
-    //     cy.logoutFromDevportal();
-    //     cy.wait(5000)
+        cy.get(`[data-testid="delete-${appName}-btn"]`, { timeout: 30000 });
+        cy.get(`[data-testid="delete-${appName}-btn"]`).click();
+        cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
+        cy.logoutFromDevportal();
+        cy.wait(5000)
 
-    //     // Delete the API from publisher
-    //     cy.loginToPublisher(publisher, password);
-    //     PublisherComonPage.waitUntillLoadingComponentsExit()
-    //     cy.deleteApi(apiName, apiVersion);
-    // })
+        // Delete the API from publisher
+        cy.loginToPublisher(publisher, password);
+        PublisherComonPage.waitUntillLoadingComponentsExit()
+        cy.deleteApi(apiName, apiVersion);
+    })
 
    function goToDevpoertalAndVerifyIncoationIsBlocked(){
         // go to devportal and verify that deny policy apply

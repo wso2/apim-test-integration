@@ -83,7 +83,7 @@ describe("devportal-002-06  : Verify functionalities of unsubscription", () => {
                     cy.log("Captured access token")
                     cy.log(accessToken)
                     const formData = new FormData();
-                    const requestURL = `https://localhost:8243${apiContext}/${apiVersion}/store/inventory`;
+                    const requestURL = `${Apis.getAPIRequestBaseURL()}${apiContext}/${apiVersion}/store/inventory`;
                     cy.request({
                         method: 'GET', 
                         url: requestURL,
@@ -119,7 +119,14 @@ describe("devportal-002-06  : Verify functionalities of unsubscription", () => {
  
     })
     
+    /*
+      this should go to a after hook , due to an issue in cypress if test failed in above it block then after block is not execute properly
+    */
     it("After block : Cleanup created test data",function () {
+        cy.log("Clean created data")
+    });
+
+    it("",function () {
         // Delte created API
         cy.loginToPublisher(publisher, password);
         PublisherComonPage.waitUntillLoadingComponentsExit()

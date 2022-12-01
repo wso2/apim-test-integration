@@ -154,7 +154,10 @@ class Apis {
         cy.contains("Lifecycle state updated successfully")
         cy.wait('@lifecycleChange', { requestTimeout: 30000 });
     }
-    
+    static getAPIRequestBaseURL(){
+        const requestURL = Cypress.config().baseUrl.replace("9443", "8243");
+        cy.log(requestURL)
+    }
     
 
 }

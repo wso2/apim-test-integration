@@ -86,7 +86,7 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                     cy.log("Captured access token")
                     cy.log(accessToken)
                     const formData = new FormData();
-                    const requestURL = `https://localhost:8243${apiContext}/${apiVersion}/store/inventory`;
+                    const requestURL = `${Apis.getAPIRequestBaseURL()}${apiContext}/${apiVersion}/store/inventory`;
                     cy.log("Request URL : " + requestURL);
                     cy.request({
                         method: 'GET', 
@@ -142,12 +142,16 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                         expect(body.includes("API blocked")).to.be.true; //<am:message>API blocked</am:message>
                       })
                 });
-    })
+    });
     
     /*
       this should go to a after hook , due to an issue in cypress if test failed in above it block then after block is not execute properly
     */
     it("After block : Cleanup created test data",function () {
+        cy.log("Clean created data")
+    });
+
+    after("",function () {
 
       cy.loginToPublisher(publisher, password);
       PublisherComonPage.waitUntillLoadingComponentsExit();
