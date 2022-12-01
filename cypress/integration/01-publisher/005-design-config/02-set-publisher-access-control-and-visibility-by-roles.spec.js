@@ -36,6 +36,7 @@ describe("publisher-005-02 : Verify adding restrictions for publisher access con
         const role = 'internal/everyone';
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
+        cy.wait(3000);
         cy.get('[data-testid="left-menu-itemDesignConfigurations"]').click();
 
         // Select the restricted by role option for access control

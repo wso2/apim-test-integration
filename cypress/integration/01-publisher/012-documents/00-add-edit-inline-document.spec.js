@@ -15,7 +15,9 @@ describe("publisher-012-00 : Verify an authorized user can create an inline docu
         const documentName = 'api document';
         const documentSummery = 'api document summery';
         cy.loginToPublisher(publisher, password);
+        cy.wait(4000);
         cy.createAPIWithoutEndpoint();
+        cy.wait(4000);
         cy.get('[data-testid="left-menu-itemDocumentation"]').click();
 
         cy.get('[data-testid="add-new-document-btn"]').click();

@@ -17,6 +17,7 @@ describe("publisher-003-00 : Verify authorized user can add authorization header
         const customAuthHeader = '-custom';
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
+        cy.wait(3000);
         cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();
         cy.get('[data-testid="application-level-security-head"').click();
         cy.get('[data-testid="outlined-name-test"] input').focus().type(customAuthHeader);

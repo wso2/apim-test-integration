@@ -11,7 +11,7 @@ describe("publisher-004-00 : Verify authorized user can add prodcution and sandb
     })
     it.only("Authorized user adds sandbox and production endpoints", () => {
         cy.loginToPublisher(publisher, password);
-        cy.wait(2000);
+        cy.wait(3000);
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         cy.createAPIWithoutEndpoint();
         cy.get('[data-testid="left-menu-itemendpoints"]').click();
