@@ -83,6 +83,7 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                     cy.log(accessToken)
                     const formData = new FormData();
                     const requestURL = `https://localhost:8243${apiContext}/${apiVersion}/store/inventory`;
+                    cy.log("Request URL : " + requestURL);
                     cy.request({
                         method: 'GET', 
                         url: requestURL,
@@ -123,18 +124,26 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                         expect(body.includes("900907")).to.be.true;
                         expect(body.includes("The requested API is temporarily blocked")).to.be.true;
                       })
-
-                      // unblock Sbuscription
-                      cy.get(' #MUIDataTableBodyRow-0 > td:nth-child(10) > dev > button:nth-child(3)').click() // click unblock
-                     
-                      cy.logoutFromPublisher();
-                      cy.wait(7000)
                 });
 
  
     })
     
-    after(function () {
+    /*
+      this should go to a after hook , due to an issue in cypress if test failed in above it block then after block is not execute properly
+    */
+    it("After block : Cleanup created test data",function () {
+
+      cy.loginToPublisher(publisher, password);
+      PublisherComonPage.waitUntillLoadingComponentsExit();
+      Apis.searchAndGetAPIFromPublisher(apiName);
+      PublisherMenu.goToSubscriptions();
+
+          // unblock Sbuscription
+        // cy.wait(10000)
+        cy.get('#MUIDataTableBodyRow-0 > td:nth-child(10) > dev > button:nth-child(3)').click() // click unblock                
+        cy.logoutFromPublisher();
+        cy.wait(7000)
 
         // Unsubscribe from devportal 
         cy.loginToDevportal(developer, password);
