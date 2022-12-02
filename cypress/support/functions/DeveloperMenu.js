@@ -28,6 +28,12 @@ class DeveloperMenu {
         cy.wait('@oauthKeys');
         DevportalComonPage.waitUntillLoadingComponentsExit();
     }
+    static goToApplicationsByURL(tenant){
+        cy.intercept('GET','**/applications?**').as('applications');
+        cy.visit(`/devportal/applications?tenant=${tenant}`);
+        cy.wait('@applications', { requestTimeout: 30000 });
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+    }
 
 
 }

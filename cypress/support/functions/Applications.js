@@ -15,28 +15,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import AdminComonPage from "../pages/admin/AdminComonPage";
-class AdminMenu {
+import DevportalComonPage from "../pages/devportal/DevportalComonPage";
+import DeveloperMenu from "../functions/DeveloperMenu";
+class Applications {
 
-    static goToDenyPoliciesByURL(){
-        cy.intercept('GET','**/throttling/blacklist').as('getPolicies');
-        cy.visit('/admin/throttling/blacklisted')
-        cy.wait('@getPolicies', { requestTimeout: 30000 });
-        AdminComonPage.waitUntillLoadingComponentsExit()
-        AdminComonPage.waitUntillProgressComponentsExit();
-    }
-
-    static goToApplicationsByURL(){
+    static  searchAndListApplicationFromDevportal(appName,tenant){
+        DeveloperMenu.goToApplicationsByURL(tenant)
+        cy.get('input[placeholder="Search application by name"]').clear().type(appName);
         cy.intercept('GET','**/applications?**').as('applications');
-        cy.visit('/admin/settings/applications')
+        cy.get('button > [class="MuiButton-label"]').contains("Search").click();
         cy.wait('@applications', { requestTimeout: 30000 });
-        AdminComonPage.waitUntillLoadingComponentsExit()
-        AdminComonPage.waitUntillProgressComponentsExit();
+        cy.wait(5000)
     }
 
-    static goToLogoutURL(){
-        cy.visit('/admin/services/logout')
-    }
+    
+
 
 }
-export default AdminMenu;
+export default Applications;
