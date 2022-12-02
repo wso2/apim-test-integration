@@ -21,7 +21,7 @@ import PublisherMenu from "../../../support/functions/PublisherMenu";
 import DeveloperMenu from "../../../support/functions/DeveloperMenu";
 
 
-describe("ublisher-011-03 : Verify functionalities of subscription block of rest apis", () => {
+describe("publisher-011-03 : Verify functionalities of subscription block of rest apis", () => {
     const apiName = 'SubBlockTest' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.5';
     const random_number = Math.floor(Date.now() / 1000);

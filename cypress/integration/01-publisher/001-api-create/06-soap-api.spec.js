@@ -21,7 +21,7 @@ import DeveloperMenu from "../../../support/functions/DeveloperMenu";
 import Portals from "../../../support/functions/Portals";
 
 
-describe("admin-10 : Verify SOAP API creation", () => {
+describe("publisher-001-06 : VVerify SOAP API creation", () => {
     const apiVersion = '1.0.0';
     const random_number = Math.floor(Date.now() / 1000);
     const apiName = 'SoapAPI' + random_number;
