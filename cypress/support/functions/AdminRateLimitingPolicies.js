@@ -29,6 +29,7 @@ class AdminRateLimitingPolicies {
         cy.get('button.MuiButton-containedPrimary > span').contains('Deny').click();
         cy.contains('Deny Policy added successfully.')
         cy.contains(apiContext)
+        cy.wait(3000)
     }
     static Denypolicies_AddApplicationPolicy(applicationValue){
         cy.get('.MuiButton-label').contains('Add Policy').click();
@@ -37,6 +38,7 @@ class AdminRateLimitingPolicies {
         cy.get('button.MuiButton-containedPrimary > span').contains('Deny').click();
         cy.contains('Deny Policy added successfully.')
         cy.contains(applicationValue)
+        cy.wait(3000)
     }
 
     static Denypolicies_AddUserPolicy(userValue){
@@ -46,6 +48,7 @@ class AdminRateLimitingPolicies {
         cy.get('button.MuiButton-containedPrimary > span').contains('Deny').click();
         cy.contains('Deny Policy added successfully.')
         cy.contains(userValue)
+        cy.wait(3000)
     }
 
     static deleteAllDenyPoliocies(){    

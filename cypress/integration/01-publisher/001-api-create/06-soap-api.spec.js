@@ -137,12 +137,15 @@ describe("admin-10 : Verify SOAP API creation", () => {
       it("After block : Cleanup created test data",function () {
         cy.log("Clean created data")
     });
-    
+
     after(function () {
 
         // go to Subscriptions and "UNSUBSCRIBE" (this is to delte the API after test)
+        cy.loginToDevportal(developer, password);
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        Apis.searchAndGetAPIFromDevportal(apiName,tenant)
         DeveloperMenu.goToSubscriptions()
-        cy.get('#DefaultApplication-UN').click()
+        Apis.clickUnsubscribOnApplcation(appName)
         
         cy.logoutFromDevportal()
         DevportalComonPage.waitUntillLoadingComponentsExit()

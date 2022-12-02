@@ -35,6 +35,7 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
     const swaggerFileName = "petstore_swagger_2.0_store-only.json";
     const tenant = "carbon.super";
     const appName = "DefaultApplication";
+    var isAPIBlocked = false;
 
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
@@ -82,7 +83,7 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                     cy.log("Captured access token")
                     cy.log(accessToken)
                     const formData = new FormData();
-                    const requestURL = `${Apis.getAPIRequestBaseURL()}{apiContext}/${apiVersion}/store/inventory`;
+                    const requestURL = `${Apis.getAPIRequestBaseURL()}${apiContext}/${apiVersion}/store/inventory`;
                     cy.log("Request URL : " + requestURL);
                     cy.request({
                         method: 'GET', 
@@ -108,6 +109,7 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                       cy.get('#MUIDataTableBodyRow-0 > td:nth-child(10) > dev > button:nth-child(2)').click() // click block all
                       cy.wait('@blockSubscription', { requestTimeout: 30000 });
                       cy.wait(10000)
+                      isAPIBlocked = true;
 
                       // invoke api externally after sbuscription is blocked
                       cy.request({
@@ -139,16 +141,18 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
 
     after("",function () {
 
-      cy.loginToPublisher(publisher, password);
-      PublisherComonPage.waitUntillLoadingComponentsExit();
-      Apis.searchAndGetAPIFromPublisher(apiName);
-      PublisherMenu.goToSubscriptions();
-
+        if(isAPIBlocked) {
+          cy.loginToPublisher(publisher, password);
+          PublisherComonPage.waitUntillLoadingComponentsExit();
+          Apis.searchAndGetAPIFromPublisher(apiName);
+          PublisherMenu.goToSubscriptions();
           // unblock Sbuscription
-        // cy.wait(10000)
-        cy.get('#MUIDataTableBodyRow-0 > td:nth-child(10) > dev > button:nth-child(3)').click() // click unblock                
-        cy.logoutFromPublisher();
-        cy.wait(7000)
+          cy.get('#MUIDataTableBodyRow-0 > td:nth-child(10) > dev > button:nth-child(3)').click() // click unblock  
+          cy.logoutFromPublisher();
+          cy.wait(7000)
+        }
+                      
+
 
         // Unsubscribe from devportal 
         cy.loginToDevportal(developer, password);

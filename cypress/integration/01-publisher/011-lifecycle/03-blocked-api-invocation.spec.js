@@ -21,7 +21,7 @@ import PublisherMenu from "../../../support/functions/PublisherMenu";
 import DeveloperMenu from "../../../support/functions/DeveloperMenu";
 
 
-describe("devportal-002-05  : Verify functionalities of subscription block of rest apis", () => {
+describe("ublisher-011-03 : Verify functionalities of subscription block of rest apis", () => {
     const apiName = 'SubBlockTest' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.5';
     const random_number = Math.floor(Date.now() / 1000);
@@ -153,27 +153,30 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
 
     after("",function () {
 
+      // re-bublished the clocked API
       cy.loginToPublisher(publisher, password);
       PublisherComonPage.waitUntillLoadingComponentsExit();
       Apis.searchAndGetAPIFromPublisher(apiName);
       PublisherMenu.goToLifecycle();
       Apis.clickRePublishAPIOnLIfecycleInPublisher();
+      cy.logoutFromPublisher();
+      cy.wait(5000)
 
-        // Unsubscribe from devportal 
-        cy.loginToDevportal(developer, password);
-        DevportalComonPage.waitUntillLoadingComponentsExit();
-        Apis.searchAndGetAPIFromDevportal(apiName,tenant)
-        DeveloperMenu.goToSubscriptions()
-        Apis.clickUnsubscribOnApplcation(appName)
+      // Unsubscribe from devportal 
+      cy.loginToDevportal(developer, password);
+      DevportalComonPage.waitUntillLoadingComponentsExit();
+      Apis.searchAndGetAPIFromDevportal(apiName,tenant)
+      DeveloperMenu.goToSubscriptions()
+      Apis.clickUnsubscribOnApplcation(appName)
 
-        cy.logoutFromDevportal()
-        DevportalComonPage.waitUntillLoadingComponentsExit()
-        cy.wait(5000)
+      cy.logoutFromDevportal()
+      DevportalComonPage.waitUntillLoadingComponentsExit()
+      cy.wait(5000)
 
-        // Delte created API
-        cy.loginToPublisher(publisher, password);
-        PublisherComonPage.waitUntillLoadingComponentsExit()
-        Apis.searchAndDeleteAPIFromPublisher(apiName,apiVersion)
+      // Delte created API
+      cy.loginToPublisher(publisher, password);
+      PublisherComonPage.waitUntillLoadingComponentsExit()
+      Apis.searchAndDeleteAPIFromPublisher(apiName,apiVersion)
     });
  
 });
