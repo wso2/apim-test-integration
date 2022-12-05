@@ -28,6 +28,14 @@ class Applications {
         cy.wait(5000)
     }
 
+    static deleteAplication(appName){
+        cy.visit('/devportal/applications?tenant=carbon.super');
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        cy.wait(3000)
+        cy.get(`[data-testid="delete-${appName}-btn"]`, { timeout: 30000 });
+        cy.get(`[data-testid="delete-${appName}-btn"]`).click();
+        cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
+    }
     
 
 

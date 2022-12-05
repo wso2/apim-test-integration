@@ -126,7 +126,7 @@ describe("devportal-002-06  : Verify functionalities of unsubscription", () => {
         cy.log("Clean created data")
     });
 
-    it("",function () {
+    after("",function () {
         // Delte created API
         cy.loginToPublisher(publisher, password);
         PublisherComonPage.waitUntillLoadingComponentsExit()

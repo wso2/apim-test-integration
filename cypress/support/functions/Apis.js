@@ -56,10 +56,11 @@ class Apis {
         cy.get('[data-testid="api-create-finish-btn"]').click();
         cy.contains("API created successfully")
         cy.wait('@lifeCycleStatus', { requestTimeout: 30000 });
+        cy.wait(3000)
     
         // publish
         cy.get('[data-testid="publish-btn"]', { timeout: 30000 });
-        cy.get('[data-testid="publish-btn"]').click();
+        cy.get('[data-testid="publish-btn"]').click({ force: true });
         
         cy.get('[data-testid="published-status"]', { timeout: 30000 });
         cy.get('[data-testid="published-status"]').contains('Published').should('exist');
