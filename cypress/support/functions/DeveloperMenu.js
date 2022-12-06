@@ -35,6 +35,13 @@ class DeveloperMenu {
         DevportalComonPage.waitUntillLoadingComponentsExit();
     }
 
+    static goToDocumentationByUI(){
+        cy.intercept('GET','**/documents?**').as('documents');
+        cy.get('a[data-testid="left-menu-documents"]').click()
+        cy.wait('@documents', { requestTimeout: 30000 });
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+    }
+
 
 }
 export default DeveloperMenu;

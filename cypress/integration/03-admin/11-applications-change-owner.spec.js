@@ -73,6 +73,7 @@ describe("admin-11 : Verify that Admin is able to change the Application owner",
         AdminComonPage.waitUntillLoadingComponentsExit()
         AdminSettings.changeApplicationOwner(appName,nonAdminUser,adminUser)
         AdminMenu.goToLogoutURL();
+        cy.wait(5000)
 
         //Log in to devportal by "developer" user and verify user cannot see the application
         cy.loginToDevportal(developer, password);

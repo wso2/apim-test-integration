@@ -30,6 +30,11 @@ class PublisherMenu {
         cy.wait('@lifecycleHistory', { requestTimeout: 30000 });
         cy.get('h2[class*="MuiTypography-root"]').eq(0).contains("Lifecycle");
     }
-
+    static goToDocumentationByUI(){
+        cy.intercept('GET','**/documents?**').as('documents');
+        cy.get('[data-testid="left-menu-itemDocumentation"]').click();
+        cy.wait('@documents', { requestTimeout: 30000 });
+        PublisherComonPage.waitUntillLoadingComponentsExit();
+    }
 }
 export default PublisherMenu;

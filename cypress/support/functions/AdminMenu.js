@@ -36,6 +36,7 @@ class AdminMenu {
 
     static goToLogoutURL(){
         cy.visit('/admin/services/logout')
+        cy.wait(5000);
     }
 
 }
