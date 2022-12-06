@@ -237,7 +237,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
             "message": "Message blocked",
             "description": "You have been blocked from accessing the resource"
         */
-        cy.get('tr[class="response"] > td.response-col_status',{ timeout: 10000 }).should("have.text",'403');
+        cy.get('tr[class="response"] > td.response-col_status',{ timeout: 10000 }).contains ('403');
 
         cy.contains('900805')
         cy.contains("Message blocked")
