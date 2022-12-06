@@ -158,6 +158,7 @@ class Apis {
     static getAPIRequestBaseURL(){
         const requestURL = Cypress.config().baseUrl.replace("9443", "8243");
         cy.log(requestURL)
+        return requestURL;
     }
     
 
