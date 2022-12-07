@@ -110,7 +110,7 @@ describe("publisher-011-03 : Verify functionalities of subscription block of res
                       PublisherMenu.goToLifecycle();
                       Apis.clickBlockAPIOnLIfecycleInPublisher();
 
-                      cy.wai(15000)
+                      cy.wait(15000)
                       // invoke api externally after sbuscription is blocked
                       cy.request({
                         method: 'GET', 

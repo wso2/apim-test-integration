@@ -101,7 +101,7 @@ describe("devportal-002-06  : Verify functionalities of unsubscription", () => {
                       cy.get('div[aria-labelledby="responsive-dialog-title"] > div:nth-child(3) > button:nth-child(1)').contains("Close").click()
                       Apis.clickUnsubscribOnApplcation(appName)
                       cy.wait(15000)
-                      
+
                       cy.request({
                         method: 'GET', 
                         url: requestURL,
@@ -109,7 +109,7 @@ describe("devportal-002-06  : Verify functionalities of unsubscription", () => {
                           'authorization': 'Bearer ' + accessToken
                         }
                       }).then( ({ status }) => {
-                        expect(401).to.eq(status)
+                        expect(403).to.eq(status)
                       }).then( ({ body }) => {
                         cy.log(body.toString())
                       })

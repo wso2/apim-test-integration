@@ -57,7 +57,7 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
         Apis.createAPIFromPetstoreSwagger2AndPublish(swaggerFileName,apiName,apiContext,apiVersion,"")
 
         cy.logoutFromPublisher();
-        cy.wait(5000)
+        cy.wait(10000)
 
         cy.loginToDevportal(developer, password);
         DevportalComonPage.waitUntillLoadingComponentsExit();
@@ -108,7 +108,7 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
                       cy.intercept('**/subscriptions/block-subscription?**').as('blockSubscription');
                       cy.get('#MUIDataTableBodyRow-0 > td:nth-child(10) > dev > button:nth-child(2)').click() // click block all
                       cy.wait('@blockSubscription', { requestTimeout: 30000 });
-                      cy.wait(10000)
+                      cy.wait(15000)
                       isAPIBlocked = true;
 
                       // invoke api externally after sbuscription is blocked
@@ -149,7 +149,7 @@ describe("devportal-002-05  : Verify functionalities of subscription block of re
           // unblock Sbuscription
           cy.get('#MUIDataTableBodyRow-0 > td:nth-child(10) > dev > button:nth-child(3)').click() // click unblock  
           cy.logoutFromPublisher();
-          cy.wait(7000)
+          cy.wait(3000)
         }
                       
 
