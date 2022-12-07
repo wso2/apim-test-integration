@@ -100,8 +100,8 @@ describe("devportal-002-06  : Verify functionalities of unsubscription", () => {
                       //DeveloperMenu.goToSubscriptions()
                       cy.get('div[aria-labelledby="responsive-dialog-title"] > div:nth-child(3) > button:nth-child(1)').contains("Close").click()
                       Apis.clickUnsubscribOnApplcation(appName)
-                      //cy.get('#DefaultApplication-UN').click()
-                      cy.wait(5000)
+                      cy.wait(15000)
+                      
                       cy.request({
                         method: 'GET', 
                         url: requestURL,

@@ -202,7 +202,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         AdminMenu.goToDenyPoliciesByURL();
         AdminRateLimitingPolicies.deleteAllDenyPoliocies()
         AdminMenu.goToLogoutURL()
-        cy.wait(5000)
+        cy.wait(10000)
 
         // Delete the application from devportal
         cy.loginToDevportal(developer, password);
@@ -215,7 +215,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
         cy.logoutFromDevportal();
-        cy.wait(5000)
+        cy.wait(10000)
 
         // Delete the API from publisher
         cy.loginToPublisher(publisher, password);

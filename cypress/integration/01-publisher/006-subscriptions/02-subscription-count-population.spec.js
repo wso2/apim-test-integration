@@ -106,7 +106,7 @@ describe("publisher-006-02 : Verify functionalities of subscription count ", () 
         asserrtSubscriptionCountIs(0)
 
         cy.logoutFromDevportal()
-        cy.wait(5000)       
+        cy.wait(10000)       
  
     });
     

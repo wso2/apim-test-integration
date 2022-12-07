@@ -110,6 +110,7 @@ describe("publisher-011-03 : Verify functionalities of subscription block of res
                       PublisherMenu.goToLifecycle();
                       Apis.clickBlockAPIOnLIfecycleInPublisher();
 
+                      cy.wai(15000)
                       // invoke api externally after sbuscription is blocked
                       cy.request({
                         method: 'GET', 
@@ -160,7 +161,8 @@ describe("publisher-011-03 : Verify functionalities of subscription block of res
       PublisherMenu.goToLifecycle();
       Apis.clickRePublishAPIOnLIfecycleInPublisher();
       cy.logoutFromPublisher();
-      cy.wait(5000)
+      cy.wait(10000)
+      cy.log("Republish")
 
       // Unsubscribe from devportal 
       cy.loginToDevportal(developer, password);
@@ -168,15 +170,17 @@ describe("publisher-011-03 : Verify functionalities of subscription block of res
       Apis.searchAndGetAPIFromDevportal(apiName,tenant)
       DeveloperMenu.goToSubscriptions()
       Apis.clickUnsubscribOnApplcation(appName)
+      cy.log("Unsubscribe")
 
       cy.logoutFromDevportal()
       DevportalComonPage.waitUntillLoadingComponentsExit()
-      cy.wait(5000)
+      cy.wait(10000)
 
       // Delte created API
       cy.loginToPublisher(publisher, password);
       PublisherComonPage.waitUntillLoadingComponentsExit()
       Apis.searchAndDeleteAPIFromPublisher(apiName,apiVersion)
+      cy.log("API Delted")
     });
  
 });
