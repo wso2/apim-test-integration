@@ -21,7 +21,7 @@ import PublisherMenu from "../../../support/functions/PublisherMenu";
 import DeveloperMenu from "../../../support/functions/DeveloperMenu";
 
 
-describe("publisher-011-03 : Verify functionalities of subscription block of rest apis", () => {
+describe("publisher-011-03 : Invocation on blocked rest apis", () => {
     const apiName = 'SubBlockTest' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.5';
     const random_number = Math.floor(Date.now() / 1000);
@@ -109,6 +109,7 @@ describe("publisher-011-03 : Verify functionalities of subscription block of res
                       Apis.searchAndGetAPIFromPublisher(apiName);
                       PublisherMenu.goToLifecycle();
                       Apis.clickBlockAPIOnLIfecycleInPublisher();
+                      cy.log("Api is blocked")
 
                       cy.wait(15000)
                       // invoke api externally after sbuscription is blocked
@@ -127,6 +128,7 @@ describe("publisher-011-03 : Verify functionalities of subscription block of res
                         expect(body.includes("API blocked")).to.be.true; //<am:message>API blocked</am:message>
                       })
                       cy.wait(3000)
+                      
                       // invoke api with POST externally after sbuscription is blocked
                       cy.request({
                         method: 'POST', 

@@ -55,7 +55,7 @@ describe("devportal-002-06  : Verify functionalities of unsubscription", () => {
         Apis.createAPIFromPetstoreSwagger2AndPublish(swaggerFileName,apiName,apiContext,apiVersion,"")
 
         cy.logoutFromPublisher();
-        cy.wait(5000)
+        cy.wait(10000)
 
         cy.loginToDevportal(developer, password);
         DevportalComonPage.waitUntillLoadingComponentsExit();
@@ -105,6 +105,7 @@ describe("devportal-002-06  : Verify functionalities of unsubscription", () => {
                       cy.request({
                         method: 'GET', 
                         url: requestURL,
+                        failOnStatusCode: false,
                         headers: {
                           'authorization': 'Bearer ' + accessToken
                         }
