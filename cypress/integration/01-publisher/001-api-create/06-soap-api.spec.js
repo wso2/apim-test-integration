@@ -21,7 +21,7 @@ import DeveloperMenu from "../../../support/functions/DeveloperMenu";
 import Portals from "../../../support/functions/Portals";
 
 
-describe("admin-10 : Verify SOAP API creation", () => {
+describe("publisher-001-06 : Verify SOAP API creation", () => {
     const apiVersion = '1.0.0';
     const random_number = Math.floor(Date.now() / 1000);
     const apiName = 'SoapAPI' + random_number;
@@ -131,11 +131,21 @@ describe("admin-10 : Verify SOAP API creation", () => {
         
     });
 
+    /*
+      this should go to a after hook , due to an issue in cypress if test failed in above it block then after block is not execute properly
+    */
+      it("After block : Cleanup created test data",function () {
+        cy.log("Clean created data")
+    });
+
     after(function () {
 
         // go to Subscriptions and "UNSUBSCRIBE" (this is to delte the API after test)
+        cy.loginToDevportal(developer, password);
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        Apis.searchAndGetAPIFromDevportal(apiName,tenant)
         DeveloperMenu.goToSubscriptions()
-        cy.get('#DefaultApplication-UN').click()
+        Apis.clickUnsubscribOnApplcation(appName)
         
         cy.logoutFromDevportal()
         DevportalComonPage.waitUntillLoadingComponentsExit()

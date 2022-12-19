@@ -56,10 +56,11 @@ class Apis {
         cy.get('[data-testid="api-create-finish-btn"]').click();
         cy.contains("API created successfully")
         cy.wait('@lifeCycleStatus', { requestTimeout: 30000 });
+        cy.wait(3000)
     
         // publish
         cy.get('[data-testid="publish-btn"]', { timeout: 30000 });
-        cy.get('[data-testid="publish-btn"]').click();
+        cy.get('[data-testid="publish-btn"]').click({ force: true });
         
         cy.get('[data-testid="published-status"]', { timeout: 30000 });
         cy.get('[data-testid="published-status"]').contains('Published').should('exist');
@@ -135,6 +136,31 @@ class Apis {
         cy.get(`[data-testid="subscribe-to-api-btn"]`).click();
         cy.get(`[data-testid="subscription-table"] td`).contains(appName).should('exist');
     }
+
+    static clickUnsubscribOnApplcation(appName){
+        cy.intercept('**/subscriptions/**').as('deleteSubscriptions');
+        cy.get(`#${appName}-UN`).click()
+        cy.contains("Subscription deleted successfully!")
+        cy.wait('@deleteSubscriptions', { requestTimeout: 30000 });
+    }
+    static clickBlockAPIOnLIfecycleInPublisher(){
+        cy.intercept('**/change-lifecycle?**').as('lifecycleChange');
+        cy.get('[data-testid="Block"]').click();
+        cy.contains("Lifecycle state updated successfully")
+        cy.wait('@lifecycleChange', { requestTimeout: 30000 });
+    }
+    static clickRePublishAPIOnLIfecycleInPublisher(){
+        cy.intercept('**/change-lifecycle?**').as('lifecycleChange');
+        cy.get('[data-testid="Re-Publish"]').click();
+        cy.contains("Lifecycle state updated successfully")
+        cy.wait('@lifecycleChange', { requestTimeout: 30000 });
+    }
+    static getAPIRequestBaseURL(){
+        const requestURL = Cypress.config().baseUrl.replace("9443", "8243");
+        cy.log(requestURL)
+        return requestURL;
+    }
+    
 
 }
 export default Apis;

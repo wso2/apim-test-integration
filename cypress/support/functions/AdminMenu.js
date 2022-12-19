@@ -26,8 +26,17 @@ class AdminMenu {
         AdminComonPage.waitUntillProgressComponentsExit();
     }
 
+    static goToApplicationsByURL(){
+        cy.intercept('GET','**/applications?**').as('applications');
+        cy.visit('/admin/settings/applications')
+        cy.wait('@applications', { requestTimeout: 30000 });
+        AdminComonPage.waitUntillLoadingComponentsExit()
+        AdminComonPage.waitUntillProgressComponentsExit();
+    }
+
     static goToLogoutURL(){
         cy.visit('/admin/services/logout')
+        cy.wait(5000);
     }
 
 }

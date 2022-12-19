@@ -16,32 +16,28 @@
  * under the License.
  */
 import DevportalComonPage from "../pages/devportal/DevportalComonPage";
-class DeveloperMenu {
+import DeveloperMenu from "../functions/DeveloperMenu";
+class Applications {
 
-    static goToSubscriptions(){
-        cy.get('[data-testid="left-menu-credentials"]').click();
-        cy.get('h2[class*="MuiTypography-root"]').contains("Subscriptions");
-    }
-    static goToTryOut(){
-        cy.intercept('**/oauth-keys').as('oauthKeys');
-        cy.get('[data-testid="left-menu-test"]').click();
-        cy.wait('@oauthKeys');
-        DevportalComonPage.waitUntillLoadingComponentsExit();
-    }
-    static goToApplicationsByURL(tenant){
+    static  searchAndListApplicationFromDevportal(appName,tenant){
+        DeveloperMenu.goToApplicationsByURL(tenant)
+        cy.get('input[placeholder="Search application by name"]').clear().type(appName);
         cy.intercept('GET','**/applications?**').as('applications');
-        cy.visit(`/devportal/applications?tenant=${tenant}`);
+        cy.get('button > [class="MuiButton-label"]').contains("Search").click();
         cy.wait('@applications', { requestTimeout: 30000 });
-        DevportalComonPage.waitUntillLoadingComponentsExit();
+        cy.wait(5000)
     }
 
-    static goToDocumentationByUI(){
-        cy.intercept('GET','**/documents?**').as('documents');
-        cy.get('a[data-testid="left-menu-documents"]').click()
-        cy.wait('@documents', { requestTimeout: 30000 });
+    static deleteAplication(appName){
+        cy.visit('/devportal/applications?tenant=carbon.super');
         DevportalComonPage.waitUntillLoadingComponentsExit();
+        cy.wait(3000)
+        cy.get(`[data-testid="delete-${appName}-btn"]`, { timeout: 30000 });
+        cy.get(`[data-testid="delete-${appName}-btn"]`).click();
+        cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
     }
+    
 
 
 }
-export default DeveloperMenu;
+export default Applications;
