@@ -19,6 +19,7 @@
 
 import DevportalComonPage from "../../../support/pages/devportal/DevportalComonPage";
 import PublisherComonPage from "../../../support/pages/publisher/PublisherComonPage";
+import Portals from "../../../support/functions/Portals";
 
 describe("devportal-000-01 : Verify anonymous user can view public apis", () => {
     const developer = 'developer';
@@ -97,8 +98,9 @@ describe("devportal-000-01 : Verify anonymous user can view public apis", () => 
     })
 
     it("Verify authorized user can download client sdks", () => {
-        cy.loginToDevportal(developer, password);
-        DevportalComonPage.waitUntillLoadingComponentsExit();
+        //cy.loginToDevportal(developer, password);
+        //DevportalComonPage.waitUntillLoadingComponentsExit();
+        Portals.logInToDevportal();
         cy.visit('/devportal/apis?tenant=carbon.super');
         DevportalComonPage.waitUntillLoadingComponentsExit();
         cy.url().should('contain', '/apis?tenant=carbon.super');

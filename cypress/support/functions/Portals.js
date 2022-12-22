@@ -16,6 +16,7 @@
  * under the License.
  */
 import PublisherComonPage from "../pages/publisher/PublisherComonPage";
+import DevportalComonPage from "../pages/devportal/DevportalComonPage";
 
 class Portals {
     static logInToPublisher(username = 'admin', password = 'admin'){
@@ -39,6 +40,34 @@ class Portals {
         cy.wait('@getapis', { requestTimeout: 30000 });
         PublisherComonPage.waitUntillLoadingComponentsExit()
         cy.url().should('contain', portal);
+    }
+
+    static logInToDevportal(username = 'admin', password = 'admin'){
+        var portal = 'devportal';
+        Cypress.log({
+            name: 'logInToDevportalr',
+            message: `${username} | ${password}`,
+        })
+        cy.intercept('**/api/am/store/v1/apis?limit**').as('getapis');
+        cy.visit('/devportal/apis?tenant=carbon.super');
+        DevportalComonPage.waitUntillLoadingComponentsExit()
+        cy.wait('@getapis', { requestTimeout: 30000 });
+        cy.get('[data-testid="itest-devportal-sign-in"]').click();
+        cy.url().should('contain', `/authenticationendpoint/login.do`);
+        cy.wait(2000);
+
+        cy.get('#usernameUserInput').click();
+        cy.get('#usernameUserInput').type(username);
+        cy.wait(1000);
+        cy.get('#password').type(password);
+        cy.wait(1000);
+        
+        //cy.get('button[type="submit"]').click();
+        cy.get('#loginForm').submit();
+        cy.wait('@getapis', { requestTimeout: 30000 });
+        DevportalComonPage.waitUntillLoadingComponentsExit()
+        cy.url().should('contain', portal);
+        cy.wait(2000);
     }
 
 }

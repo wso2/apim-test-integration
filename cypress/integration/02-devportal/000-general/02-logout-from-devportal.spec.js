@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+import Portals from "../../../support/functions/Portals";
 describe("devportal-000-02 : Verify a user can perform login and logout in devportal", () => {
     const developer = 'developer';
     const password = 'test123';
@@ -28,7 +28,8 @@ describe("devportal-000-02 : Verify a user can perform login and logout in devpo
         //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
     })
     it.only("User can login and logout from devportal", () => {
-        cy.loginToDevportal(developer, password);
+        //cy.loginToDevportal(developer, password);
+        Portals.logInToDevportal(developer, password);
         cy.wait(3000);
         cy.logoutFromDevportal();
     });
