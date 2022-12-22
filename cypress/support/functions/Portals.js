@@ -20,6 +20,7 @@ import DevportalComonPage from "../pages/devportal/DevportalComonPage";
 
 class Portals {
     static logInToPublisher(username = 'admin', password = 'admin'){
+         
         var portal = 'publisher';
         Cypress.log({
             name: 'logInToPublisher',
@@ -28,29 +29,40 @@ class Portals {
     
         cy.intercept('**/logincontext*').as('logincontext');
         cy.visit(portal);
+        cy.wait(3000)
         cy.wait('@logincontext', { requestTimeout: 30000 });
         cy.url().should('contain', `/authenticationendpoint/login.do`);
         cy.get('#usernameUserInput').click();
         cy.get('#usernameUserInput').type(username);
+        cy.wait(1000);
         cy.get('#password').type(password);
+        cy.wait(1000);
         cy.intercept('**/api/am/publisher/v1/apis?limit**').as('getapis');
         
-        //cy.get('button[type="submit"]').click();
-        cy.get('#loginForm').submit();
+        //cy.wait(15000)
+        cy.get('button[type="submit"]').click();
+        //cy.get('#loginForm').submit();
         cy.wait('@getapis', { requestTimeout: 30000 });
         PublisherComonPage.waitUntillLoadingComponentsExit()
         cy.url().should('contain', portal);
+
+        Cypress.on('uncaught:exception', (err, runnable) => {
+            // returning false here prevents Cypress from
+            // failing the test
+            return false
+        });
     }
 
-    static logInToDevportal(username = 'admin', password = 'admin'){
+    static logInToDevportal(username = 'admin', password = 'admin',tenant="carbon.super"){
         var portal = 'devportal';
         Cypress.log({
-            name: 'logInToDevportalr',
+            name: 'logInToDevportal : ',
             message: `${username} | ${password}`,
         })
         cy.intercept('**/api/am/store/v1/apis?limit**').as('getapis');
-        cy.visit('/devportal/apis?tenant=carbon.super');
-        DevportalComonPage.waitUntillLoadingComponentsExit()
+        cy.visit(`/devportal/apis?tenant=${tenant}`);
+        cy.wait(3000)
+        //DevportalComonPage.waitUntillLoadingComponentsExit()
         cy.wait('@getapis', { requestTimeout: 30000 });
         cy.get('[data-testid="itest-devportal-sign-in"]').click();
         cy.url().should('contain', `/authenticationendpoint/login.do`);

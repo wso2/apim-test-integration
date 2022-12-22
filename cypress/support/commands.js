@@ -1,4 +1,5 @@
 import 'cypress-file-upload';
+import Portals from "../support/functions/Portals";
 
 //const commandDelay = 0;
 
@@ -52,11 +53,13 @@ Cypress.Commands.add('portalLogin', (username = 'admin', password = 'admin', por
 })
 
 Cypress.Commands.add('loginToPublisher', (username, password) => {
-    cy.portalLogin(username, password, 'publisher');
+    //cy.portalLogin(username, password, 'publisher');
+    Portals.logInToPublisher(username, password);
 })
 
 Cypress.Commands.add('loginToDevportal', (username, password) => {
-    cy.portalLogin(username, password, 'devportal');
+    Portals.logInToDevportal(username, password);
+    //cy.portalLogin(username, password, 'devportal');
 })
 
 Cypress.Commands.add('loginToAdmin', (username, password) => {
