@@ -20,7 +20,12 @@ import DevportalComonPage from "../pages/devportal/DevportalComonPage";
 
 class Portals {
     static logInToPublisher(username = 'admin', password = 'admin'){
-         
+        Cypress.on('uncaught:exception', (err, runnable) => {
+            // returning false here prevents Cypress from
+            // failing the test
+            return false
+        });
+
         var portal = 'publisher';
         Cypress.log({
             name: 'logInToPublisher',
@@ -40,16 +45,26 @@ class Portals {
         cy.intercept('**/api/am/publisher/v1/apis?limit**').as('getapis');
         
         //cy.wait(15000)
-        cy.get('button[type="submit"]').click();
+        const submitElement = 'button[type="submit"]';
+        cy.get(submitElement).click();
         //cy.get('#loginForm').submit();
         cy.wait('@getapis', { requestTimeout: 30000 });
         PublisherComonPage.waitUntillLoadingComponentsExit()
         cy.url().should('contain', portal);
+        cy.log("submit Publisher login")
 
-        Cypress.on('uncaught:exception', (err, runnable) => {
-            // returning false here prevents Cypress from
-            // failing the test
-            return false
+        // After first submit somtimes screen is freeze in automation, hence here we try another time if submit element exit and visible.
+        cy.get("body").then($body => {
+            if ($body.find(submitElement).length > 0) {   // is element exit
+                cy.get(submitElement).then($button => {
+                    if ($button.is(':visible')) { // is element visible
+                        cy.log("retry Publisher login")
+                        cy.get(submitElement).click();
+                        PublisherComonPage.waitUntillLoadingComponentsExit()
+                        cy.url().should('contain', portal);
+                    }
+                });
+            }
         });
     }
 
@@ -74,12 +89,30 @@ class Portals {
         cy.get('#password').type(password);
         cy.wait(1000);
         
+        const submitElement = 'button[type="submit"]';
         //cy.get('button[type="submit"]').click();
         cy.get('#loginForm').submit();
         cy.wait('@getapis', { requestTimeout: 30000 });
         DevportalComonPage.waitUntillLoadingComponentsExit()
         cy.url().should('contain', portal);
         cy.wait(2000);
+        cy.log("submit Devportal login")
+
+        // After first submit somtimes screen is freeze in automation, hence here we try another time if submit element exit and visible.
+        cy.get("body").then($body => {
+            if ($body.find(submitElement).length > 0) {   // is element exit
+                cy.get(submitElement).then($button => {
+                    if ($button.is(':visible')) { // is element visible
+                        cy.log("retry Devportal login")
+                        cy.get(submitElement).click();
+                        PublisherComonPage.waitUntillLoadingComponentsExit()
+                        cy.url().should('contain', portal);
+                    }
+                });
+            }
+        });
+
+
     }
 
 }
