@@ -58,6 +58,7 @@ class Portals {
             if ($body.find(submitElement).length > 0) {   // is element exit
                 cy.get(submitElement).then($button => {
                     if ($button.is(':visible')) { // is element visible
+                        cy.wait(15000);
                         cy.log("retry Publisher login")
                         cy.get(submitElement).click();
                         PublisherComonPage.waitUntillLoadingComponentsExit()
@@ -103,6 +104,7 @@ class Portals {
             if ($body.find(submitElement).length > 0) {   // is element exit
                 cy.get(submitElement).then($button => {
                     if ($button.is(':visible')) { // is element visible
+                        cy.wait(15000);
                         cy.log("retry Devportal login")
                         cy.get(submitElement).click();
                         PublisherComonPage.waitUntillLoadingComponentsExit()
