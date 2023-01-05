@@ -51,6 +51,7 @@ class Portals {
         cy.wait('@getapis', { requestTimeout: 30000 });
         PublisherComonPage.waitUntillLoadingComponentsExit()
         cy.url().should('contain', portal);
+        cy.wait(5000);
         cy.log("submit Publisher login")
 
         // After first submit somtimes screen is freeze in automation, hence here we try another time if submit element exit and visible.
@@ -96,7 +97,7 @@ class Portals {
         cy.wait('@getapis', { requestTimeout: 30000 });
         DevportalComonPage.waitUntillLoadingComponentsExit()
         cy.url().should('contain', portal);
-        cy.wait(2000);
+        cy.wait(5000);
         cy.log("submit Devportal login")
 
         // After first submit somtimes screen is freeze in automation, hence here we try another time if submit element exit and visible.
