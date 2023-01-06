@@ -315,11 +315,12 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
 })
 
 Cypress.Commands.add('logoutFromDevportal', (referer = '/devportal/apis') => {
-    cy.visit('/devportal/apis?tenant=carbon.super');
-    cy.get('#userToggleButton').click();
-    cy.get('[data-testid="logout-link"]').click();
-    cy.url().should('contain', '/devportal/logout');
-    cy.url().should('contain', referer);
+    // cy.visit('/devportal/apis?tenant=carbon.super');
+    // cy.get('#userToggleButton').click();
+    // cy.get('[data-testid="logout-link"]').click();
+    // cy.url().should('contain', '/devportal/logout');
+    // cy.url().should('contain', referer);
+    Portals.logoutFromDevportal();
 })
 
 Cypress.Commands.add('logoutFromPublisher', () => {

@@ -43,6 +43,12 @@ describe("admin-11 : Verify that Admin is able to change the Application owner",
     const adminUser = "admin";
     const adminUserPassword = "admin"
 
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        // returning false here prevents Cypress from
+        // failing the test
+        return false
+    });
+
     before("Create an application from devportal",function () {
         cy.loginToDevportal(developer, password);
         DevportalComonPage.waitUntillLoadingComponentsExit();

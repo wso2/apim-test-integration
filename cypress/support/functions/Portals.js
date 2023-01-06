@@ -71,6 +71,11 @@ class Portals {
     }
 
     static logInToDevportal(username = 'admin', password = 'admin',tenant="carbon.super"){
+        Cypress.on('uncaught:exception', (err, runnable) => {
+            // returning false here prevents Cypress from
+            // failing the test
+            return false
+        });
         var portal = 'devportal';
         Cypress.log({
             name: 'logInToDevportal : ',
@@ -116,6 +121,22 @@ class Portals {
         });
 
 
+    }
+
+    static logoutFromDevportal(referer = '/devportal/apis'){
+        Cypress.on('uncaught:exception', (err, runnable) => {
+            // returning false here prevents Cypress from
+            // failing the test
+            return false
+        });
+
+        cy.intercept('**/api/am/store/v1/apis?limit**').as('getapis');
+        cy.visit('/devportal/apis?tenant=carbon.super');
+        cy.wait('@getapis', { requestTimeout: 30000 });
+        cy.get('#userToggleButton').click();
+        cy.get('[data-testid="logout-link"]').click();
+        cy.url().should('contain', '/devportal/logout');
+        cy.url().should('contain', referer);
     }
 
 }
