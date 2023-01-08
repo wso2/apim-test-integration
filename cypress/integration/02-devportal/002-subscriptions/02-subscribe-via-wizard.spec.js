@@ -38,6 +38,7 @@ describe("devportal-002-02 : Verify authorized user can Subscribe to an API via 
     it.only("Subscribe to API via Subscription & Key Generation Wizard ", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
+        cy.wait(2000)
         cy.logoutFromPublisher();
         cy.wait(2000);
         cy.loginToDevportal(developer, password);
@@ -109,9 +110,11 @@ describe("devportal-002-02 : Verify authorized user can Subscribe to an API via 
 
     after(() => {
         cy.visit('/devportal/applications?tenant=carbon.super');
+        cy.wait(10000)
         cy.get(`[data-testid="delete-${appName}-btn"]`, { timeout: 30000 });
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
+        cy.wait(3000)
 
         // Delete api
         cy.logoutFromDevportal();

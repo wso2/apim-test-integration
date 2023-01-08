@@ -324,10 +324,11 @@ Cypress.Commands.add('logoutFromDevportal', (referer = '/devportal/apis') => {
 })
 
 Cypress.Commands.add('logoutFromPublisher', () => {
-    cy.get('[data-testid="logout-menu-dropdown"]', { timeout: 30000 });
-    cy.get('[data-testid="logout-menu-dropdown"]').click();
-    cy.get('[data-testid="logout-menu-item"]').click();
-    cy.get('#usernameUserInput').should('exist');
+    // cy.get('[data-testid="logout-menu-dropdown"]', { timeout: 30000 });
+    // cy.get('[data-testid="logout-menu-dropdown"]').click();
+    // cy.get('[data-testid="logout-menu-item"]').click();
+    // cy.get('#usernameUserInput').should('exist');
+    Portals.logoutFromPublisher();
 })
 
 //for (const command of ['visit', 'click']) {

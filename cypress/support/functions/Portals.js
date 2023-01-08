@@ -57,15 +57,17 @@ class Portals {
         // After first submit somtimes screen is freeze in automation, hence here we try another time if submit element exit and visible.
         cy.get("body").then($body => {
             if ($body.find(submitElement).length > 0) {   // is element exit
-                cy.get(submitElement).then($button => {
-                    if ($button.is(':visible')) { // is element visible
-                        cy.wait(15000);
-                        cy.log("retry Publisher login")
-                        cy.get(submitElement).click();
-                        PublisherComonPage.waitUntillLoadingComponentsExit()
-                        cy.url().should('contain', portal);
-                    }
-                });
+                cy.wait(15000);
+                if ($body.find(submitElement).length > 0) { 
+                    cy.get(submitElement).then($button => {
+                        if ($button.is(':visible')) { // is element visible
+                            cy.log("retry Publisher login")
+                            cy.get(submitElement).click();
+                            PublisherComonPage.waitUntillLoadingComponentsExit()
+                            cy.url().should('contain', portal);
+                        }
+                    });
+                }
             }
         });
     }
@@ -108,15 +110,17 @@ class Portals {
         // After first submit somtimes screen is freeze in automation, hence here we try another time if submit element exit and visible.
         cy.get("body").then($body => {
             if ($body.find(submitElement).length > 0) {   // is element exit
-                cy.get(submitElement).then($button => {
-                    if ($button.is(':visible')) { // is element visible
-                        cy.wait(15000);
-                        cy.log("retry Devportal login")
-                        cy.get(submitElement).click();
-                        PublisherComonPage.waitUntillLoadingComponentsExit()
-                        cy.url().should('contain', portal);
-                    }
-                });
+                cy.wait(15000);
+                if ($body.find(submitElement).length > 0) { 
+                    cy.get(submitElement).then($button => {
+                        if ($button.is(':visible')) { // is element visible
+                            cy.log("retry Devportal login")
+                            cy.get(submitElement).click();
+                            PublisherComonPage.waitUntillLoadingComponentsExit()
+                            cy.url().should('contain', portal);
+                        }
+                    });
+                }
             }
         });
 
@@ -137,6 +141,14 @@ class Portals {
         cy.get('[data-testid="logout-link"]').click();
         cy.url().should('contain', '/devportal/logout');
         cy.url().should('contain', referer);
+    }
+
+    static logoutFromPublisher(){
+        cy.get('[data-testid="logout-menu-dropdown"]', { timeout: 30000 });
+        cy.get('[data-testid="logout-menu-dropdown"]').click();
+        cy.get('[data-testid="logout-menu-item"]').click();
+        //cy.get('#usernameUserInput').should('exist');
+        cy.wait(3000)
     }
 
 }
