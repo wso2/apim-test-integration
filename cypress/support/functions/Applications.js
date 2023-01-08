@@ -37,6 +37,27 @@ class Applications {
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
     }
     
+    static goToProductionOAuth2TokensByUI(){
+        cy.intercept('GET','**/oauth-keys').as('ProdOauthKeys');
+        cy.get('[data-testid="left-menu-productionkeys/oauth"]').click();
+        cy.wait('@ProdOauthKeys', { requestTimeout: 30000 });
+        cy.wait(3000)
+    }
+
+    static goToSandboxOAuth2TokensByUI(){
+        cy.intercept('GET','**/oauth-keys').as('SandboxOauthKeys');
+        cy.get('[data-testid="left-menu-productionkeys/oauth"]').click();
+        cy.wait('@SandboxOauthKeys', { requestTimeout: 30000 });
+        cy.wait(3000)
+    }
+
+    static clickOnGenerateKeys(){
+        cy.intercept('GET','**/oauth-keys').as('GenKeys_OauthKeys');
+        cy.get('[data-testid="generate-application-keys"]').click();
+        cy.wait('@GenKeys_OauthKeys', { requestTimeout: 30000 });
+        cy.wait(3000)
+    }
+    
 
 
 }
