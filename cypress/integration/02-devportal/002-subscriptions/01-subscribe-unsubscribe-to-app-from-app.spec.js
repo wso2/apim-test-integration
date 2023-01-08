@@ -39,6 +39,7 @@ describe("devportal-002-01 : Verify authorized user can subscribe, unsubscribe t
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();
+        cy.wait(5000)
         cy.loginToDevportal(developer, password);
         cy.createApp(appName, appDescription);
         cy.visit('/devportal/applications?tenant=carbon.super');
@@ -47,6 +48,7 @@ describe("devportal-002-01 : Verify authorized user can subscribe, unsubscribe t
         // Go to application subscription page
         cy.get('[data-testid="left-menu-subscriptions"]').click();
         cy.get('[data-testid="subscribe-api-btn"]').click();
+        cy.wait(5000)
         cy.get('[data-testid="subscribe-to-api-table"] td button span').contains('Subscribe').click();
         cy.get('[data-testid="close-btn"]').click();
 

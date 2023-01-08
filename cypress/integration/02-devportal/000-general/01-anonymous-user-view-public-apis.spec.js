@@ -98,12 +98,13 @@ describe("devportal-000-01 : Verify anonymous user can view public apis", () => 
     })
 
     it("Verify authorized user can download client sdks", () => {
-        //cy.loginToDevportal(developer, password);
-        //DevportalComonPage.waitUntillLoadingComponentsExit();
-        Portals.logInToDevportal();
+        cy.loginToDevportal(developer, password);
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        //Portals.logInToDevportal();
         cy.visit('/devportal/apis?tenant=carbon.super');
         DevportalComonPage.waitUntillLoadingComponentsExit();
         cy.url().should('contain', '/apis?tenant=carbon.super');
+        cy.wait(2000);
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
         cy.get('[data-testid="left-menu-sdk"]').click();
