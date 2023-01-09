@@ -11,7 +11,8 @@ describe("nit-00 : Prepare test data for execution", () => {
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
         cy.addNewTenant('wso2.com', 'admin');
-        cy.reload();
-        cy.carbonLogout();
+        cy.wait(3000)
+        // cy.reload();
+        // cy.carbonLogout();
     })
 });

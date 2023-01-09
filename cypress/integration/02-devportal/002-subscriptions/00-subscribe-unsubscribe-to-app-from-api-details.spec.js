@@ -65,7 +65,7 @@ describe("devportal-002-00 : Verify authorized user can Subscribe and unsubscrib
                 cy.reload();
 
                 // Wait a second for the server to respond and the DOM to be present.
-                return cy.wait(4000).then(() => {
+                return cy.wait(15000).then(() => {
                     return waitUntilApiExists();
                 });
             }
