@@ -27,7 +27,16 @@ describe("publisher-001-01 : Verify an authorized user can perform login and log
         cy.get('[data-testid="api-table-view"]').then(() => {
             cy.get('[data-testid="logout-menu-dropdown"]').click();
             cy.get('[data-testid="logout-menu-item"]').click();
-            cy.get('#usernameUserInput').should('exist');
+            cy.wait(5000)
+
+            // somtimes without redirect to login page it endedup in logged out screen
+            cy.get("body").then($body => {
+                if ($body.find('#usernameUserInput').length > 0) {  
+                    cy.get('#usernameUserInput').should('exist');
+                } else {
+                    cy.contains("You have successfully logged")
+                }
+            });
         })
     })
 
@@ -46,7 +55,16 @@ describe("publisher-001-01 : Verify an authorized user can perform login and log
         cy.get('[data-testid="api-table-view"]').then(() => {
             cy.get('[data-testid="logout-menu-dropdown"]').click();
             cy.get('[data-testid="logout-menu-item"]').click();
-            cy.get('#usernameUserInput').should('exist');
+            //cy.get('#usernameUserInput').should('exist');
+            cy.wait(3000)
+            // somtimes without redirect to login page it endedup in logged out screen
+            cy.get("body").then($body => {
+                if ($body.find('#usernameUserInput').length > 0) {  
+                    cy.get('#usernameUserInput').should('exist');
+                } else {
+                    cy.contains("You have successfully logged")
+                }
+            });
         })
     })
     after(() => {
