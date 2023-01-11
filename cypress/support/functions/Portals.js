@@ -46,9 +46,9 @@ class Portals {
         
         //cy.wait(15000)
         const submitElement = 'button[type="submit"]';
-        cy.get(submitElement).click();
+       cy.get(submitElement).click();
         //cy.get('#loginForm').submit();
-        cy.wait('@getapis', { requestTimeout: 30000 });
+       cy.wait('@getapis', { requestTimeout: 30000 });
         PublisherComonPage.waitUntillLoadingComponentsExit()
         cy.url().should('contain', portal);
         cy.wait(5000);
@@ -58,16 +58,21 @@ class Portals {
         cy.get("body").then($body => {
             if ($body.find(submitElement).length > 0) {   // is element exit
                 cy.wait(15000);
-                if ($body.find(submitElement).length > 0) { 
-                    cy.get(submitElement).then($button => {
-                        if ($button.is(':visible')) { // is element visible
-                            cy.log("retry Publisher login")
-                            cy.get(submitElement).click();
-                            PublisherComonPage.waitUntillLoadingComponentsExit()
-                            cy.url().should('contain', portal);
-                        }
-                    });
-                }
+                // second re-try
+                cy.get("body").then($body => {
+                    if ($body.find(submitElement).length > 0) { 
+                        cy.get(submitElement).then($button => {
+                            if ($button.is(':visible')) { // is element visible
+                                cy.log("retry Publisher login")
+                                cy.get(submitElement).click();
+                                PublisherComonPage.waitUntillLoadingComponentsExit()
+                                cy.url().should('contain', portal);
+                            }
+                        });
+                    }
+                });
+
+
             }
         });
     }
@@ -111,16 +116,20 @@ class Portals {
         cy.get("body").then($body => {
             if ($body.find(submitElement).length > 0) {   // is element exit
                 cy.wait(15000);
-                if ($body.find(submitElement).length > 0) { 
-                    cy.get(submitElement).then($button => {
-                        if ($button.is(':visible')) { // is element visible
-                            cy.log("retry Devportal login")
-                            cy.get(submitElement).click();
-                            PublisherComonPage.waitUntillLoadingComponentsExit()
-                            cy.url().should('contain', portal);
-                        }
-                    });
-                }
+
+                //Second re-try
+                cy.get("body").then($body => {
+                    if ($body.find(submitElement).length > 0) { 
+                        cy.get(submitElement).then($button => {
+                            if ($button.is(':visible')) { // is element visible
+                                cy.log("retry Devportal login")
+                                cy.get(submitElement).click();
+                                PublisherComonPage.waitUntillLoadingComponentsExit()
+                                cy.url().should('contain', portal);
+                            }
+                        });
+                    }
+                });
             }
         });
 
