@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+import DeveloperMenu from "../../../support/functions/DeveloperMenu";
 describe("devportal-002-02 : Verify authorized user can Subscribe to an API via Subscription & Key Generation Wizard ", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const developer = 'developer';
@@ -75,7 +75,9 @@ describe("devportal-002-02 : Verify authorized user can Subscribe to an API via 
             cy.log('apis: ' + $apis.text());
             cy.get(`[title="${apiName}"]`, { timeout: 30000 });
             cy.get(`[title="${apiName}"]`).click();
-            cy.get('[data-testid="left-menu-credentials"]').click();
+            DeveloperMenu.goToSubscriptions();
+            //cy.get('[data-testid="left-menu-credentials"]').click();
+            cy.wait(3000)
     
             // Go through the wizard
             cy.get('[data-testid="start-key-gen-wizard-btn"]').click();

@@ -160,6 +160,12 @@ class Apis {
         cy.log(requestURL)
         return requestURL;
     }
+
+    static clickSaveOnRuntimeConfigurationsInPublisher(){
+        cy.intercept('GET','**/key-managers').as('runtimeConfigSave_keyManagers');
+        cy.get('[data-testid="save-runtime-configurations"]').click();
+        cy.wait('@runtimeConfigSave_keyManagers', { requestTimeout: 30000 });
+    }
     
 
 }
