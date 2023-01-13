@@ -76,10 +76,11 @@ describe("devportal-002-02 : Verify authorized user can Subscribe to an API via 
         //     throw Error('Table was not found.');
         // }
 
-        Apis.waitUntilApiExists(apiName,5).then($apis => {
+        Apis.waitUntilApiExists(apiName,3).then($apis => {
             cy.log('apis: ' + $apis.text());
             cy.get(`[title="${apiName}"]`, { timeout: 30000 });
             cy.get(`[title="${apiName}"]`).click();
+            cy.wait(5000)
             DeveloperMenu.goToSubscriptions();
             //cy.get('[data-testid="left-menu-credentials"]').click();
             cy.wait(3000)

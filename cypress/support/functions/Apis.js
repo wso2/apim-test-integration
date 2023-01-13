@@ -182,7 +182,7 @@ class Apis {
             cy.reload();
 
             // Wait a second for the server to respond and the DOM to be present.
-            return cy.wait(20000).then(() => {
+            return cy.wait(30000).then(() => {
                 return this.waitUntilApiExists(apiName,remainingAttempts);
             });
         }
