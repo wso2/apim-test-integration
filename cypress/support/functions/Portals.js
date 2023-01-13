@@ -160,5 +160,12 @@ class Portals {
         cy.wait(3000)
     }
 
+    static visitDevportalApisPage(tenant="carbon.super"){
+        cy.intercept('**/api/am/store/v1/apis?limit**').as('visitDevportalApisPage_getapis');
+        cy.visit(`/devportal/apis?tenant=${tenant}`);
+        cy.wait('@visitDevportalApisPage_getapis', { requestTimeout: 30000 });
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        cy.url().should('contain', `/apis?tenant=${tenant}`);
+    }
 }
 export default Portals;

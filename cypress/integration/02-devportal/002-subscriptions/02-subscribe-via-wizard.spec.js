@@ -17,6 +17,9 @@
  * under the License.
  */
 import DeveloperMenu from "../../../support/functions/DeveloperMenu";
+import Portals from "../../../support/functions/Portals";
+import Apis from "../../../support/functions/Apis";
+import Applications from "../../../support/functions/Applications";
 describe("devportal-002-02 : Verify authorized user can Subscribe to an API via Subscription & Key Generation Wizard ", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const developer = 'developer';
@@ -42,36 +45,38 @@ describe("devportal-002-02 : Verify authorized user can Subscribe to an API via 
         cy.logoutFromPublisher();
         cy.wait(2000);
         cy.loginToDevportal(developer, password);
-        cy.visit('/devportal/apis?tenant=carbon.super');
-        cy.url().should('contain', '/apis?tenant=carbon.super');
+        //cy.visit('/devportal/apis?tenant=carbon.super');
+        //cy.url().should('contain', '/apis?tenant=carbon.super');
+        Portals.visitDevportalApisPage();
          // After publishing the api appears in devportal with a delay.
         // We need to keep refresing and look for the api in the listing page
         // following waitUntilApiExists function does that recursively.
-        let remainingAttempts = 30;
 
-        function waitUntilApiExists() {
-            let $apis = Cypress.$(`[title="${apiName}"]`);
-            if ($apis.length) {
-                // At least one with api name was found.
-                // Return a jQuery object.
-                return $apis;
-            }
+        // let remainingAttempts = 30;
 
-            if (--remainingAttempts) {
-                cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
+        // function waitUntilApiExists() {
+        //     let $apis = Cypress.$(`[title="${apiName}"]`);
+        //     if ($apis.length) {
+        //         // At least one with api name was found.
+        //         // Return a jQuery object.
+        //         return $apis;
+        //     }
 
-                // Requesting the page to reload (F5)
-                cy.reload();
+        //     if (--remainingAttempts) {
+        //         cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
 
-                // Wait a second for the server to respond and the DOM to be present.
-                return cy.wait(4000).then(() => {
-                    return waitUntilApiExists();
-                });
-            }
-            throw Error('Table was not found.');
-        }
+        //         // Requesting the page to reload (F5)
+        //         cy.reload();
 
-        waitUntilApiExists().then($apis => {
+        //         // Wait a second for the server to respond and the DOM to be present.
+        //         return cy.wait(4000).then(() => {
+        //             return waitUntilApiExists();
+        //         });
+        //     }
+        //     throw Error('Table was not found.');
+        // }
+
+        Apis.waitUntilApiExists(apiName,5).then($apis => {
             cy.log('apis: ' + $apis.text());
             cy.get(`[title="${apiName}"]`, { timeout: 30000 });
             cy.get(`[title="${apiName}"]`).click();
@@ -111,7 +116,8 @@ describe("devportal-002-02 : Verify authorized user can Subscribe to an API via 
     })
 
     after(() => {
-        cy.visit('/devportal/applications?tenant=carbon.super');
+        //cy.visit('/devportal/applications?tenant=carbon.super');
+        Applications.gotoDevportalAplication()
         cy.wait(10000)
         cy.get(`[data-testid="delete-${appName}-btn"]`, { timeout: 30000 });
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();

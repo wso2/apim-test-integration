@@ -57,7 +57,13 @@ class Applications {
         cy.wait('@GenKeys_OauthKeys', { requestTimeout: 30000 });
         cy.wait(3000)
     }
-    
+    static gotoDevportalAplication(tenant="carbon.super"){
+        cy.intercept('**/api/am/store/v1/applications?sortBy**').as('gotoDevportalAplication');
+        cy.visit(`/devportal/applications?tenant=${tenant}`);
+        cy.wait('@gotoDevportalAplication', { requestTimeout: 30000 });
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        cy.wait(3000)
+    }
 
 
 }

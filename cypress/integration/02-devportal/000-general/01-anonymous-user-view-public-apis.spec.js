@@ -20,6 +20,7 @@
 import DevportalComonPage from "../../../support/pages/devportal/DevportalComonPage";
 import PublisherComonPage from "../../../support/pages/publisher/PublisherComonPage";
 import Portals from "../../../support/functions/Portals";
+import Apis from "../../../support/functions/Apis";
 
 describe("devportal-000-01 : Verify anonymous user can view public apis", () => {
     const developer = 'developer';
@@ -28,61 +29,61 @@ describe("devportal-000-01 : Verify anonymous user can view public apis", () => 
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
     const apiVersion = '2.0.0';
-    let randomNumber;
-    let apiName;
-    let apiContext;
+    const randomNumber = Math.floor(Math.random() * (100000 - 1 + 1) + 1);
+    const apiName = `AnonymousApi_${randomNumber}`;
+    const apiContext = `anonymous${randomNumber}`;
 
     before(function () {
-        cy.loginToPublisher(publisher, password);
-
-        randomNumber = Math.floor(Math.random() * (100000 - 1 + 1) + 1);
-        apiName = `anonymousApi`;
-        apiContext = `anonymous${randomNumber}`;
-        cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
-        cy.logoutFromPublisher();
-        cy.wait(10000)
+       cy.loginToPublisher(publisher, password);
+       cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
+       cy.logoutFromPublisher();
+       cy.wait(10000)
     })
     it("Verify anonymous user can view public APIs in devportal", () => {
-        cy.visit('/devportal/apis?tenant=carbon.super');
-        DevportalComonPage.waitUntillLoadingComponentsExit();
-        cy.url().should('contain', '/apis?tenant=carbon.super');
+        // cy.visit('/devportal/apis?tenant=carbon.super');
+        // DevportalComonPage.waitUntillLoadingComponentsExit();
+        // cy.url().should('contain', '/apis?tenant=carbon.super');
+        // cy.wait(10000)
 
         // After publishing the api appears in devportal with a delay.
         // We need to keep refresing and look for the api in the listing page
         // following waitUntilApiExists function does that recursively.
-        let remainingAttempts = 30;
+        // let remainingAttempts = 30;
 
-        function waitUntilApiExists() {
-            let $apis = Cypress.$(`[title="${apiName}"]`);
-            if ($apis.length) {
-                // At least one with api name was found.
-                // Return a jQuery object.
-                return $apis;
-            }
+        // function waitUntilApiExists() {
+        //     let $apis = Cypress.$(`[title="${apiName}"]`);
+        //     if ($apis.length) {
+        //         // At least one with api name was found.
+        //         // Return a jQuery object.
+        //         return $apis;
+        //     }
 
-            if (--remainingAttempts) {
-                cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
+        //     if (--remainingAttempts) {
+        //         cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
 
-                // Requesting the page to reload (F5)
-                cy.reload();
+        //         // Requesting the page to reload (F5)
+        //         cy.reload();
 
-                // Wait a second for the server to respond and the DOM to be present.
-                return cy.wait(4000).then(() => {
-                    return waitUntilApiExists();
-                });
-            }
-            throw Error('Table was not found.');
-        }
+        //         // Wait a second for the server to respond and the DOM to be present.
+        //         return cy.wait(4000).then(() => {
+        //             return waitUntilApiExists();
+        //         });
+        //     }
+        //     throw Error('Table was not found.');
+        // }
 
-        waitUntilApiExists().then($apis => {
+        Portals.visitDevportalApisPage();
+        Apis.waitUntilApiExists(apiName,5).then($apis => {
             cy.log('apis: ' + $apis.text());
+            cy.log('apis: ' + $apis.length);
         });
     })
 
     it("Verify anonymous user can download swagger file from public APIs in devportal", () => {
-        cy.visit('/devportal/apis?tenant=carbon.super');
-        DevportalComonPage.waitUntillLoadingComponentsExit();
-        cy.url().should('contain', '/apis?tenant=carbon.super');
+        // cy.visit('/devportal/apis?tenant=carbon.super');
+        // DevportalComonPage.waitUntillLoadingComponentsExit();
+        // cy.url().should('contain', '/apis?tenant=carbon.super');
+        Portals.visitDevportalApisPage();
         cy.wait(1000);
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
@@ -101,9 +102,12 @@ describe("devportal-000-01 : Verify anonymous user can view public apis", () => 
         cy.loginToDevportal(developer, password);
         DevportalComonPage.waitUntillLoadingComponentsExit();
         //Portals.logInToDevportal();
-        cy.visit('/devportal/apis?tenant=carbon.super');
-        DevportalComonPage.waitUntillLoadingComponentsExit();
-        cy.url().should('contain', '/apis?tenant=carbon.super');
+        // cy.visit('/devportal/apis?tenant=carbon.super');
+        // DevportalComonPage.waitUntillLoadingComponentsExit();
+        // cy.url().should('contain', '/apis?tenant=carbon.super');
+
+        Portals.visitDevportalApisPage();
+
         cy.wait(2000);
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();

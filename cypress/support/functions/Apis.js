@@ -167,6 +167,29 @@ class Apis {
         cy.wait('@runtimeConfigSave_keyManagers', { requestTimeout: 30000 });
     }
     
+    static waitUntilApiExists(apiName,remainingAttempts) {
+
+        let $apis = Cypress.$(`[title="${apiName}"]`);
+        if ($apis.length) {
+            // At least one with api name was found.
+            // Return a jQuery object.
+            return $apis;
+        }
+        if (--remainingAttempts) {
+            cy.log('API not found yet. Remaining attempts: ' + remainingAttempts);
+
+            // Requesting the page to reload (F5)
+            cy.reload();
+
+            // Wait a second for the server to respond and the DOM to be present.
+            return cy.wait(20000).then(() => {
+                return this.waitUntilApiExists(apiName,remainingAttempts);
+            });
+        }
+        throw Error('API not found in Devportal');
+    }
+
 
 }
+
 export default Apis;
