@@ -17,6 +17,7 @@
  */
 import PublisherComonPage from "../pages/publisher/PublisherComonPage";
 import DevportalComonPage from "../pages/devportal/DevportalComonPage";
+import Portals from "../functions/Portals";
 
 class Apis {
     static createAPIFromPetstoreSwagger2AndPublish(fileName,apiName,apiContext,apiVersion,businessPlan){
@@ -93,9 +94,10 @@ class Apis {
 
     static searchAndDeleteAPIFromPublisher(apiName,version){
         // Delete the API from publisher
-        cy.visit(`/publisher/apis`);
-        cy.intercept('**/apis*').as('getApis');
-        cy.wait('@getApis', { requestTimeout: 30000 });
+        // cy.visit(`/publisher/apis`);
+        // cy.intercept('**/apis*').as('getApis');
+        // cy.wait('@getApis', { requestTimeout: 30000 });
+        Portals.visitPublisherApisPage();
         PublisherComonPage.waitUntillLoadingComponentsExit();
         cy.get('#searchQuery').clear().type(apiName).type('{enter}')
         cy.wait(3000)

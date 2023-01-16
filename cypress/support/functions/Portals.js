@@ -17,8 +17,9 @@
  */
 import PublisherComonPage from "../pages/publisher/PublisherComonPage";
 import DevportalComonPage from "../pages/devportal/DevportalComonPage";
+import utils from "../../support/utils";
 
-class Portals {
+class Portals extends utils{
     static logInToPublisher(username = 'admin', password = 'admin'){
         Cypress.on('uncaught:exception', (err, runnable) => {
             // returning false here prevents Cypress from
@@ -35,7 +36,7 @@ class Portals {
         cy.intercept('**/logincontext*').as('logincontext');
         cy.visit(portal);
         cy.wait(3000)
-        cy.wait('@logincontext', { requestTimeout: 30000 });
+        cy.wait('@logincontext', { requestTimeout: this.getDefaulttimeout() });
         cy.url().should('contain', `/authenticationendpoint/login.do`);
         cy.get('#usernameUserInput').click();
         cy.get('#usernameUserInput').type(username);
@@ -48,7 +49,7 @@ class Portals {
         const submitElement = 'button[type="submit"]';
        cy.get(submitElement).click();
         //cy.get('#loginForm').submit();
-       cy.wait('@getapis', { requestTimeout: 30000 });
+       cy.wait('@getapis', { requestTimeout: this.getDefaulttimeout() });
         PublisherComonPage.waitUntillLoadingComponentsExit()
         cy.url().should('contain', portal);
         cy.wait(5000);
@@ -92,7 +93,7 @@ class Portals {
         cy.visit(`/devportal/apis?tenant=${tenant}`);
         cy.wait(3000)
         //DevportalComonPage.waitUntillLoadingComponentsExit()
-        cy.wait('@getapis', { requestTimeout: 30000 });
+        cy.wait('@getapis', { requestTimeout: this.getDefaulttimeout() });
         cy.get('[data-testid="itest-devportal-sign-in"]').click();
         cy.url().should('contain', `/authenticationendpoint/login.do`);
         cy.wait(2000);
@@ -106,7 +107,7 @@ class Portals {
         const submitElement = 'button[type="submit"]';
         //cy.get('button[type="submit"]').click();
         cy.get('#loginForm').submit();
-        cy.wait('@getapis', { requestTimeout: 30000 });
+        cy.wait('@getapis', { requestTimeout: this.getDefaulttimeout() });
         DevportalComonPage.waitUntillLoadingComponentsExit()
         cy.url().should('contain', portal);
         cy.wait(5000);
@@ -163,9 +164,17 @@ class Portals {
     static visitDevportalApisPage(tenant="carbon.super"){
         cy.intercept('**/api/am/store/v1/apis?limit**').as('visitDevportalApisPage_getapis');
         cy.visit(`/devportal/apis?tenant=${tenant}`);
-        cy.wait('@visitDevportalApisPage_getapis', { requestTimeout: 30000 });
+        cy.wait('@visitDevportalApisPage_getapis', { requestTimeout: this.getDefaulttimeout() });
         DevportalComonPage.waitUntillLoadingComponentsExit();
         cy.url().should('contain', `/apis?tenant=${tenant}`);
+    }
+
+    static visitPublisherApisPage(){
+        cy.intercept('**/publisher/v1/apis?limit**').as('visitPublisherApisPage_getapis');
+        cy.visit(`/publisher/apis`);
+        cy.wait('@visitPublisherApisPage_getapis', { requestTimeout: this.getDefaulttimeout() });
+        PublisherComonPage.waitUntillLoadingComponentsExit();
+        cy.url().should('contain','/publisher/apis');
     }
 }
 export default Portals;

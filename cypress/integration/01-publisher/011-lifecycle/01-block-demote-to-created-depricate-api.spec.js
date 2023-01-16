@@ -1,4 +1,4 @@
-
+import Apis from "../../../support/functions/Apis";
 describe("publisher-011-01 : Verify authorized user can change lifecycle status of an API", () => {
     const publisher = 'publisher';
     const password = 'test123';
@@ -13,7 +13,7 @@ describe("publisher-011-01 : Verify authorized user can change lifecycle status 
 
     })
 
-    it.only("Authorized user updates lifecycle status", () => {
+    it("Authorized user updates lifecycle status", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemsubscriptions"]').click();
@@ -82,9 +82,11 @@ describe("publisher-011-01 : Verify authorized user can change lifecycle status 
     });
 
     after(function () {
+
+        Apis.searchAndDeleteAPIFromPublisher(apiName,apiVersion)
         // Test is done. Now delete the api
-        cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
-        cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+        // cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
+        // cy.get(`[data-testid="itest-id-deleteconf"]`).click();
 
         //cy.visit('carbon/user/user-mgt.jsp');
         //cy.deleteUser(publisher);

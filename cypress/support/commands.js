@@ -179,7 +179,8 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
     cy.wait(2000);
-    cy.visit(`/publisher/apis`);
+    //cy.visit(`/publisher/apis`);
+    Portals.visitPublisherApisPage();
     cy.wait(5000);
     cy.get('[data-testid="itest-id-createapi"]', { timeout: 30000 });
     cy.get('[data-testid="itest-id-createapi"]').click();
@@ -191,14 +192,20 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     cy.get('[data-testid="itest-id-apiversion-input"] input').type(apiVersion);
     cy.get('[data-testid="itest-id-apiendpoint-input"]').click();
     cy.get('[data-testid="itest-id-apiendpoint-input"]').type(`https://apis.wso2.com/sample${random_number}`);
+
+    cy.intercept('POST','**/apis?*').as('createAPIByRestAPIDesign_postAPI');
     cy.get('[data-testid="itest-create-default-api-button"]').click();
+    cy.wait('@createAPIByRestAPIDesign_postAPI', { requestTimeout: Portals.getDefaulttimeout() }).its('response.statusCode').should('equal', 201)
+
     // There is a UI error in the console. We need to skip this so that the test will not fail.
     Cypress.on('uncaught:exception', (err, runnable) => {
         // returning false here prevents Cypress from
         // failing the test
         return false
     });
-    cy.visit(`/publisher/apis`);
+    //cy.visit(`/publisher/apis`);
+    Portals.visitPublisherApisPage();
+    cy.wait(3000)
     cy.get(`#${apiName}`).click();
 
 
