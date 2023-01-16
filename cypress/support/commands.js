@@ -206,9 +206,10 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     //cy.visit(`/publisher/apis`);
     Portals.visitPublisherApisPage();
     cy.wait(3000)
+    cy.intercept('GET','**/apis/*').as('createAPIByRestAPIDesign_getAPI');
     cy.get(`#${apiName}`).click();
-
-
+    cy.wait('@createAPIByRestAPIDesign_getAPI', { requestTimeout: Portals.getDefaulttimeout() })
+    cy.wait(3000)
     cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 }).should('be.visible');
     cy.get('[data-testid="itest-api-name-version"]').contains(apiVersion);
 })
