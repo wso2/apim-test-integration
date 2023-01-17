@@ -184,7 +184,11 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     cy.wait(5000);
     cy.get('[data-testid="itest-id-createapi"]', { timeout: 30000 });
     cy.get('[data-testid="itest-id-createapi"]').click();
+
+    cy.intercept('GET','**/throttling-policies/*').as('createAPIByRestAPIDesign_throttlingPolicy');
     cy.get('[data-testid="itest-id-createdefault"]').click();
+    cy.wait('@createAPIByRestAPIDesign_throttlingPolicy', { requestTimeout: Portals.getDefaulttimeout() })
+    cy.wait(5000);
     cy.get('[data-testid="itest-id-apiname-input"]').type(apiName);
     cy.get('[data-testid="itest-id-apicontext-input"] input').click();
     cy.get('[data-testid="itest-id-apicontext-input"] input').type(apiContext);
