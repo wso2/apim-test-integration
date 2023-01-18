@@ -13,7 +13,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+import Portals from "../../../support/functions/Portals";
+import Apis from "../../../support/functions/Apis";
+import Applications from "../../../support/functions/Applications";
 describe("devportal-002-03 : Verify authorized user can change subscription tier of an application", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const developer = 'developer';
@@ -39,35 +41,37 @@ describe("devportal-002-03 : Verify authorized user can change subscription tier
         // After publishing the api appears in devportal with a delay.
         // We need to keep refresing and look for the api in the listing page
         // following waitUntilApiExists function does that recursively.
-        let remainingAttempts = 30;
 
-        function waitUntilApiExists() {
-            let $apis = Cypress.$(`[title="${apiName}"]`);
-            if ($apis.length) {
-                // At least one with api name was found.
-                // Return a jQuery object.
-                return $apis;
-            }
+        // let remainingAttempts = 30;
 
-            if (--remainingAttempts) {
-                cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
+        // function waitUntilApiExists() {
+        //     let $apis = Cypress.$(`[title="${apiName}"]`);
+        //     if ($apis.length) {
+        //         // At least one with api name was found.
+        //         // Return a jQuery object.
+        //         return $apis;
+        //     }
 
-                // Requesting the page to reload (F5)
-                cy.reload();
+        //     if (--remainingAttempts) {
+        //         cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
 
-                // Wait a second for the server to respond and the DOM to be present.
-                return cy.wait(4000).then(() => {
-                    return waitUntilApiExists();
-                });
-            }
-            throw Error('Table was not found.');
-        }
+        //         // Requesting the page to reload (F5)
+        //         cy.reload();
 
-        waitUntilApiExists().then($apis => {
+        //         // Wait a second for the server to respond and the DOM to be present.
+        //         return cy.wait(4000).then(() => {
+        //             return waitUntilApiExists();
+        //         });
+        //     }
+        //     throw Error('Table was not found.');
+        // }
+
+        Apis.waitUntilApiExists(apiName,5).then($apis => {
             cy.log('apis: ' + $apis.text());
             // Create an app and subscribe
             cy.createApp(appName, 'application description');
-            cy.visit('/devportal/applications?tenant=carbon.super');
+            //cy.visit('/devportal/applications?tenant=carbon.super');
+            Applications.gotoDevportalAplication()
             cy.get(`[data-testid="application-listing-table"] td a`).contains(appName).click();
 
             // Go to application subscription page
@@ -94,7 +98,8 @@ describe("devportal-002-03 : Verify authorized user can change subscription tier
 
     after(function () {
         // Test is done. Now delete the api
-        cy.visit('/devportal/applications?tenant=carbon.super');
+        //cy.visit('/devportal/applications?tenant=carbon.super');
+        Applications.gotoDevportalAplication();
         cy.get(`[data-testid="delete-${appName}-btn"]`, { timeout: 30000 });
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();

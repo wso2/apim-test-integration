@@ -1,7 +1,7 @@
 {
     "chromeWebSecurity": false,
-    "pageLoadTimeout": 250000,
-    "defaultCommandTimeout": 250000,
+    "pageLoadTimeout": 150000,
+    "defaultCommandTimeout": 150000,
     "baseUrl": "https://localhost:9443",
     "screenshotsFolder": "cypress/screenshots",
     "screenshotOnRunFailure":true,

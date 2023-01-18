@@ -1,4 +1,5 @@
 import 'cypress-file-upload';
+import Portals from "../support/functions/Portals";
 
 //const commandDelay = 0;
 
@@ -52,11 +53,13 @@ Cypress.Commands.add('portalLogin', (username = 'admin', password = 'admin', por
 })
 
 Cypress.Commands.add('loginToPublisher', (username, password) => {
-    cy.portalLogin(username, password, 'publisher');
+    //cy.portalLogin(username, password, 'publisher');
+    Portals.logInToPublisher(username, password);
 })
 
 Cypress.Commands.add('loginToDevportal', (username, password) => {
-    cy.portalLogin(username, password, 'devportal');
+    Portals.logInToDevportal(username, password);
+    //cy.portalLogin(username, password, 'devportal');
 })
 
 Cypress.Commands.add('loginToAdmin', (username, password) => {
@@ -176,11 +179,16 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
     cy.wait(2000);
-    cy.visit(`/publisher/apis`);
+    //cy.visit(`/publisher/apis`);
+    Portals.visitPublisherApisPage();
     cy.wait(5000);
     cy.get('[data-testid="itest-id-createapi"]', { timeout: 30000 });
     cy.get('[data-testid="itest-id-createapi"]').click();
+
+    cy.intercept('GET','**/throttling-policies/*').as('createAPIByRestAPIDesign_throttlingPolicy');
     cy.get('[data-testid="itest-id-createdefault"]').click();
+    cy.wait('@createAPIByRestAPIDesign_throttlingPolicy', { requestTimeout: Portals.getDefaulttimeout() })
+    cy.wait(5000);
     cy.get('[data-testid="itest-id-apiname-input"]').type(apiName);
     cy.get('[data-testid="itest-id-apicontext-input"] input').click();
     cy.get('[data-testid="itest-id-apicontext-input"] input').type(apiContext);
@@ -188,17 +196,24 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     cy.get('[data-testid="itest-id-apiversion-input"] input').type(apiVersion);
     cy.get('[data-testid="itest-id-apiendpoint-input"]').click();
     cy.get('[data-testid="itest-id-apiendpoint-input"]').type(`https://apis.wso2.com/sample${random_number}`);
+
+    cy.intercept('POST','**/apis?*').as('createAPIByRestAPIDesign_postAPI');
     cy.get('[data-testid="itest-create-default-api-button"]').click();
+    cy.wait('@createAPIByRestAPIDesign_postAPI', { requestTimeout: Portals.getDefaulttimeout() }).its('response.statusCode').should('equal', 201)
+
     // There is a UI error in the console. We need to skip this so that the test will not fail.
     Cypress.on('uncaught:exception', (err, runnable) => {
         // returning false here prevents Cypress from
         // failing the test
         return false
     });
-    cy.visit(`/publisher/apis`);
+    //cy.visit(`/publisher/apis`);
+    Portals.visitPublisherApisPage();
+    cy.wait(3000)
+    cy.intercept('GET','**/apis/*').as('createAPIByRestAPIDesign_getAPI');
     cy.get(`#${apiName}`).click();
-
-
+    cy.wait('@createAPIByRestAPIDesign_getAPI', { requestTimeout: Portals.getDefaulttimeout() })
+    cy.wait(3000)
     cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 }).should('be.visible');
     cy.get('[data-testid="itest-api-name-version"]').contains(apiVersion);
 })
@@ -312,18 +327,20 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
 })
 
 Cypress.Commands.add('logoutFromDevportal', (referer = '/devportal/apis') => {
-    cy.visit('/devportal/apis?tenant=carbon.super');
-    cy.get('#userToggleButton').click();
-    cy.get('[data-testid="logout-link"]').click();
-    cy.url().should('contain', '/devportal/logout');
-    cy.url().should('contain', referer);
+    // cy.visit('/devportal/apis?tenant=carbon.super');
+    // cy.get('#userToggleButton').click();
+    // cy.get('[data-testid="logout-link"]').click();
+    // cy.url().should('contain', '/devportal/logout');
+    // cy.url().should('contain', referer);
+    Portals.logoutFromDevportal();
 })
 
 Cypress.Commands.add('logoutFromPublisher', () => {
-    cy.get('[data-testid="logout-menu-dropdown"]', { timeout: 30000 });
-    cy.get('[data-testid="logout-menu-dropdown"]').click();
-    cy.get('[data-testid="logout-menu-item"]').click();
-    cy.get('#usernameUserInput').should('exist');
+    // cy.get('[data-testid="logout-menu-dropdown"]', { timeout: 30000 });
+    // cy.get('[data-testid="logout-menu-dropdown"]').click();
+    // cy.get('[data-testid="logout-menu-item"]').click();
+    // cy.get('#usernameUserInput').should('exist');
+    Portals.logoutFromPublisher();
 })
 
 //for (const command of ['visit', 'click']) {

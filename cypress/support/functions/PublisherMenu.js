@@ -36,5 +36,12 @@ class PublisherMenu {
         cy.wait('@documents', { requestTimeout: 30000 });
         PublisherComonPage.waitUntillLoadingComponentsExit();
     }
+
+    static goToRuntimeConfigurations(){
+        cy.intercept('GET','**/key-managers').as('runtimeconfig_keyManagers');
+        cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();
+        cy.wait('@runtimeconfig_keyManagers', { requestTimeout: 30000 });
+        PublisherComonPage.waitUntillLoadingComponentsExit();
+    }
 }
 export default PublisherMenu;

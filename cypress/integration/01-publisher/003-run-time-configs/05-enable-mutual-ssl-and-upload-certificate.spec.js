@@ -1,4 +1,6 @@
 
+import PublisherMenu from "../../../support/functions/PublisherMenu";
+import Apis from "../../../support/functions/Apis";
 describe("publisher-003-05 : Verify authorized user can enable and upload certificate under runtime configuration", () => {
     const publisher = 'publisher';
     const password = 'test123';
@@ -7,18 +9,15 @@ describe("publisher-003-05 : Verify authorized user can enable and upload certif
     const apiName = 'newapi' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.0';
 
-    beforeEach(function () {
-        //cy.carbonLogin(carbonUsername, carbonPassword);
-        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-    })
-
-    it.only("Authorized user enable mutual ssl and upload cert", () => {
+    it("Authorized user enable mutual ssl and upload cert", () => {
         cy.loginToPublisher(publisher, password);
         const random_number = Math.floor(Date.now() / 1000);
         const alias = `alias${random_number}`;
 
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();
+        PublisherMenu.goToRuntimeConfigurations();
+        //cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();
+        cy.wait(3000)
         cy.get('[data-testid="transport-level-security-head"]').click();
         cy.get('[data-testid="mutual-ssl-checkbox"]').click();
 
@@ -35,21 +34,25 @@ describe("publisher-003-05 : Verify authorized user can enable and upload certif
         // Click away
         cy.get('[data-testid="upload-cert-save-btn"]').click();
         cy.get('[data-testid="upload-cert-save-btn"]').then(() => {
-            cy.get('[data-testid="save-runtime-configurations"]').click();
-        })
-        cy.get('[data-testid="save-runtime-configurations"]').get(() => {
-            cy.get('[data-testid="transport-level-security-head"]').click();
-            cy.get('[data-testid="mutual-ssl-checkbox"] input').should('be.checked');
-            cy.get('[data-testid="endpoint-cert-list"]').contains(alias).should('be.visible');
-        })
+            //cy.get('[data-testid="save-runtime-configurations"]').click();
+            Apis.clickSaveOnRuntimeConfigurationsInPublisher();
+        });
+        cy.wait(3000)
+        // cy.get('[data-testid="save-runtime-configurations"]').get(() => {
+        //     cy.get('[data-testid="transport-level-security-head"]').click();
+        //     cy.get('[data-testid="mutual-ssl-checkbox"] input').should('be.checked');
+        //     cy.get('[data-testid="endpoint-cert-list"]').contains(alias).should('be.visible');
+        // })
+
+        cy.get('[data-testid="transport-level-security-head"]').click();
+        cy.wait(1000)
+        cy.get('[data-testid="mutual-ssl-checkbox"] input').should('be.checked');
+        cy.get('[data-testid="endpoint-cert-list"]').contains(alias).should('be.visible');
     });
 
 
     after(function () {
          // Test is done. Now delete the api
          cy.deleteApi(apiName, apiVersion);
-
-        //cy.visit('carbon/user/user-mgt.jsp');
-        //cy.deleteUser(publisher);
     })
 });

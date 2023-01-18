@@ -17,6 +17,7 @@
  */
 import PublisherComonPage from "../pages/publisher/PublisherComonPage";
 import DevportalComonPage from "../pages/devportal/DevportalComonPage";
+import Portals from "../functions/Portals";
 
 class Apis {
     static createAPIFromPetstoreSwagger2AndPublish(fileName,apiName,apiContext,apiVersion,businessPlan){
@@ -93,9 +94,10 @@ class Apis {
 
     static searchAndDeleteAPIFromPublisher(apiName,version){
         // Delete the API from publisher
-        cy.visit(`/publisher/apis`);
-        cy.intercept('**/apis*').as('getApis');
-        cy.wait('@getApis', { requestTimeout: 30000 });
+        // cy.visit(`/publisher/apis`);
+        // cy.intercept('**/apis*').as('getApis');
+        // cy.wait('@getApis', { requestTimeout: 30000 });
+        Portals.visitPublisherApisPage();
         PublisherComonPage.waitUntillLoadingComponentsExit();
         cy.get('#searchQuery').clear().type(apiName).type('{enter}')
         cy.wait(3000)
@@ -160,7 +162,36 @@ class Apis {
         cy.log(requestURL)
         return requestURL;
     }
+
+    static clickSaveOnRuntimeConfigurationsInPublisher(){
+        cy.intercept('GET','**/key-managers').as('runtimeConfigSave_keyManagers');
+        cy.get('[data-testid="save-runtime-configurations"]').click();
+        cy.wait('@runtimeConfigSave_keyManagers', { requestTimeout: 30000 });
+    }
     
+    static waitUntilApiExists(apiName,remainingAttempts) {
+
+        let $apis = Cypress.$(`[title="${apiName}"]`);
+        if ($apis.length) {
+            // At least one with api name was found.
+            // Return a jQuery object.
+            return $apis;
+        }
+        if (--remainingAttempts) {
+            cy.log('API not found yet. Remaining attempts: ' + remainingAttempts);
+
+            // Requesting the page to reload (F5)
+            cy.reload();
+
+            // Wait a second for the server to respond and the DOM to be present.
+            return cy.wait(30000).then(() => {
+                return this.waitUntilApiExists(apiName,remainingAttempts);
+            });
+        }
+        throw Error('API not found in Devportal');
+    }
+
 
 }
+
 export default Apis;
