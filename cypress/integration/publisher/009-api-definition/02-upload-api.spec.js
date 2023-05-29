@@ -24,7 +24,7 @@ describe("publisher-009-02 : Upload api spec from the api definition page", () =
     const uploadApi = (tenant) => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemAPIdefinition').click();
             cy.get('#import-definition-btn').click();

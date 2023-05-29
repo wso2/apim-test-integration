@@ -24,7 +24,7 @@ describe("publisher-015-00 : Create new revision and deploy", () => {
     const createNewRevisionAndDeployApi = (tenant) => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPIWithEndpoints({}).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             // Going to deployments page
             cy.get('#left-menu-itemdeployments').click();
 

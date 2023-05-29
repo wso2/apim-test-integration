@@ -27,7 +27,7 @@ describe("publisher-005-02 : Set publisher access control and visibility by role
         cy.loginToPublisher(publisher, password, tenant);
         const role = 'internal/everyone';
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemDesignConfigurations').click();
 

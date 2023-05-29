@@ -29,7 +29,7 @@ describe("publisher-010-00 : Add additional properties", () => {
 
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemproperties').click();
 

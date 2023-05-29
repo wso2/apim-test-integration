@@ -26,7 +26,7 @@ describe("publisher-011-00 : Save and publish API", () => {
     const saveAndPublishApi = (tenant) => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemsubscriptions').click();
             cy.get('[data-testid="policy-checkbox-silver"]').click();

@@ -26,7 +26,7 @@ describe("publisher-012-00 : creating document", () => {
         const documentName = 'api_document';
         const documentSummary = 'api document summery';
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemdocuments').click();
 

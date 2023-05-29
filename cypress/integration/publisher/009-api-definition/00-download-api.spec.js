@@ -26,7 +26,7 @@ describe("publisher-009-00 : Api Definition - Download API", () => {
     const downloadApi = (tenant) => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemAPIdefinition').click();
             cy.get('#download-api-btn').click();

@@ -27,7 +27,7 @@ describe("publisher-006-00 : Select subscription tiers for the API", () => {
     const selectSubscriptionTiers = (tenant) => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemsubscriptions').click();
             cy.get('[data-testid="policy-checkbox-silver"]').click();

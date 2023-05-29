@@ -23,7 +23,7 @@ class DevportalComonPage {
         return cy.get('div[role="status"][aria-live="polite"]')
     }
     static waitUntillLoadingComponentsExit(){
-        cy.get('.apim-dual-ring',{timeout:25000}).should('not.exist');;
+        cy.get('.apim-dual-ring',{timeout:25000}).should('not.exist');
     }
 
 }

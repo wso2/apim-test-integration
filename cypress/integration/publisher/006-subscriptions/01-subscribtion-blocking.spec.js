@@ -54,7 +54,7 @@ describe("publisher-006-01 : Subscription blocking", () => {
                 // Subscription blocking port in the publisher side.
                 cy.logoutFromDevportal();
                 cy.loginToPublisher(publisher, password, tenant);
-                cy.visit(`/publisher/apis/${apiId}/overview`);
+                cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
 
 
                 // click the left menu to go to subscriptions page.

@@ -46,7 +46,7 @@ describe("admin-08 : Add API Categories and assign via publisher portal", () => 
         cy.visit(`/publisher/apis`);
         Utils.addAPI({}).then((apiId) => {
             testApiId = apiId;
-            cy.visit(`/publisher/apis/${apiId}/configuration`);
+            cy.visit({url:`/publisher/apis/${apiId}/configuration`, retryOnStatusCodeFailure: true});
             cy.get('#APICategories', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('span').contains(category).click();
             cy.get('#menu-categories').click('topLeft');

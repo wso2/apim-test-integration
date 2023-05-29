@@ -24,7 +24,7 @@ describe("publisher-015-01 : Undeploy new revision", () => {
     const undeployNewRevision = (tenant) => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPIWithEndpoints({}).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             // Going to deployments page
             cy.get('#left-menu-itemdeployments').click();
 
