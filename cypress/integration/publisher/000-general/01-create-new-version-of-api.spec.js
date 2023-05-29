@@ -30,7 +30,7 @@ describe("publisher-000-01 : Create a new version of API", () => {
         apiName = Utils.generateName();
         Utils.addAPI({name: apiName, version: apiVersion}).then((apiId) => {
             testApiId = apiId;
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#create-new-version-btn').click();
             cy.get('#newVersion').click().type(newVersion);
             cy.intercept('**/apis/**').as('apiGet');

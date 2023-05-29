@@ -27,7 +27,7 @@ describe("publisher-004-05 : Modify failover endpoints after configuring endpoin
         const usernameLocal = 'admin';
         const passwordLocal = 'admin';
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemendpoints').click();
             cy.get('[data-testid="http/restendpoint-add-btn"]').click();

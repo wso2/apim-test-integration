@@ -28,7 +28,7 @@ describe("publisher-004-02 : Check endpoint test button", () => {
         const endpointNoProtocol = 'bullproto://'; // unknown protocol: bullproto
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
 
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemendpoints').click();

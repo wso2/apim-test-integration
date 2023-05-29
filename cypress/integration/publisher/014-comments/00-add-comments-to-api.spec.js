@@ -26,7 +26,7 @@ describe("publisher-014-00 : Adding comment", () => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
             cy.intercept('**/comments?limit=5&offset=0').as('commentsGet');
-            cy.visit(`/publisher/apis/${apiId}/comments`);
+            cy.visit({url:`/publisher/apis/${apiId}/comments`, retryOnStatusCodeFailure: true});
             cy.wait('@commentsGet', {timeout: 30000}).then(() => {
                 cy.wait(2000)
                 cy.get('#standard-multiline-flexible').click();

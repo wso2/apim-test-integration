@@ -26,7 +26,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
 
     const addApiAndResource = (verb, apiId) => {
         // Typing the resource name
-        cy.visit(`/publisher/apis/${apiId}/resources`);
+        cy.visit({url:`/publisher/apis/${apiId}/resources`, retryOnStatusCodeFailure: true});
         cy.get('#operation-target').type(target);
         cy.get('body').click();
         cy.get('#add-operation-selection-dropdown').click();
@@ -49,7 +49,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             testApiId = apiId;
-            cy.visit(`/publisher/apis/${apiId}/resources`);
+            cy.visit({url:`/publisher/apis/${apiId}/resources`, retryOnStatusCodeFailure: true});
 
             // Typing the resource name
             cy.get('#itest-api-details-api-config-acc').click();
@@ -156,7 +156,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
             addApiAndResource(verb, apiId);
 
             // Go to local scope page
-            cy.visit(`/publisher/apis/${apiId}/scopes/create`);
+            cy.visit({url:`/publisher/apis/${apiId}/scopes/create`, retryOnStatusCodeFailure: true});
 
             cy.wait(2000);
             // Create a local scope
@@ -179,7 +179,7 @@ describe("publisher-002-00 : Resource add edit operations", () => {
                 .contains(scopeName).should('be.visible');
 
             // Go to resources page
-            cy.visit(`/publisher/apis/${apiId}/resources`);
+            cy.visit({url:`/publisher/apis/${apiId}/resources`, retryOnStatusCodeFailure: true});
 
             // Open the operation sub section
             cy.get(`#${verb}\\${target}`).click();

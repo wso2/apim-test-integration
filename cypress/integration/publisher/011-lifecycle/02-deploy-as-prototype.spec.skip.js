@@ -30,7 +30,7 @@ describe("publisher-011-02 : Deploy as prototype", () => {
     it.only("Deploy as prototype", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`); 
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemendpoints').click();
             cy.wait(500);

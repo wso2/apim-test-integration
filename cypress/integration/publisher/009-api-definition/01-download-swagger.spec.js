@@ -25,7 +25,7 @@ describe("publisher-009-01 : Download swagger", () => {
     const downloadSwagger = (tenant) => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemAPIdefinition').click();
             cy.get('.lines-content.monaco-editor-background div.view-lines div.view-line', {timeout: Cypress.config().largeTimeout});

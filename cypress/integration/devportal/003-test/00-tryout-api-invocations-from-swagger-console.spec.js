@@ -32,7 +32,7 @@ describe("devportal-003-00 : Tryout API invocations from swagger console", () =>
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext, endpoint: 'https://petstore.swagger.io/v2/swagger.json' }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
-                cy.visit(`publisher/apis/${apiId}/deployments`);
+                cy.visit({url:`publisher/apis/${apiId}/deployments`, retryOnStatusCodeFailure: true});
                 cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({force:true});
                 cy.wait(3000);
                 cy.contains('Deployments');
@@ -71,7 +71,7 @@ describe("devportal-003-00 : Tryout API invocations from swagger console", () =>
                 cy.get('#gen-test-key').click({force:true});
 
                 cy.wait('@genToken', {timeout: Cypress.config().largeTimeout}).then(()=> {
-                    cy.get('#accessTokenInput').invoke('val').should('not.be.empty');;
+                    cy.get('#accessTokenInput').invoke('val').should('not.be.empty');
                     // Test the console
                     cy.get('#operations-default-get__').find('.opblock-summary-control').click();
                     cy.get('#operations-default-get__').find('.try-out__btn').click();

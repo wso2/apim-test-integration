@@ -31,7 +31,7 @@ describe("publisher-004-03 : Endpoint testing - Failover", () => {
         });
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#left-menu-itemendpoints').click();
             cy.get('[data-testid="http/restendpoint-add-btn"]').click();

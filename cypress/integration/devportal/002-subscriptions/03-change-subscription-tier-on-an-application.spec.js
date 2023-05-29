@@ -32,7 +32,7 @@ describe("devportal-002-03 : Change subscription tier of an application", () => 
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
                 
-                cy.visit(`/publisher/apis/${apiId}/subscriptions`);
+                cy.visit({url:`/publisher/apis/${apiId}/subscriptions`, retryOnStatusCodeFailure: true});
                 cy.get('[data-testid="policy-checkbox-silver"]', {timeout: Cypress.config().largeTimeout});
                 cy.get('[data-testid="policy-checkbox-silver"]').click();
                 cy.get('#subscriptions-save-btn').click();

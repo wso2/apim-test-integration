@@ -28,7 +28,7 @@ describe("publisher-011-01 : Lifecycle changes", () => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion }).then((apiId) => {
             testApiId = apiId;
-            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
             cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#left-menu-itemsubscriptions').click();
             cy.get('[data-testid="policy-checkbox-silver"]').click();

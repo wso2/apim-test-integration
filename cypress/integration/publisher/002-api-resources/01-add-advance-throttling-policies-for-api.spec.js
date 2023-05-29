@@ -28,7 +28,7 @@ describe("publisher-002-01 : Add advanced throttling policies", () => {
         cy.loginToPublisher(publisher, password, tenant);
         apiName = Utils.generateName();
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/resources`);
+            cy.visit({url:`/publisher/apis/${apiId}/resources`, retryOnStatusCodeFailure: true});
 
             cy.get('#api-rate-limiting-api-level').click();
             cy.get('#operation_throttling_policy').click();

@@ -26,10 +26,10 @@ describe("publisher-003-00 : Runtime configuration-Authorization Header ", () =>
 
     const addAuthorizationHeaderForTheApi = (tenant) => {
         cy.loginToPublisher(publisher, password, tenant);
-        apiName = Utils.generateName();;
+        apiName = Utils.generateName();
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             const customAuthHeader = '-custom';
-            cy.visit(`/publisher/apis/${apiId}/runtime-configuration`);
+            cy.visit({url:`/publisher/apis/${apiId}/runtime-configuration`, retryOnStatusCodeFailure: true});
             cy.get('#applicationLevel').children('[role="button"]').click({force:true});
             cy.wait(1000);
             cy.get('#itest-id-headerName-input').click({force:true}).type(customAuthHeader, {force:true});

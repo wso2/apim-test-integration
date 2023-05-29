@@ -28,7 +28,7 @@ describe("publisher-003-01 : Runtime configuration-transport type", () => {
         cy.loginToPublisher(publisher, password, tenant);
         apiName = Utils.generateName();
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/runtime-configuration`);
+            cy.visit({url:`/publisher/apis/${apiId}/runtime-configuration`, retryOnStatusCodeFailure: true});
             cy.get('#transportLevel div:first', {timeout: Cypress.config().largeTimeout}).click({force:true});
             cy.wait(1000);
             cy.get('#http-transport').click({force:true});
