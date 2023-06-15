@@ -18,7 +18,7 @@ import Utils from "@support/utils";
 
 let apiId;
 let activeTenant;
-describe("publisher-000-03 : Create GraphQl API from file", () => {
+describe("publisher-000-03 : Verify authorized user can create and publish GraphQl API from file", () => {
     const {superTenant, carbonUsername, carbonPassword} = Utils.getUserInfo();
     const generatedAPIName = 'StarWars-' + Utils.generateName();
     const filepath = 'api_artifacts/schema_graphql.graphql';
@@ -247,7 +247,7 @@ describe("publisher-000-03 : Create GraphQl API from file", () => {
 
     }
 
-    it("Verify GraphQl API Capabilities - super admin", () => {
+    it("Admin user create and publish GraphQL API"    , () => {
         activeTenant = superTenant;
         createAndPublisherGraphQLApiWithAllInfo(superTenant);
 

@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-004-06 : Endpoint testing - import delete certificate", () => {
+describe("publisher-004-06 : Verify authorized user can import and delete certificates", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const importDeleteCertificate = (tenant) => {
@@ -81,10 +81,10 @@ describe("publisher-004-06 : Endpoint testing - import delete certificate", () =
         });
     }
 
-    it.only("Add REST endpoints for production and sandbox endpoints with failover - super admin", () => {
+    it.only("Verify admin user can upload and delete certificate in general endpoint configurations", () => {
         importDeleteCertificate(superTenant);
     });
-    it.only("Add REST endpoints for production and sandbox endpoints with failover - tenant user", () => {
+    it.only("Verify tenant user can upload and delete certificate in general endpoint configurations", () => {
         importDeleteCertificate(testTenant);
     });
 });

@@ -18,14 +18,14 @@
 
 import Utils from "@support/utils";
 
-describe("Landing page", () => {
+describe("publisher-000-03 :Verify admin user can access menu items in create API menu", () => {
     const { publisher, password } = Utils.getUserInfo();
 
     before(function () {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Click and check all cards", () => {
+    it.only("Admin user click and check all cards under Create API menu", () => {
         cy.visit(`/publisher/apis`);
         cy.intercept(
             {

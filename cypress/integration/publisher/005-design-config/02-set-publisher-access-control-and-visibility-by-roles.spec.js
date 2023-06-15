@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-005-02 : Set publisher access control and visibility by roles", () => {
+describe("publisher-005-02 : Verify adding restrictions for publisher access control and visibility by user roles", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -55,10 +55,10 @@ describe("publisher-005-02 : Set publisher access control and visibility by role
         });
     }
 
-    it.only("Set role based API Store visibility and access control for the api - super admin", () => {
+    it.only("Admin user adds role based API Store visibility and access control for the api", () => {
         setPublisherAccessControAndVisibilityByRoles(superTenant);
     });
-    it.only("Set role based API Store visibility and access control for the api - tenant user", () => {
+    it.only("Tenant user adds role based API Store visibility and access control for the api", () => {
         setPublisherAccessControAndVisibilityByRoles(testTenant);
     });
 });

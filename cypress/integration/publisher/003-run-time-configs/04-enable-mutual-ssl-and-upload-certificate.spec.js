@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-003-04 : Runtime configuration-ssl", () => {
+describe("publisher-003-04 : Verify authorized user can enable and upload certificate under runtime configuration", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     let apiName;
     const apiVersion = '1.0.0';
@@ -60,10 +60,10 @@ describe("publisher-003-04 : Runtime configuration-ssl", () => {
         });
     }
 
-    it.only("Enable mutual ssl and upload cert - super admin", () => {
+    it.only("Verify admin user can enable mutual ssl and upload cert", () => {
         enableMutualSSLandUploadCert(superTenant);
     });
-    it.only("Enable mutual ssl and upload cert - tenant user", () => {
+    it.only("Verify tenant user can enable mutual ssl and upload cert", () => {
         enableMutualSSLandUploadCert(testTenant);
     });
 });

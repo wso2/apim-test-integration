@@ -17,7 +17,7 @@
  */
 import Utils from "@support/utils";
 
-describe("publisher-003-02 : Runtime configuration-response caching", () => {
+describe("publisher-003-02 : Verify authorized user can enable response chaching under runtime configuration", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     let apiName;
     const apiVersion = '1.0.0';
@@ -36,10 +36,10 @@ describe("publisher-003-02 : Runtime configuration-response caching", () => {
             Utils.deleteAPI(apiId);
         });
     }
-    it.only("Enable response caching - super admin", () => {
+    it.only("Verify admin user can enable response caching", () => {
         enableResponseCaching(superTenant);
     });
-    it.only("Enable response caching - tenant user", () => {
+    it.only("Verify tenant user can enable response caching", () => {
         enableResponseCaching(testTenant);
     });
 });

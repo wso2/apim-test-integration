@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-013-03 : Mock the api response and test it", () => {
+describe("publisher-013-03 : Verify admin user can undeploy the new revision of API prodcut", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     const productName = Utils.generateName();
     const apiName = Utils.generateName();
@@ -106,7 +106,7 @@ describe("publisher-013-03 : Mock the api response and test it", () => {
         });
     }
 
-    it("Mock the api response and test it - super admin", {
+    it("Verify admin user can create new revision for the API product", {
         retries: {
             runMode: 3,
             openMode: 0,
@@ -114,7 +114,7 @@ describe("publisher-013-03 : Mock the api response and test it", () => {
     }, () => {
         undeployNewRevisionOfApiProduct(superTenant);
     });
-    it("Mock the api response and test it - tenant user", {
+    it("Verify tenant user can create new revision for the API product", {
         retries: {
             runMode: 3,
             openMode: 0,

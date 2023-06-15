@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-011-00 : Save and publish API", () => {
+describe("publisher-011-00 : Verify authorized user can save and publish API", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -58,10 +58,10 @@ describe("publisher-011-00 : Save and publish API", () => {
             Utils.deleteAPI(apiId);
         });
     }
-    it.only("Save and publish API - super admin", () => {
+    it.only("Verify admin user can save and publish API", () => {
         saveAndPublishApi(superTenant);
     });
-    it.only("Save and publish API - tenant user", () => {
+    it.only("Verify tenant user can save and publish API", () => {
         saveAndPublishApi(testTenant);
     });
 });

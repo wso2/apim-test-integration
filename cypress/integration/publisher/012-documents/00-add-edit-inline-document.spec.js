@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-012-00 : creating document", () => {
+describe("publisher-012-00 : Verify an authorized user can create an inline document for the API", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
     
     const addEditInlineDocument = (tenant) => {
@@ -45,10 +45,10 @@ describe("publisher-012-00 : creating document", () => {
             Utils.deleteAPI(apiId);
         });
     }
-    it.only("Creating inline document - super admin", () => {
+    it.only("Verify an admin user can create an inline document for the API", () => {
         addEditInlineDocument(superTenant);
     });
-    it.only("Creating inline document - tenant user", () => {
+    it.only("Verify tenant user can create an inline document for the API", () => {
         addEditInlineDocument(testTenant);
     });
 });

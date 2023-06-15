@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("devportal-002-03 : Change subscription tier of an application", () => {
+describe("devportal-002-03 : Verify authorized user can change subscription tier of an application", () => {
     const { publisher, developer, password, superTenant } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
@@ -73,7 +73,7 @@ describe("devportal-002-03 : Change subscription tier of an application", () => 
             })
         })
     }
-    it.only("Change subscription tier - super admin", () => {
+    it.only("Verify admin user can change subscription tier of an application", () => {
         activeTenant = superTenant;
         changeSubscriptionTierOnApplication(superTenant);
     });

@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-004-02 : Check endpoint test button", () => {
+describe("publisher-004-02 : Verify endpoint test button indicates the correct status", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
     const checkEndpointTestButton = (tenant) => {
@@ -60,10 +60,10 @@ describe("publisher-004-02 : Check endpoint test button", () => {
         });
     }
 
-    it.only("Check endpoint test button - super admin", () => {
+    it.only("Admin user verifies endpoint test button indicates the correct status", () => {
         checkEndpointTestButton(superTenant);
     });
-    it.only("Check endpoint test button - tenant user", () => {
+    it.only("Tenant user verifies endpoint test button indicates the correct status", () => {
         checkEndpointTestButton(testTenant);
     });
 });

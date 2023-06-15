@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-003-01 : Runtime configuration-transport type", () => {
+describe("publisher-003-01 : Verify authorized user can select trnasport types under runtime configuration", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
     let apiName;
@@ -44,10 +44,10 @@ describe("publisher-003-01 : Runtime configuration-transport type", () => {
         });
     }
 
-    it.only("Select transport type - super admin", () => {
+    it.only("Verify admin user can select transport type", () => {
         selectTransportType(superTenant);
     });
-    it.only("Select transport type - tenant user", () => {
+    it.only("Verify tenant user can select transport type", () => {
         selectTransportType(testTenant);
     });
 

@@ -21,7 +21,7 @@ The product is broken. we need to fix the product. This test case is ignored fro
 */
 import Utils from "@support/utils";
 
-describe("publisher-005-00 : Upload thumbnail", () => {
+describe("publisher-005-00 : Verify an authorized user can upload thumbnail image to API", () => {
     const { publisher, password, superTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -55,7 +55,7 @@ describe("publisher-005-00 : Upload thumbnail", () => {
                 })
         });
     }
-    it.only("Upload thumbnail - super admin",{
+    it.only("Admin user uploads the thumbnail image to API",{
         retries: {
             runMode: 3,
             openMode: 0,

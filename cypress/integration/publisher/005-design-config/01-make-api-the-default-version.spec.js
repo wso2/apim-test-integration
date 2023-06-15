@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-005-01 : Make api the default version", () => {
+describe("publisher-005-01 : Verify authorized user can make the api the default version", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -39,10 +39,10 @@ describe("publisher-005-01 : Make api the default version", () => {
             Utils.deleteAPI(apiId);
         });
     }
-    it.only("Add Authorization Header for the api - super admin", () => {
+    it.only("Admin user can make the api the default version", () => {
         makeApiTheDefaultVersion(superTenant);
     });
-    it.only("Add Authorization Header for the api - tenant user", () => {
+    it.only("Tenant user can make the api the default version", () => {
         makeApiTheDefaultVersion(testTenant);
     });
 });

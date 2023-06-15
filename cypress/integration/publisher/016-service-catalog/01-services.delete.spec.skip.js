@@ -1,6 +1,6 @@
 import Utils from "@support/utils";
 
-describe("publisher-016-01 : Service catalog delete flow", () => {
+describe("publisher-016-01 : Verify authorized user can delete serivces from service catalog", () => {
     const username = 'admin'
     const password = 'admin'
     const { superTenant, testTenant } = Utils.getUserInfo();
@@ -22,10 +22,10 @@ describe("publisher-016-01 : Service catalog delete flow", () => {
             )
     }
 
-    it("Delete all APIs - super admin", () => {
+    it("Verify admin user can delete serivces from service catalog", () => {
         servicesDelete(superTenant);
     });
-    it("Delete all APIs - tenant user", () => {
+    it("Verify tenant user can delete serivces from service catalog", () => {
         servicesDelete(testTenant);
     });
 })

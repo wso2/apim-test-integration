@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-003-00 : Runtime configuration-Authorization Header ", () => {
+describe("publisher-003-00 : Verify authorized user can add authorization header under the runtime configurations", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
     let apiName;
@@ -40,10 +40,10 @@ describe("publisher-003-00 : Runtime configuration-Authorization Header ", () =>
         });
     }
 
-    it.only("Add Authorization Header for the api - super admin", () => {
+    it.only("Verify admin user can authorization header for the api", () => {
         addAuthorizationHeaderForTheApi(superTenant);
     });
-    it.only("Add Authorization Header for the api - tenant user", () => {
+    it.only("Verify tenant user can add authorization header for the api", () => {
         addAuthorizationHeaderForTheApi(testTenant);
     });
 });

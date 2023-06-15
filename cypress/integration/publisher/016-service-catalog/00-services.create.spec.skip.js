@@ -2,7 +2,7 @@ import { getSampleServiceMeta, getSampleOpenAPI } from '../../../support/mockDat
 import Utils from "@support/utils";
 
 
-describe("publisher-016-00 : Service catalog create flow", () => {
+describe("publisher-016-00 : Verify authorized user can create services through service catalog", () => {
     const { publisher, password, superTenant, testTenant } = Utils.getUserInfo();
 
     const serviceCreate = (tenant) => {
@@ -55,10 +55,10 @@ describe("publisher-016-00 : Service catalog create flow", () => {
 
     });
 
-    it("Create 15~25 services - super admin", () => {
+    it("Verify admin user can create services through service catalog", () => {
         serviceCreate(superTenant);
     });
-    it("Create 15~25 services - tenant user", () => {
+    it("Verify tenant user can create services through service catalog", () => {
         serviceCreate(testTenant);
     });
 

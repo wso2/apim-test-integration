@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-002-01 : Add advanced throttling policies", () => {
+describe("publisher-002-01 : Verify authorized user can add API level rate limiting policy", () => {
     const { publisher, password, superTenant, testTenant} = Utils.getUserInfo();
 
     let apiName
@@ -44,10 +44,10 @@ describe("publisher-002-01 : Add advanced throttling policies", () => {
         });
     }
 
-    it.only("Add Authorization Header for the api - super admin", () => {
+    it.only("Verify admin user can add Authorization Header for the api", () => {
         addAuthorizationHeaderForApi(superTenant);
     });
-    it.only("Add Authorization Header for the api - tenant user", () => {
+    it.only("Verify tenant user can add Authorization Header for the api", () => {
         addAuthorizationHeaderForApi(testTenant);
     });
 });

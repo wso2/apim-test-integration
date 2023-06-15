@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("admin-08 : Add API Categories and assign via publisher portal", () => {
+describe("admin-08 :  Verify creating API Category and assign to a API via publisher portal", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
     let testApiId;
@@ -26,7 +26,7 @@ describe("admin-08 : Add API Categories and assign via publisher portal", () => 
     beforeEach(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it("Add API Categories and assign via publisher portal",{
+    it("Admin user create API Categories and assign via publisher portal",{
         retries: {
           runMode: 3,
           openMode: 0,

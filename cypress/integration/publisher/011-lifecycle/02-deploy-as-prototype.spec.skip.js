@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("publisher-011-02 : Deploy as prototype", () => {
+describe("publisher-011-02 : Verify an authorized user can deploy an API as prototype", () => {
     const { publisher, password, } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
@@ -27,7 +27,7 @@ describe("publisher-011-02 : Deploy as prototype", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Deploy as prototype", () => {
+    it.only("Authorized user can deploy an API as prototype", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit({url:`/publisher/apis/${apiId}/overview`, retryOnStatusCodeFailure: true});
