@@ -101,27 +101,11 @@ sudo apt-get update -y
 sleep 300
 sudo killall apt apt-get dpkg
 sudo dpkg --configure -a
-curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-chmod 644 /usr/share/keyrings/nodesource.gpg
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+sudo apt-get install -y nodejs
 npm -v
-if [[ $? -ne 0 ]]
-then
-    echo "NPM exists and removing existing version."
-    sudo apt-get purge nodejs -y
-    sudo apt-get purge npm -y
-else
-    echo "NPM Deos NOT exists and installing existing version."
-fi
-
-wget https://nodejs.org/dist/v12.22.3/node-v12.22.3-linux-x64.tar.xz
-tar -xvf node-v12.22.3-linux-x64.tar.xz
-sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/node /usr/bin/node
-sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npm /usr/bin/npm
-sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npx /usr/bin/npx
 sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y
 export LC_CTYPE="en_US.UTF-8"
-npm -v
 cd $HOME
 npm install cypress
 npm install --save-dev cypress-file-upload
