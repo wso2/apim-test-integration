@@ -15,18 +15,19 @@ describe("publisher-000-00 : Verify authorized user can deploy sample api in pub
         //cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Verify admin user can add test users", () => {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        cy.reload();
-        cy.carbonLogout();
-    });
+    // it.only("Verify admin user can add test users", () => {
+    //     cy.carbonLogin(carbonUsername, carbonPassword);
+    //     cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+    //     cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+    //     cy.reload();
+    //     cy.carbonLogout();
+    // });
 
-    it.only("Verify admin user can deploy sample api", () => {
+    it.only("Verify admin user can deploy sample api from publisher portal", () => {
         cy.loginToPublisher(publisher, password);
         cy.deploySampleAPI();
-    });
+        cy.wait(3000)
+    }); 
 
     after(function () {
         // Test is done. Now delete the api

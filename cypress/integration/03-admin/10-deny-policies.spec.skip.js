@@ -18,15 +18,16 @@ import PublisherComonPage from "../../support/pages/publisher/PublisherComonPage
 import DevportalComonPage from "../../support/pages/devportal/DevportalComonPage";
 import AdminComonPage from "../../support/pages/admin/AdminComonPage";
 import Apis from "../../support/functions/Apis";
+import DeveloperMenu from "../../support/functions/DeveloperMenu";
 import AdminMenu from "../../support/functions/AdminMenu";
 import AdminRateLimitingPolicies from "../../support/functions/AdminRateLimitingPolicies";
 
 
 describe("admin-10 : Verify functionalities of deny policies", () => {
-    const apiName = 'changeTierApi' + Math.floor(Date.now() / 1000);
+    const apiName = 'DenyPolicyTest' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.5';
     const random_number = Math.floor(Date.now() / 1000);
-    const appName = 'testapp' + random_number;
+    const appName = 'DenyPolicyApp' + random_number;
     const apiContext = `/api_${random_number}`
     const appDescription = 'change tier app description';
     const developer = 'developer';
@@ -34,6 +35,8 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
+    const swaggerFileName = "petstore_swagger_2.0_without-scopes.json";
+    const tenant = "carbon.super";
 
      /*---------------------------------------------------------------------
     | 
@@ -48,7 +51,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
     before("Create API, publish and verify portal invocation(try-out)",function () {
         cy.loginToPublisher(publisher, password);
         PublisherComonPage.waitUntillLoadingComponentsExit();
-        Apis.createAPIFromPetstoreSwagger2AndPublish(apiName,apiContext,apiVersion,"")
+        Apis.createAPIFromPetstoreSwagger2AndPublish(swaggerFileName,apiName,apiContext,apiVersion,"")
 
         cy.logoutFromPublisher();
         cy.loginToDevportal(developer, password);
@@ -59,15 +62,18 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         cy.createApp(appName, appDescription);
         DevportalComonPage.waitUntillLoadingComponentsExit();
 
-        searchAndGetAPIFromDevportal();
+        //searchAndGetAPIFromDevportal();
+        Apis.searchAndGetAPIFromDevportal(apiName,tenant)
 
-        cy.get('[data-testid="left-menu-credentials"]').click();
+        DeveloperMenu.goToSubscriptions();
+        //cy.get('[data-testid="left-menu-credentials"]').click();
 
         // Click and select the new application
-        cy.get('#application-subscribe').click();
-        cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
-        cy.get(`[data-testid="subscribe-to-api-btn"]`).click();
-        cy.get(`[data-testid="subscription-table"] td`).contains(appName).should('exist');
+        Apis.subscribeToapplication(appName)
+        // cy.get('#application-subscribe').click();
+        // cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
+        // cy.get(`[data-testid="subscribe-to-api-btn"]`).click();
+        // cy.get(`[data-testid="subscription-table"] td`).contains(appName).should('exist');
 
         // Generate prod keys
         cy.get(`#${appName}-PK`).click();
@@ -82,7 +88,17 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         goToTryOutAndInvokeStoreInventoryResource()
 
         cy.get('tr[class="response"] > td.response-col_status').contains('200').should('exist');
-        cy.contains("totvs1")
+        cy.get('pre[class="microlight"] > code[class="language-json"] > span[class="hljs-attr"]').should('have.length.least', 1) // to verify some response is retreived, we cannot assert exact value
+        //cy.contains("totvs1")
+
+        // //temp check to prod url
+        // cy.log(Cypress.config().baseUrl)
+
+        // cy.get('div[class="request-url"] > pre[class="microlight"]').invoke('text').then((requestURL) => {
+        //     const geturl = requestURL;
+        //     cy.log(geturl);
+        //     expect(geturl).to.have.string('true');
+        // });
 
         cy.logoutFromDevportal()
         cy.wait(10000)
@@ -140,7 +156,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         AdminRateLimitingPolicies.deleteAllDenyPoliocies()
         AdminRateLimitingPolicies.Denypolicies_AddApplicationPolicy(applicationDenyValue)
         AdminMenu.goToLogoutURL()
-
+        
         goToDevpoertalAndVerifyIncoationIsBlocked();
 
 
@@ -175,6 +191,10 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         cy.wait(10000)
     });
 
+    it("After Block : clen created test data", () => {
+        cy.log("Cleaning data")
+    });
+
     after(function () {
         // Delete any deny Policy from Admin
         cy.loginToAdmin(carbonUsername, carbonPassword);
@@ -182,7 +202,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         AdminMenu.goToDenyPoliciesByURL();
         AdminRateLimitingPolicies.deleteAllDenyPoliocies()
         AdminMenu.goToLogoutURL()
-        cy.wait(5000)
+        cy.wait(10000)
 
         // Delete the application from devportal
         cy.loginToDevportal(developer, password);
@@ -195,19 +215,20 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
         cy.logoutFromDevportal();
-        cy.wait(5000)
+        cy.wait(10000)
 
         // Delete the API from publisher
         cy.loginToPublisher(publisher, password);
         PublisherComonPage.waitUntillLoadingComponentsExit()
-        cy.deleteApi(apiName, apiVersion);
+        Apis.searchAndDeleteAPIFromPublisher(apiName,apiVersion)
     })
 
    function goToDevpoertalAndVerifyIncoationIsBlocked(){
         // go to devportal and verify that deny policy apply
         cy.loginToDevportal(developer, password);
         DevportalComonPage.waitUntillLoadingComponentsExit();
-        searchAndGetAPIFromDevportal()
+        Apis.searchAndGetAPIFromDevportal(apiName,tenant)
+        //searchAndGetAPIFromDevportal()
         goToTryOutAndInvokeStoreInventoryResource()
         /*
             If Deny policy appllied 
@@ -216,7 +237,8 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
             "message": "Message blocked",
             "description": "You have been blocked from accessing the resource"
         */
-        cy.get('tr[class="response"] > td.response-col_status').contains('403').should('exist');
+        cy.get('tr[class="response"] > td.response-col_status',{ timeout: 10000 }).contains ('403');
+
         cy.contains('900805')
         cy.contains("Message blocked")
         cy.contains("You have been blocked from accessing the resource")
@@ -241,15 +263,7 @@ describe("admin-10 : Verify functionalities of deny policies", () => {
         cy.get('#operations-store-getInventory .try-out__btn').click();
         cy.get('#operations-store-getInventory button.execute').click();
         cy.get('.loading-container',{timeout:25000}).should('not.exist');
+        cy.wait(5000)
     }
-    function searchAndGetAPIFromDevportal(){
-        cy.visit('/devportal/apis?tenant=carbon.super');
-        DevportalComonPage.waitUntillLoadingComponentsExit();
-        cy.url().should('contain', '/apis?tenant=carbon.super');
-        cy.get('#searchQuery').clear().type(apiName)
-        cy.wait(3000)
-        cy.get(`[title="${apiName}"]`, { timeout: 30000 });
-        cy.get(`[title="${apiName}"]`).click();
-        DevportalComonPage.waitUntillLoadingComponentsExit();
-    }
+
 });

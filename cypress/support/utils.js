@@ -27,4 +27,8 @@ export default class Utils {
             NOUNS[Utils.getRandomRange(0, NOUNS.length + 1)]
         )
     }
+
+    static getDefaulttimeout(){
+        return Cypress.config('defaultCommandTimeout');
+    }
 }

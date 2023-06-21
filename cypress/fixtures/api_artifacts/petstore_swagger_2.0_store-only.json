@@ -1,0 +1,334 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
+      "version": "1.0.5",
+      "title": "Swagger Petstore",
+      "termsOfService": "http://swagger.io/terms/",
+      "contact": {
+        "email": "apiteam@swagger.io"
+      },
+      "license": {
+        "name": "Apache 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+      }
+    },
+    "host": "https://petstore.swagger.io/v2",
+    "basePath": "/apimcontext",
+    "tags": [
+      {
+        "name": "store",
+        "description": "Access to Petstore orders"
+      }
+    ],
+    "schemes": [
+      "https",
+      "http"
+    ],
+    "security": [
+      {
+        "default": [
+          
+        ]
+      }
+    ],
+    "paths": {
+      "/store/inventory": {
+        "get": {
+          "tags": [
+            "store"
+          ],
+          "summary": "Returns pet inventories by status",
+          "description": "Returns a map of status codes to quantities",
+          "operationId": "getInventory",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "api_key": [
+                
+              ]
+            },
+            {
+              "default": [
+                
+              ]
+            }
+          ],
+          "x-auth-type": "Application & Application User",
+          "x-throttling-tier": "Unlimited",
+          "x-wso2-application-security": {
+            "security-types": [
+              "oauth2"
+            ],
+            "optional": false
+          }
+        }
+      }
+    },
+    "securityDefinitions": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      },
+      "petstore_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://petstore.swagger.io/oauth/authorize",
+        "flow": "implicit",
+        "scopes": {
+          "read:pets": "read your pets",
+          "write:pets": "modify pets in your account"
+        }
+      },
+      "default": {
+        "type": "oauth2",
+        "authorizationUrl": "https://test.com",
+        "flow": "implicit"
+      }
+    },
+    "definitions": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "Category"
+        }
+      },
+      "Pet": {
+        "type": "object",
+        "required": [
+          "name",
+          "photoUrls"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "category": {
+            "$ref": "#/definitions/Category"
+          },
+          "name": {
+            "type": "string",
+            "example": "doggie"
+          },
+          "photoUrls": {
+            "type": "array",
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "type": "string",
+              "xml": {
+                "name": "photoUrl"
+              }
+            }
+          },
+          "tags": {
+            "type": "array",
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "xml": {
+                "name": "tag"
+              },
+              "$ref": "#/definitions/Tag"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "pet status in the store",
+            "enum": [
+              "available",
+              "pending",
+              "sold"
+            ]
+          }
+        },
+        "xml": {
+          "name": "Pet"
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "Tag"
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "petId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "shipDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "description": "Order Status",
+            "enum": [
+              "placed",
+              "approved",
+              "delivered"
+            ]
+          },
+          "complete": {
+            "type": "boolean"
+          }
+        },
+        "xml": {
+          "name": "Order"
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "username": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "userStatus": {
+            "type": "integer",
+            "format": "int32",
+            "description": "User Status"
+          }
+        },
+        "xml": {
+          "name": "User"
+        }
+      }
+    },
+    "externalDocs": {
+      "description": "Find out more about Swagger",
+      "url": "http://swagger.io"
+    },
+    "x-wso2-cors": {
+      "corsConfigurationEnabled": false,
+      "accessControlAllowOrigins": [
+        "*"
+      ],
+      "accessControlAllowCredentials": false,
+      "accessControlAllowHeaders": [
+        "authorization",
+        "Access-Control-Allow-Origin",
+        "Content-Type",
+        "SOAPAction",
+        "apikey",
+        "testKey"
+      ],
+      "accessControlAllowMethods": [
+        "GET",
+        "PUT",
+        "POST",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+      ]
+    },
+    "x-wso2-production-endpoints": {
+      "urls": [
+        "https://petstore.swagger.io/v2/"
+      ],
+      "type": "http"
+    },
+    "x-wso2-sandbox-endpoints": {
+      "urls": [
+        "https://petstore.swagger.io/v2/"
+      ],
+      "type": "http"
+    },
+    "x-wso2-basePath": "/api_1669623712/1.0.5",
+    "x-wso2-transports": [
+      "http",
+      "https"
+    ],
+    "x-wso2-application-security": {
+      "security-types": [
+        "oauth2"
+      ],
+      "optional": false
+    },
+    "x-wso2-response-cache": {
+      "enabled": false,
+      "cacheTimeoutInSeconds": 300
+    }
+  }

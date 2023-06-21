@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+import Applications from "../../../support/functions/Applications";
+import Portals from "../../../support/functions/Portals";
 describe("devportal-002-04  : Verify an authorized user can generate application keys from api details page", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const developer = 'developer';
@@ -44,11 +45,13 @@ describe("devportal-002-04  : Verify an authorized user can generate application
 
         // Create an app and subscribe
         cy.createApp(appName, 'application description');
-        cy.visit('/devportal/apis?tenant=carbon.super');
-        cy.url().should('contain', '/apis?tenant=carbon.super');
+        //cy.visit('/devportal/apis?tenant=carbon.super');
+        //cy.url().should('contain', '/apis?tenant=carbon.super');
+        Portals.visitDevportalApisPage();
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
         cy.get('[data-testid="left-menu-credentials"]').click();
+        cy.wait(3000)
 
         // Click and select the new application
         cy.get('#application-subscribe').click();
@@ -69,7 +72,8 @@ describe("devportal-002-04  : Verify an authorized user can generate application
 
     after(() => {
         cy.get(`#${appName}-UN`).click();
-        cy.visit('/devportal/applications?tenant=carbon.super');
+        //cy.visit('/devportal/applications?tenant=carbon.super');
+        Applications.gotoDevportalAplication();
         cy.get(`[data-testid="delete-${appName}-btn"]`, {timeout: 30000});
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();

@@ -16,9 +16,11 @@
  * under the License.
  */
 import PublisherComonPage from "../pages/publisher/PublisherComonPage";
+import DevportalComonPage from "../pages/devportal/DevportalComonPage";
+import Portals from "../functions/Portals";
 
 class Apis {
-    static createAPIFromPetstoreSwagger2AndPublish(apiName,apiContext,apiVersion,businessPlan){
+    static createAPIFromPetstoreSwagger2AndPublish(fileName,apiName,apiContext,apiVersion,businessPlan){
         cy.visit(`/publisher/apis`);
         PublisherComonPage.waitUntillLoadingComponentsExit();
         // select the option from the menu item
@@ -28,7 +30,7 @@ class Apis {
     
         // upload the swagger
         cy.get('[data-testid="browse-to-upload-btn"]').then(function () {
-            const filepath = 'api_artifacts/swagger_2.0.json'
+            const filepath = `api_artifacts/${fileName}`
             cy.get('input[type="file"]').attachFile(filepath)
         });
     
@@ -55,14 +57,141 @@ class Apis {
         cy.get('[data-testid="api-create-finish-btn"]').click();
         cy.contains("API created successfully")
         cy.wait('@lifeCycleStatus', { requestTimeout: 30000 });
+        cy.wait(3000)
     
         // publish
         cy.get('[data-testid="publish-btn"]', { timeout: 30000 });
-        cy.get('[data-testid="publish-btn"]').click();
+        cy.get('[data-testid="publish-btn"]').click({ force: true });
         
         cy.get('[data-testid="published-status"]', { timeout: 30000 });
         cy.get('[data-testid="published-status"]').contains('Published').should('exist');
     }
 
+    static createSoapAPIFromPhoneverifyEndpoint(apiName,apiContext,apiVersion){
+        cy.visit("publisher/apis/create/wsdl")
+        PublisherComonPage.waitUntillLoadingComponentsExit();
+
+        cy.intercept('**/apis/validate-wsdl').as('validateWsdl');
+        cy.get("#outlined-full-width").type("http://ws.cdyne.com/phoneverify/phoneverify.asmx?wsdl")
+        cy.get('input[value="url"]').click(); // this is to trigger url validation on above key entry event
+        cy.wait('@validateWsdl', { requestTimeout: 30000 });
+        cy.get("button>span").contains("Next").click()
+
+        cy.get('#itest-id-apiname-input').type(apiName);
+        cy.get('#itest-id-apicontext-input').type(apiContext)
+        cy.get('#itest-id-apiversion-input').type(apiVersion)
+        cy.get('#itest-id-apiendpoint-input').type('http://ws.cdyne.com/phoneverify/phoneverify.asmx')
+        cy.get('[data-testid="select-policy-dropdown"]').click();
+        cy.get('[data-testid="policy-item-Unlimited"]').click();
+        cy.get('#menu-policies').click('topLeft');
+
+        cy.intercept('**/lifecycle-state').as('lifeCycleStatus');
+        cy.get("button>span").contains("Create").click()
+        cy.contains("API created successfully")
+        cy.wait('@lifeCycleStatus', { requestTimeout: 30000 });
+        PublisherComonPage.waitUntillLoadingComponentsExit();
+    }
+
+    static searchAndDeleteAPIFromPublisher(apiName,version){
+        // Delete the API from publisher
+        // cy.visit(`/publisher/apis`);
+        // cy.intercept('**/apis*').as('getApis');
+        // cy.wait('@getApis', { requestTimeout: 30000 });
+        Portals.visitPublisherApisPage();
+        PublisherComonPage.waitUntillLoadingComponentsExit();
+        cy.get('#searchQuery').clear().type(apiName).type('{enter}')
+        cy.wait(3000)
+        cy.get(`[id="${apiName}${version}-delete-button"]`, { timeout: 30000 });
+        cy.get(`[id="${apiName}${version}-delete-button"]`).click();
+        cy.intercept('DELETE','**/publisher/v1/apis/**').as('deleteAPI'); 
+        cy.get('[data-testid="itest-id-deleteconf"]').click();
+        cy.wait('@deleteAPI', { requestTimeout: 30000 });
+    }
+
+    /*
+        e.g. tenant = "carbon.super"
+    */
+    static searchAndGetAPIFromDevportal(apiName,tenant){
+        cy.visit(`/devportal/apis?tenant=${tenant}`);
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+        cy.url().should('contain', '/apis?tenant=carbon.super');
+        cy.get('#searchQuery').clear().type(apiName).type('{enter}')
+        cy.wait(3000)
+        cy.get(`[title="${apiName}"]`, { timeout: 30000 });
+        cy.get(`[title="${apiName}"]`).click();
+        DevportalComonPage.waitUntillLoadingComponentsExit();
+    }
+
+    static searchAndGetAPIFromPublisher(apiName){
+        cy.visit('publisher/apis');
+        PublisherComonPage.waitUntillLoadingComponentsExit();
+        cy.get('#searchQuery').clear().type(apiName).type('{enter}')
+        cy.wait(3000)
+        cy.get(`[title="${apiName}"]`, { timeout: 30000 });
+        cy.get(`[title="${apiName}"]`).click();
+        PublisherComonPage.waitUntillLoadingComponentsExit();
+    }
+
+    static subscribeToapplication(appName){
+        cy.get('#application-subscribe').click();
+        cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
+        cy.get(`[data-testid="subscribe-to-api-btn"]`).click();
+        cy.get(`[data-testid="subscription-table"] td`).contains(appName).should('exist');
+    }
+
+    static clickUnsubscribOnApplcation(appName){
+        cy.intercept('**/subscriptions/**').as('deleteSubscriptions');
+        cy.get(`#${appName}-UN`).click()
+        cy.contains("Subscription deleted successfully!")
+        cy.wait('@deleteSubscriptions', { requestTimeout: 30000 });
+    }
+    static clickBlockAPIOnLIfecycleInPublisher(){
+        cy.intercept('**/change-lifecycle?**').as('lifecycleChange');
+        cy.get('[data-testid="Block"]').click();
+        cy.contains("Lifecycle state updated successfully")
+        cy.wait('@lifecycleChange', { requestTimeout: 30000 });
+    }
+    static clickRePublishAPIOnLIfecycleInPublisher(){
+        cy.intercept('**/change-lifecycle?**').as('lifecycleChange');
+        cy.get('[data-testid="Re-Publish"]').click();
+        cy.contains("Lifecycle state updated successfully")
+        cy.wait('@lifecycleChange', { requestTimeout: 30000 });
+    }
+    static getAPIRequestBaseURL(){
+        const requestURL = Cypress.config().baseUrl.replace("9443", "8243");
+        cy.log(requestURL)
+        return requestURL;
+    }
+
+    static clickSaveOnRuntimeConfigurationsInPublisher(){
+        cy.intercept('GET','**/key-managers').as('runtimeConfigSave_keyManagers');
+        cy.get('[data-testid="save-runtime-configurations"]').click();
+        cy.wait('@runtimeConfigSave_keyManagers', { requestTimeout: 30000 });
+    }
+    
+    static waitUntilApiExists(apiName,remainingAttempts) {
+
+        let $apis = Cypress.$(`[title="${apiName}"]`);
+        if ($apis.length) {
+            // At least one with api name was found.
+            // Return a jQuery object.
+            return $apis;
+        }
+        if (--remainingAttempts) {
+            cy.log('API not found yet. Remaining attempts: ' + remainingAttempts);
+
+            // Requesting the page to reload (F5)
+            cy.reload();
+
+            // Wait a second for the server to respond and the DOM to be present.
+            return cy.wait(30000).then(() => {
+                return this.waitUntilApiExists(apiName,remainingAttempts);
+            });
+        }
+        throw Error('API not found in Devportal');
+    }
+
+
 }
+
 export default Apis;

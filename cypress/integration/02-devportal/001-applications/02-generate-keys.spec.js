@@ -13,6 +13,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import Applications from "../../../support/functions/Applications";
+
 describe("devportal-001-02 : Verify an authorized user can generate sandbox and production application keys", () => {
     const appName = 'keygenapplication' + Math.floor(Date.now() / 1000);
     const appDescription = 'Key gen application description';
@@ -43,10 +46,12 @@ describe("devportal-001-02 : Verify an authorized user can generate sandbox and 
         cy.get('[data-testid="application-title"]').contains(appName).should('exist');
 
         // Generating keys production
-        cy.get('[data-testid="left-menu-productionkeys/oauth"]').click();
+        //cy.get('[data-testid="left-menu-productionkeys/oauth"]').click();
+        Applications.goToProductionOAuth2TokensByUI();
         cy.get('input#client_credentials').check();
         cy.get('input#password').check();
-        cy.get('[data-testid="generate-application-keys"]').click();
+        Applications.clickOnGenerateKeys();
+        //cy.get('[data-testid="generate-application-keys"]').click();
         cy.get('#consumer-key', {timeout: 30000});
         cy.get('#consumer-key').should('exist');
 
@@ -56,15 +61,18 @@ describe("devportal-001-02 : Verify an authorized user can generate sandbox and 
         cy.get('#callbackURL').click();
         cy.get('#callbackURL').type('https://localhost');
         cy.get('[data-testid="generate-application-keys"]').click();
+        cy.wait(3000)
         // Checking if the code grant is still selected.
         cy.get('input#authorization_code').should('be.checked');
 
 
         // Generating keys sandbox
-        cy.get('[data-testid="left-menu-sandboxkeys/oauth"]').click();
+        //cy.get('[data-testid="left-menu-sandboxkeys/oauth"]').click();
+        Applications.goToSandboxOAuth2TokensByUI();
         cy.get('input#client_credentials').check();
         cy.get('input#password').check();
-        cy.get('[data-testid="generate-application-keys"]').click();
+        //cy.get('[data-testid="generate-application-keys"]').click();
+        Applications.clickOnGenerateKeys();
         cy.get('#consumer-key', {timeout: 30000});
         cy.get('#consumer-key').should('exist');
 
@@ -74,6 +82,8 @@ describe("devportal-001-02 : Verify an authorized user can generate sandbox and 
         cy.get('#callbackURL').click();
         cy.get('#callbackURL').type('https://localhost');
         cy.get('[data-testid="generate-application-keys"]').click();
+        cy.wait(3000)
+
         // Checking if the code grant is still selected.
         cy.get('input#authorization_code').should('be.checked');
 
@@ -85,10 +95,11 @@ describe("devportal-001-02 : Verify an authorized user can generate sandbox and 
     })
 
     after(() => {
-        cy.visit('/devportal/applications?tenant=carbon.super');
-        cy.get(`[data-testid="delete-${appName}-btn"]`, {timeout: 30000});
-        cy.get(`[data-testid="delete-${appName}-btn"]`).click();
-        cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
+        Applications.deleteAplication(appName);
+        // cy.visit('/devportal/applications?tenant=carbon.super');
+        // cy.get(`[data-testid="delete-${appName}-btn"]`, {timeout: 30000});
+        // cy.get(`[data-testid="delete-${appName}-btn"]`).click();
+        // cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
         // delete developer
         //cy.visit('carbon/user/user-mgt.jsp');
         //cy.deleteUser(developer);
