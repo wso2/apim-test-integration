@@ -30,6 +30,10 @@ describe("admin-09 : Add key manager", () => {
         const clientSecret = 'test';
         const audience = 'test';
         const introspectionEp = 'https://my-tenant.auth0.com/oauth/token';
+        const claimKey1 = 'claimKey1';
+        const claimValueRegex1 = 'claimValueRegex1';
+        const claimKey2 = 'claimKey2';
+        const claimValueRegex2 = 'claimValueRegex2';
 
         cy.get('[data-testid="Key Managers"]').click();
         cy.get('.MuiButton-label').contains('Add Key Manager').click();
@@ -47,11 +51,37 @@ describe("admin-09 : Add key manager", () => {
             cy.get('input[name="client_id"]').type(clientId);
             cy.get('input[name="client_secret"]').type(clientSecret);
             cy.get('input[name="audience"]').type(audience);
+            // adding claims under Token Handling Options for JWT type
+            cy.get('#mui-component-select-type').click();
+            cy.contains('li', 'JWT').click();
+            cy.get('input[name="claimKey"]').type(claimKey1);
+            cy.get('input[name="claimValueRegex"]').type(claimValueRegex1);
+            cy.get('[aria-label="[object Object]"]').click();
+            cy.get('input[name="claimKey"]').type(claimKey2);
+            cy.get('input[name="claimValueRegex"]').type(claimValueRegex2);
+            cy.get('[aria-label="[object Object]"]').click();
+            // validating added claims
+            cy.contains(claimKey1).should('exist');
+            cy.contains(claimValueRegex1).should('exist');
+            cy.contains(claimKey2).should('exist');
+            cy.contains(claimValueRegex2).should('exist');
             cy.get('button.MuiButton-containedPrimary span').contains('Add').click();
+            cy.wait(1000);
 
             // validating
             cy.get('td > a').contains(km).should('exist');
         });
+
+        // edit key manager
+        cy.get('td > a').contains(km).click();
+        // editing claims under Token Handling Options for JWT type (adding one more claim and deleting one claim)
+        cy.get('input[name="claimKey"]').type('claimKey3');
+        cy.get('input[name="claimValueRegex"]').type('claimValueRegex3');
+        cy.get('[aria-label="[object Object]"]').click();
+        // deleting claimKey1
+        cy.contains(claimKey1).parents('tr').find('button').click();
+        cy.contains(claimKey1).should('not.exist');
+        cy.get('button.MuiButton-containedPrimary span').contains('Update').click();
 
         // delete
         cy.get(`[data-testid="${km}-actions"] > span:first-child svg`).click();
