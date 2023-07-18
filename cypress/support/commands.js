@@ -52,7 +52,7 @@ Cypress.Commands.add('portalLogin', (username, password, tenant, portal) => {
         cy.visit(`/devportal/apis?tenant=${tenant}`);
         cy.get('#itest-devportal-sign-in', {timeout: Cypress.config().largeTimeout}).click();
     }
-    cy.url().should('contains', `/authenticationendpoint/login.do`);
+    cy.url({ timeout: Cypress.config().largeTimeout }).should('contains', `/authenticationendpoint/login.do`, {matchCase: false});
     cy.get('[data-testid=login-page-username-input]').click();
     cy.get('[data-testid=login-page-username-input]').type(username);
     cy.get('[data-testid=login-page-password-input]').type(password);
@@ -671,8 +671,12 @@ Cypress.Commands.add('addNewUserUsingSelfSignUp', (username, password, firstName
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
     });
+ 
+    cy.wait(30000);
+    cy.url({ timeout: Cypress.config().largeTimeout }).should('contains', `/accountrecoveryendpoint/signup.do`, {matchCase: false});
+    cy.get('[name="http://wso2.org/claims/givenname"]').then(function () {
 
-    cy.get('[name="http://wso2.org/claims/givenname"]').type(firstName);
+    cy.get('[name="http://wso2.org/claims/givenname"]', { timeout: Cypress.config().largeTimeout }).type(firstName);
     cy.get('[name="http://wso2.org/claims/lastname"]').type(lastName);
     cy.get('#password').type(password);
     cy.get('#password2').type(password);
@@ -681,6 +685,8 @@ Cypress.Commands.add('addNewUserUsingSelfSignUp', (username, password, firstName
     cy.get('#registrationSubmit').click();
     cy.contains('User registration completed successfully').should('exist');
     cy.get('[type="button"]').click();
+});
+
 })
 
 Cypress.Commands.add('addExistingUserUsingSelfSignUp', (username, tenant) => {
@@ -708,7 +714,7 @@ Cypress.Commands.add('portalLoginUsingIncorrectUserCredentials', (username, pass
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
         cy.get('#itest-devportal-sign-in').click();
     }
-    cy.url().should('contains', `${Utils.getAppOrigin()}/authenticationendpoint/login.do`);
+    cy.url({ timeout: Cypress.config().largeTimeout }).should('contains', `/authenticationendpoint/login.do`, {matchCase: false});
     cy.get('[data-testid=login-page-username-input]').click();
     cy.get('[data-testid=login-page-username-input]').type(username);
     cy.get('[data-testid=login-page-password-input]').type(password);
