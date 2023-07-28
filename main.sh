@@ -2,6 +2,7 @@
 workingdir=$(pwd)
 reldir=`dirname $0`
 cd $reldir
+tests_dir=$(pwd)
 
 kubectl get pods -l product=apim -n="${kubernetes_namespace}"  -o custom-columns=:metadata.name > podNames.txt
 dateWithMinute=$(date +"%Y_%m_%d_%H_%M")
@@ -64,25 +65,46 @@ rm -f "$outputFolderpath/jmeter.log"
 rm -f -r "$jmeterResultPath"
 mkdir -p "$outputFolderpath"
 mkdir -p "$jmeterResultPath"
-jmeter -n -t APIM-jmeter-test.jmx -Jhost="${HOST_NAME}" -l "$outputFolderpath/jmeter.log" -e -o "$jmeterResultPath" > jmeter-runtime.log
-cp jmeter-runtime.log "$jmeterResultPath"
-greppedOutput=$(cat jmeter-runtime.log | grep "end of run" | wc -l)
-if [[ "$greppedOutput" == "0" ]]
-then
-    echo "Could not start jmeter tests."
-    exit 1
-fi 
+echo "host : " ${HOST_NAME}
 
-greppedOutput=$(cat jmeter-runtime.log | grep "Err:.*(100.00%).*" | wc -l)
-if [[ "$greppedOutput" != "0" ]]
-then
-    echo Jmeter test srcipts failed.
-    exit 1
+echo ls
+
+echo "========== Running newman tests ================"
+
+analytics_collection_file=$tests_dir/tests-cases/analytics-tests/analytics_test.json
+analytics_environment_file=$tests_dir/tests-cases/analytics-tests/analytics_environment.json
+
+/home/ubuntu/.nvm/versions/node/v19.0.1/bin/newman run "$analytics_collection_file" \
+  --environment "$analytics_environment_file" \
+  --env-var "cluster_ip=${HOST_NAME}" \
+  --insecure \
+  --reporters cli,junit \
+  --reporter-junit-export newman-analytics-results.xml
+  
+analyticsExitCode=$?
+
+collection_file=$tests_dir/tests-cases/profile-tests/Profile_Setup_Tests.postman_collection.json
+environment_file=$tests_dir/tests-cases/profile-tests/APIM_Environment.postman_environment.json
+
+
+/home/ubuntu/.nvm/versions/node/v19.0.1/bin/newman run "$collection_file" \
+  --environment "$environment_file" \
+  --env-var "cluster_ip=${HOST_NAME}" \
+  --insecure \
+  --reporters cli,junit \
+  --reporter-junit-export newman-results.xml
+
+# Capture the exit code of the Newman test run
+newmanExitCode=$?
+
+echo ""
+# Check the exit codes and return the appropriate error status
+if [ $analyticsExitCode -eq 0 ] && [ $newmanExitCode -eq 0 ]; then
+  echo "All tests passed successfully."
+  exit 0  # Jenkins job will succeed since both tests passed
 else
-    echo All the Jmeter test scripts passed.
-    exit 0
-fi 
-
-
+  echo "Tests failed. Please check the test results for more details."
+  exit 1  # Jenkins job will fail since at least one test failed
+fi
 cd "$workingdir"
 
