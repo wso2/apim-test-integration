@@ -92,7 +92,7 @@ environment_file=$tests_dir/tests-cases/profile-tests/APIM_Environment.postman_e
   --env-var "cluster_ip=${HOST_NAME}" \
   --insecure \
   --reporters cli,junit \
-  --reporter-junit-export newman-results.xml
+  --reporter-junit-export newman-profile-results.xml
 
 # Capture the exit code of the Newman test run
 newmanExitCode=$?
