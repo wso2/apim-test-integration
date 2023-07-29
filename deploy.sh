@@ -152,6 +152,9 @@ fi;
 # Wait for nginx to come alive.
 kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=480s ||  { echo 'Nginx service is not ready within the expected time limit.';  exit 1; }
 
+# Process helm charts 
+sh resources/$path_to_helm_folder/modify-resources.sh "kubernetes-apim" 
+
 # Install APIM using helm.
 helm repo add wso2 https://helm.wso2.com && helm repo update ||  { echo 'Error while adding WSO2 helm repository to helm.';  exit 1; }
 helm dependency build "kubernetes-apim/${path_to_helm_folder}" ||  { echo 'Error while building helm folder : kubernetes-apim/${path_to_helm_folder}.';  exit 1; }
@@ -169,8 +172,38 @@ if [ -z "${password}" ]; then
 else
     echo "U2 Password is defined"
 fi
+#TESTING or VERIFYING
+updateLevelState='TESTING'
 
 echo "Installing Helm chart - ns ${kubernetes_namespace}  "
+#helm install apim \
+#    "kubernetes-apim/${path_to_helm_folder}" \
+#    --version 3.2.0-5 \
+#    --namespace "${kubernetes_namespace}" \
+#    --create-namespace \
+#    --set wso2.subscription.username=${WUM_USER} \
+#    --set wso2.subscription.password=${WUM_PWD} \
+#    --set wso2.u2.username=${WUM_USER} \
+#    --set wso2.u2.password=${WUM_PWD} \
+#    --set wso2.deployment.am.gateway.startupProbe.initialDelaySeconds=300 \
+#    --set wso2.deployment.am.gateway.readinessProbe.initialDelaySeconds=300 \
+#    --set wso2.deployment.am.km.startupProbe.initialDelaySeconds=300 \
+#    --set wso2.deployment.am.km.readinessProbe.initialDelaySeconds=300 \
+#    --set wso2.deployment.am.pubDevPortalTM.startupProbe.initialDelaySeconds=300 \
+#    --set wso2.deployment.am.pubDevPortalTM.readinessProbe.initialDelaySeconds=300 \
+#    --set wso2.deployment.dependencies.nfsServerProvisioner=false \
+#    --set wso2.deployment.dependencies.mysql=false \
+#    --set wso2.deployment.analytics.worker.enable=true \
+#    --set wso2.deployment.am.db.driver="$dbDriver" \
+#    --set wso2.deployment.am.db.type="$dbType" \
+#    --set wso2.deployment.am.db.apim.username=wso2carbon \
+#    --set wso2.deployment.am.db.apim.password=wso2carbon \
+#    --set wso2.deployment.am.db.apim.url="$dbAPIMUrl" \
+#    --set wso2.deployment.am.db.apim_shared.username=wso2carbon \
+#    --set wso2.deployment.am.db.apim_shared.password=wso2carbon \
+#    --set wso2.deployment.am.db.apim_shared.url="$dbAPIMSharedUrl" \
+#    ||  { echo 'Error while installing APIM to cluster.';  exit 1; }
+
 helm install apim \
     "kubernetes-apim/${path_to_helm_folder}" \
     --version 3.2.0-5 \
@@ -178,25 +211,52 @@ helm install apim \
     --create-namespace \
     --set wso2.subscription.username=${WUM_USER} \
     --set wso2.subscription.password=${WUM_PWD} \
-    --set wso2.u2.username=${WUM_USER} \
-    --set wso2.u2.password=${WUM_PWD} \
-    --set wso2.deployment.am.gateway.startupProbe.initialDelaySeconds=300 \
-    --set wso2.deployment.am.gateway.readinessProbe.initialDelaySeconds=300 \
-    --set wso2.deployment.am.km.startupProbe.initialDelaySeconds=300 \
-    --set wso2.deployment.am.km.readinessProbe.initialDelaySeconds=300 \
-    --set wso2.deployment.am.pubDevPortalTM.startupProbe.initialDelaySeconds=300 \
-    --set wso2.deployment.am.pubDevPortalTM.readinessProbe.initialDelaySeconds=300 \
+    --set wso2.subscription.updateLevelState=$updateLevelState \
     --set wso2.deployment.dependencies.nfsServerProvisioner=false \
     --set wso2.deployment.dependencies.mysql=false \
-    --set wso2.deployment.analytics.worker.enable=true \
+    --set wso2.deployment.am.gateway.replicas=1 \
+    --set wso2.deployment.am.km.replicas=1 \
+    --set wso2.deployment.analytics.dashboard.replicas=0 \
+    --set wso2.deployment.analytics.worker.replicas=1 \
+    --set wso2.deployment.am.imagePullPolicy=IfNotPresent \
+    --set wso2.deployment.analytics.worker.ingress.hostname='worker.analytics.am.wso2.com' \
+    --set wso2.deployment.analytics.worker.ingress.annotations.'kubernetes\.io/ingress\.class'="nginx" \
+    --set wso2.deployment.analytics.worker.ingress.annotations.'nginx\.ingress\.kubernetes\.io/backend-protocol'="HTTPS" \
+    --set wso2.deployment.analytics.worker.imagePullPolicy=IfNotPresent \
+    --set wso2.deployment.am.db.hostname="$dbHost" \
+    --set wso2.deployment.am.db.port="$dbPort" \
+    --set wso2.deployment.am.db.type="$db_engine" \
     --set wso2.deployment.am.db.driver="$dbDriver" \
-    --set wso2.deployment.am.db.type="$dbType" \
-    --set wso2.deployment.am.db.apim.username=wso2carbon \
-    --set wso2.deployment.am.db.apim.password=wso2carbon \
+    --set wso2.deployment.am.db.driver_url="$driverUrl" \
+    --set wso2.deployment.am.db.apim.username="$dbUserNameAPIM" \
+    --set wso2.deployment.am.db.apim.password="$dbPasswordAPIM" \
     --set wso2.deployment.am.db.apim.url="$dbAPIMUrl" \
-    --set wso2.deployment.am.db.apim_shared.username=wso2carbon \
-    --set wso2.deployment.am.db.apim_shared.password=wso2carbon \
+    --set wso2.deployment.am.db.apim_shared.username="$dbUserNameAPIMShared" \
+    --set wso2.deployment.am.db.apim_shared.password="$dbPasswordAPIMShared" \
     --set wso2.deployment.am.db.apim_shared.url="$dbAPIMSharedUrl" \
+    --set wso2.deployment.analytics.db.hostname="$dbHost" \
+    --set wso2.deployment.analytics.db.port="$dbPort}" \
+    --set wso2.deployment.analytics.db.driver="org.h2.Driver" \
+    --set wso2.deployment.analytics.db.driver_url="$driverUrl" \
+    --set wso2.deployment.analytics.db.connection_test_query="SELECT 1" \
+    --set wso2.deployment.analytics.db.permission_db.username="wso2carbon" \
+    --set wso2.deployment.analytics.db.permission_db.password="wso2carbon" \
+    --set wso2.deployment.analytics.db.permission_db.url='jdbc:h2:\${sys:carbon.home}/wso2/${sys:wso2.runtime}/database/PERMISSION_DB;IFEXISTS=TRUE;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;MVCC=TRUE' \
+    --set wso2.deployment.analytics.db.analytics_db.username="wso2carbon" \
+    --set wso2.deployment.analytics.db.analytics_db.password="wso2carbon" \
+    --set wso2.deployment.analytics.db.analytics_db.url='jdbc:h2:\${sys:carbon.home}/wso2/worker/database/APIM_ANALYTICS_DB;AUTO_SERVER=TRUE' \
+    --set wso2.deployment.analytics.db.cluster_db.username="wso2carbon" \
+    --set wso2.deployment.analytics.db.cluster_db.password="wso2carbon" \
+    --set wso2.deployment.analytics.db.cluster_db.url='jdbc:h2:\${sys:carbon.home}/wso2/${sys:wso2.runtime}/database/WSO2_CLUSTER_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;AUTO_SERVER=TRUE' \
+    --set wso2.deployment.analytics.db.persistence_db.username="wso2carbon" \
+    --set wso2.deployment.analytics.db.persistence_db.password="wso2carbon" \
+    --set wso2.deployment.analytics.db.persistence_db.url='jdbc:h2:\${sys:carbon.home}/wso2/${sys:wso2.runtime}/database/PERSISTENCE_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;AUTO_SERVER=TRUE' \
+    --set wso2.deployment.am.gateway.readinessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.am.gateway.livenessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.am.km.readinessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.am.km.livenessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.analytics.worker.readinessProbe.initialDelaySeconds=60 \
+    --set wso2.deployment.analytics.worker.livenessProbe.initialDelaySeconds=60 \
     ||  { echo 'Error while installing APIM to cluster.';  exit 1; }
 
 echo "Waiting for deployment to complete in namespace : ${kubernetes_namespace}"
