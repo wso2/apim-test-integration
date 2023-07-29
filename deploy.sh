@@ -176,33 +176,6 @@ fi
 updateLevelState='TESTING'
 
 echo "Installing Helm chart - ns ${kubernetes_namespace}  "
-#helm install apim \
-#    "kubernetes-apim/${path_to_helm_folder}" \
-#    --version 3.2.0-5 \
-#    --namespace "${kubernetes_namespace}" \
-#    --create-namespace \
-#    --set wso2.subscription.username=${WUM_USER} \
-#    --set wso2.subscription.password=${WUM_PWD} \
-#    --set wso2.u2.username=${WUM_USER} \
-#    --set wso2.u2.password=${WUM_PWD} \
-#    --set wso2.deployment.am.gateway.startupProbe.initialDelaySeconds=300 \
-#    --set wso2.deployment.am.gateway.readinessProbe.initialDelaySeconds=300 \
-#    --set wso2.deployment.am.km.startupProbe.initialDelaySeconds=300 \
-#    --set wso2.deployment.am.km.readinessProbe.initialDelaySeconds=300 \
-#    --set wso2.deployment.am.pubDevPortalTM.startupProbe.initialDelaySeconds=300 \
-#    --set wso2.deployment.am.pubDevPortalTM.readinessProbe.initialDelaySeconds=300 \
-#    --set wso2.deployment.dependencies.nfsServerProvisioner=false \
-#    --set wso2.deployment.dependencies.mysql=false \
-#    --set wso2.deployment.analytics.worker.enable=true \
-#    --set wso2.deployment.am.db.driver="$dbDriver" \
-#    --set wso2.deployment.am.db.type="$dbType" \
-#    --set wso2.deployment.am.db.apim.username=wso2carbon \
-#    --set wso2.deployment.am.db.apim.password=wso2carbon \
-#    --set wso2.deployment.am.db.apim.url="$dbAPIMUrl" \
-#    --set wso2.deployment.am.db.apim_shared.username=wso2carbon \
-#    --set wso2.deployment.am.db.apim_shared.password=wso2carbon \
-#    --set wso2.deployment.am.db.apim_shared.url="$dbAPIMSharedUrl" \
-#    ||  { echo 'Error while installing APIM to cluster.';  exit 1; }
 
 helm install apim \
     "kubernetes-apim/${path_to_helm_folder}" \
