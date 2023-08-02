@@ -14,7 +14,7 @@ echo "ip:" $ip
 analytics_collection_file=$reldir/tests-cases/analytics-tests/analytics_test.json
 analytics_environment_file=$reldir/tests-cases/analytics-tests/analytics_environment.json
  
-/var/lib/jenkins/node-v18.17.0-linux-x64/bin/newman run "$analytics_collection_file" \
+newman run "$analytics_collection_file" \
   --environment "$analytics_environment_file" \
   --env-var "cluster_ip=${ip}" \
   --insecure \
@@ -24,7 +24,7 @@ analytics_environment_file=$reldir/tests-cases/analytics-tests/analytics_environ
 collection_file=$reldir/tests-cases/profile-tests/Profile_Setup_Tests.postman_collection.json
 environment_file=$reldir/tests-cases/profile-tests/APIM_Environment.postman_environment.json
 
-/var/lib/jenkins/node-v18.17.0-linux-x64/bin/newman run "$collection_file" \
+newman run "$collection_file" \
   --environment "$environment_file" \
   --env-var "cluster_ip=${ip}" \
   --insecure \
