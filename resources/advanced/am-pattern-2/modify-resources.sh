@@ -34,3 +34,38 @@ sed -i '/env:/a \            - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n          
 sed -i '/env:/a \          - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n            value: {{ .Values.wso2.subscription.updateLevelState }}' $k8s_repo_dir/advanced/am-pattern-2/templates/am/km/wso2am-pattern-2-am-km-statefulset.yaml
 sed -i '/env:/a \        - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n          value: {{ .Values.wso2.subscription.updateLevelState }}' $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-deployment.yaml
 
+# Remove unnecessary connections between removed instances
+
+## Remove gateway to tm-2 connection
+sed -i 's|throttle_decision_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672","tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:5672"\]|throttle_decision_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672"\]|' $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-conf.yaml
+sed -i 's|event_listening_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672","tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:5672"\]|event_listening_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672"\]|' $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-conf.yaml
+
+sed -i '/^\s*\[\[apim.event_hub.publish.url_group\]\]$/,/^\s*auth_urls = \["ssl:\/\/{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:9711"\]$/{/^\s*urls = \["tcp:\/\/{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:9611"\]$/,/^\s*auth_urls = \["ssl:\/\/{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:9711"\]$/d;}' $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-conf.yaml
+awk '/\[\[apim.event_hub.publish.url_group\]\]/{c++;if(c==2){sub(/\[\[apim.event_hub.publish.url_group\]\]/,"")}}1' $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-conf.yaml > tmpfile && mv tmpfile $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-conf.yaml
+
+sed -i '/^\s*traffic_manager_urls = \["tcp:\/\/{{ template "am-pattern-2\.resource\.prefix" \. }}-am-2-service:9611"\]$/,/^\s*type = "loadbalance"$/d' $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-conf.yaml
+awk '/\[\[apim.throttling.url_group\]\]/{c++;if(c==2){sub(/\[\[apim.throttling.url_group\]\]/,"")}}1' $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-conf.yaml > tmpfile && mv tmpfile $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-conf.yaml
+
+## Remove km to tm-2 connection
+sed -i 's|throttle_decision_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672","tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:5672"\]|throttle_decision_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672"\]|' $k8s_repo_dir/advanced/am-pattern-2/templates/am/km/wso2am-pattern-2-am-km-conf.yaml
+sed -i 's|event_listening_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672","tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:5672"\]|event_listening_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672"\]|' $k8s_repo_dir/advanced/am-pattern-2/templates/am/km/wso2am-pattern-2-am-km-conf.yaml
+
+sed -i '/^\s*\[\[apim.event_hub.publish.url_group\]\]$/,/^\s*auth_urls = \["ssl:\/\/{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:9711"\]$/{/^\s*urls = \["tcp:\/\/{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:9611"\]$/,/^\s*auth_urls = \["ssl:\/\/{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:9711"\]$/d;}' $k8s_repo_dir/advanced/am-pattern-2/templates/am/km/wso2am-pattern-2-am-km-conf.yaml
+awk '/\[\[apim.event_hub.publish.url_group\]\]/{c++;if(c==2){sub(/\[\[apim.event_hub.publish.url_group\]\]/,"")}}1' $k8s_repo_dir/advanced/am-pattern-2/templates/am/km/wso2am-pattern-2-am-km-conf.yaml > tmpfile && mv tmpfile $k8s_repo_dir/advanced/am-pattern-2/templates/am/km/wso2am-pattern-2-am-km-conf.yaml
+
+sed -i '/^\s*traffic_manager_urls = \["tcp:\/\/{{ template "am-pattern-2\.resource\.prefix" \. }}-am-2-service:9611"\]$/,/^\s*type = "loadbalance"$/d' $k8s_repo_dir/advanced/am-pattern-2/templates/am/km/wso2am-pattern-2-am-km-conf.yaml
+awk '/\[\[apim.throttling.url_group\]\]/{c++;if(c==2){sub(/\[\[apim.throttling.url_group\]\]/,"")}}1' $k8s_repo_dir/advanced/am-pattern-2/templates/am/km/wso2am-pattern-2-am-km-conf.yaml > tmpfile && mv tmpfile $k8s_repo_dir/advanced/am-pattern-2/templates/am/km/wso2am-pattern-2-am-km-conf.yaml
+
+
+## Remove tm-1 to tm-2 connection
+sed -i 's|throttle_decision_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672","tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:5672"\]|throttle_decision_endpoints = \["tcp://{{ template "am-pattern-2.resource.prefix" . }}-am-1-service:5672"\]|' $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml
+sed -i 's/^\s*event_duplicate_url = \["tcp:\/\/{{ template "am-pattern-2\.resource\.prefix" \. }}-am-2-service:5672"\]/    #event_duplicate_url = ["tcp:\/\/{{ template "am-pattern-2\.resource\.prefix" \. }}-am-2-service:5672"]/' $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml
+
+
+sed -i '/^\s*\[\[apim.event_hub.publish.url_group\]\]$/,/^\s*auth_urls = \["ssl:\/\/{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:9711"\]$/{/^\s*urls = \["tcp:\/\/{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:9611"\]$/,/^\s*auth_urls = \["ssl:\/\/{{ template "am-pattern-2.resource.prefix" . }}-am-2-service:9711"\]$/d;}' $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml
+awk '/\[\[apim.event_hub.publish.url_group\]\]/{c++;if(c==2){sub(/\[\[apim.event_hub.publish.url_group\]\]/,"")}}1' $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml > tmpfile && mv tmpfile $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml
+
+sed -i '/^\s*traffic_manager_urls = \["tcp:\/\/{{ template "am-pattern-2\.resource\.prefix" \. }}-am-2-service:9611"\]$/,/^\s*type = "loadbalance"$/d' $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml
+awk '/\[\[apim.throttling.url_group\]\]/{c++;if(c==2){sub(/\[\[apim.throttling.url_group\]\]/,"")}}1' $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml > tmpfile && mv tmpfile $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml
+
+
