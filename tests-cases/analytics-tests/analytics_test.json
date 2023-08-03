@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "02313775-7ed0-4a9b-b77c-e3f74423432f",
-		"name": "WSO2 API Manager 3.2.0 - Analytics Test Copy",
+		"name": "WSO2 API Manager 3.2.0 - Analytics Test",
 		"description": "This document specifies a **RESTful API** for WSO2 **API Manager - Publisher REST API** .\nIt is written with [swagger 2.0](http://swagger.io/).\n",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "8020362",
@@ -671,9 +671,9 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const date = new Date();",
-											"pm.collectionVariables.set(\"time1\", date.getTime());",
-											"var val = date.setSeconds(7);",
+											"let time = Date.parse(new Date().toUTCString());",
+											"pm.collectionVariables.set(\"time1\", time-10000);",
+											"var val = time +7000;",
 											"pm.collectionVariables.set(\"time2\", val);",
 											"pm.test(\"API invocation\", function () {",
 											"    pm.response.to.have.status(200);",
@@ -730,9 +730,9 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const date = new Date();",
-											"pm.collectionVariables.set(\"timeL1\", date.getTime());",
-											"var val = date.setSeconds(3);",
+											"let time = Date.parse(new Date().toUTCString());",
+											"pm.collectionVariables.set(\"timeL1\", time-10000);",
+											"var val = time +10000;",
 											"pm.collectionVariables.set(\"timeL2\", val);",
 											"pm.test(\"Faulty Invocation\", function () {",
 											"    pm.response.to.have.status(401);",
@@ -855,7 +855,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"appName\" : \"APIM_ACCESS_SUMMARY\", \"query\" : \"from ApiUserPerAppAgg within {{time2}}L, {{time1}}L per \\\"seconds\\\" select *\" }",
+							"raw": "{\"appName\" : \"APIM_ACCESS_SUMMARY\", \"query\" : \"from ApiUserPerAppAgg within {{time1}}L, {{time2}}L per \\\"seconds\\\" select *\" }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -933,7 +933,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"appName\" : \"APIM_ACCESS_SUMMARY\", \"query\" : \"from GeoLocationAgg within {{time2}}L, {{time1}}L per \\\"seconds\\\" select *\" }",
+							"raw": "{\"appName\" : \"APIM_ACCESS_SUMMARY\", \"query\" : \"from GeoLocationAgg within {{time1}}L, {{time2}}L per \\\"seconds\\\" select *\" }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1011,7 +1011,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"appName\" : \"APIM_ERROR_SUMMARY\", \"query\" : \"from ApiErrorAnalysisAgg within {{timeL2}}L, {{timeL1}}L per \\\"seconds\\\" select *\" }",
+							"raw": "{\"appName\" : \"APIM_ERROR_SUMMARY\", \"query\" : \"from ApiErrorAnalysisAgg within {{timeL1}}L, {{timeL2}}L per \\\"seconds\\\" select *\" }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1870,11 +1870,11 @@
 									"",
 									"// Assert when throttled out",
 									"if (throttledOut) {",
-									"    pm.test(\"API request is throttled\", function () {",
-									"        const date = new Date();",
-									"        pm.collectionVariables.set(\"t1\", date.getTime());",
-									"        date.setSeconds(5);",
-									"        pm.collectionVariables.set(\"t2\", date.getTime());",
+									"pm.test(\"API request is throttled\", function () {",
+									"let time = Date.parse(new Date().toUTCString());",
+									"pm.collectionVariables.set(\"t1\", time-10000);",
+									"var val = time +5000;",
+									"pm.collectionVariables.set(\"t2\", val);",
 									"        pm.response.to.have.status(429);",
 									"    });",
 									"}",
@@ -2010,7 +2010,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"appName\" : \"APIM_THROTTLED_OUT_SUMMARY\", \"query\" : \"from ApiThrottledOutAgg within {{t2}}L, {{t1}}L per \\\"seconds\\\" select *\" }",
+							"raw": "{\"appName\" : \"APIM_THROTTLED_OUT_SUMMARY\", \"query\" : \"from ApiThrottledOutAgg within {{t1}}L, {{t2}}L per \\\"seconds\\\" select *\" }",
 							"options": {
 								"raw": {
 									"language": "json"
