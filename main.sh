@@ -2,6 +2,7 @@
 workingdir=$(pwd)
 reldir=`dirname $0`
 cd $reldir
+tests_dir=$(pwd)
 
 kubectl get pods -l product=apim -n="${kubernetes_namespace}"  -o custom-columns=:metadata.name > podNames.txt
 dateWithMinute=$(date +"%Y_%m_%d_%H_%M")
@@ -64,6 +65,8 @@ rm -f "$outputFolderpath/jmeter.log"
 rm -f -r "$jmeterResultPath"
 mkdir -p "$outputFolderpath"
 mkdir -p "$jmeterResultPath"
+
+echo "host : " ${HOST_NAME}
 
 echo "========== Running newman tests ================"
 
