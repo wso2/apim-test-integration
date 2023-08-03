@@ -149,13 +149,36 @@ fi;
 # Provision rds db
 ./provision_db_apim.sh "${db_engine}" "${DB_PASSWORD}" "$dbHost" "${DB_USERNAME}" "$dbPort" || exit 1
 
+# Process helm charts 
+sh resources/$path_to_helm_folder/modify-resources.sh "kubernetes-apim" 
+
 # Wait for nginx to come alive.
 kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=480s ||  { echo 'Nginx service is not ready within the expected time limit.';  exit 1; }
 
 # Install APIM using helm.
 helm repo add wso2 https://helm.wso2.com && helm repo update ||  { echo 'Error while adding WSO2 helm repository to helm.';  exit 1; }
 helm dependency build "kubernetes-apim/${path_to_helm_folder}" ||  { echo 'Error while building helm folder : kubernetes-apim/${path_to_helm_folder}.';  exit 1; }
+
+username=${WUM_USER}
+password=${WUM_PWD}
+if [ -z "${username}" ]; then
+    echo "U2 Username is not defined"
+else
+    echo "U2 Username is defined"
+fi
+
+if [ -z "${password}" ]; then
+    echo "U2 Password is not defined"
+else
+    echo "U2 Password is defined"
+fi
+#TESTING or VERIFYING
+updateLevelState='TESTING'
+
 helm install apim "kubernetes-apim/${path_to_helm_folder}" \
+    --set wso2.subscription.username=${WUM_USER} \
+    --set wso2.subscription.password=${WUM_PWD} \
+    --set wso2.subscription.updateLevelState=$updateLevelState \
     --set wso2.deployment.am.cp.db.hostname="$dbHost" \
     --set wso2.deployment.am.cp.db.port="$dbPort" \
     --set wso2.deployment.am.cp.db.type="$dbType" \
