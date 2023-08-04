@@ -17,6 +17,7 @@ environment_file=$reldir/tests-cases/profile-tests/APIM_Environment.postman_envi
 newman run "$collection_file" \
   --environment "$environment_file" \
   --env-var "cluster_ip=${ip}" \
+  --env-var "pizzashack_endpoint=https://wso2am-pattern-4-am-cp-service:9443/am/sample/pizzashack/v1/api/" \
   --insecure \
   --reporters cli,junit \
   --reporter-junit-export newman-profiles-results.xml
