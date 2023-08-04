@@ -5129,6 +5129,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
@@ -5190,6 +5191,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
@@ -5961,6 +5963,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
@@ -6095,6 +6098,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
@@ -6329,7 +6333,7 @@
 							"script": {
 								"exec": [
 									"// Assert the response code",
-									"pm.test(\"Publish the API with schema validation\", function () {",
+									"pm.test(\"Publish the API\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									""
@@ -6763,6 +6767,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
@@ -6832,8 +6837,6 @@
 									"pm.test(\"Subscription status of the blocked subscription\", function () {",
 									"    pm.expect(subscriptionBlockResponseJson.subscriptionStatus).to.eql(\"BLOCKED\");",
 									"});",
-									"",
-									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
@@ -6915,6 +6918,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
@@ -6984,8 +6988,6 @@
 									"pm.test(\"Subscription status of the unblocked subscription\", function () {",
 									"    pm.expect(subscriptionBlockResponseJson.subscriptionStatus).to.eql(\"UNBLOCKED\");",
 									"});",
-									"",
-									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
@@ -7057,6 +7059,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
