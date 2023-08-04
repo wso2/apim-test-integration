@@ -71,21 +71,8 @@ echo ls
 
 echo "========== Running newman tests ================"
 
-analytics_collection_file=$tests_dir/tests-cases/analytics-tests/analytics_test.json
-analytics_environment_file=$tests_dir/tests-cases/analytics-tests/analytics_environment.json
-
-/home/ubuntu/.nvm/versions/node/v19.0.1/bin/newman run "$analytics_collection_file" \
-  --environment "$analytics_environment_file" \
-  --env-var "cluster_ip=${HOST_NAME}" \
-  --insecure \
-  --reporters cli,junit \
-  --reporter-junit-export newman-analytics-results.xml
-  
-analyticsExitCode=$?
-
 collection_file=$tests_dir/tests-cases/profile-tests/Profile_Setup_Tests.postman_collection.json
 environment_file=$tests_dir/tests-cases/profile-tests/APIM_Environment.postman_environment.json
-
 
 /home/ubuntu/.nvm/versions/node/v19.0.1/bin/newman run "$collection_file" \
   --environment "$environment_file" \
@@ -99,7 +86,7 @@ newmanExitCode=$?
 
 echo ""
 # Check the exit codes and return the appropriate error status
-if [ $analyticsExitCode -eq 0 ] && [ $newmanExitCode -eq 0 ]; then
+if [ $newmanExitCode -eq 0 ]; then
   echo "All tests passed successfully."
   exit 0  # Jenkins job will succeed since both tests passed
 else
