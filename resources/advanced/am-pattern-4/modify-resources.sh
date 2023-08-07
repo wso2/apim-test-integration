@@ -41,3 +41,13 @@ sed -i '/env:/a \            - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n          
 sed -i '/env:/a \            - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n              value: {{ .Values.wso2.subscription.updateLevelState }}' $k8s_repo_dir/advanced/am-pattern-4/templates/am/traffic-manager/instance-2/wso2am-pattern-4-am-trafficmanager-deployment.yaml
 sed -i '/env:/a \        - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n          value: {{ .Values.wso2.subscription.updateLevelState }}' $k8s_repo_dir/advanced/am-pattern-4/templates/am/gateway/wso2am-pattern-4-am-gateway-deployment.yaml
 
+# add u2 update logic to tm
+sed -i '/^[[:blank:]]*set -e/a\
+    # Update product\n\
+    echo "========================================== update product =========================================================="\n\
+    echo "Updating apim to $WSO2_UPDATES_UPDATE_LEVEL_STATE pack ............."\n\
+    cd ${WSO2_SERVER_HOME}/bin/\n\
+    ./wso2update_linux --backup /home/wso2carbon/ --username {{ .Values.wso2.subscription.username }} --password {{ .Values.wso2.subscription.password }}\n\
+    echo "===================================================================================================================="\n\
+' $k8s_repo_dir/advanced/am-pattern-4/templates/am/traffic-manager/wso2am-pattern-4-am-trafficmanager-conf-entrypoint.yaml
+
