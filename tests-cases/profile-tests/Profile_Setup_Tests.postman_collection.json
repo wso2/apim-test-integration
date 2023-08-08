@@ -159,7 +159,7 @@
 								},
 								{
 									"key": "scope",
-									"value": "apim:api_view apim:api_publish apim:api_create apim:subscribe apim:subscription_view apim:document_create apim:comment_write apim:admin apim:tier_manage apim:scope_manage apim:admin_operations apim:shared_scope_manage apim:mediation_policy_create apim:api_import_export apim:mediation_policy_view apim:app_manage apim:sub_manage apim:admin apim:tier_view",
+									"value": "apim:api_view apim:api_publish apim:api_create apim:subscribe apim:subscription_view apim:document_create apim:comment_write apim:admin apim:tier_manage apim:scope_manage apim:admin_operations apim:shared_scope_manage apim:mediation_policy_create apim:api_import_export apim:mediation_policy_view apim:app_manage apim:sub_manage apim:admin apim:tier_view apim:subscription_block",
 									"type": "text"
 								}
 							]
@@ -7142,6 +7142,1098 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{gateway_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{gateway_port}}/pizzashack/1.0.0/menu",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{gateway_port}}",
+							"path": [
+								"pizzashack",
+								"1.0.0",
+								"menu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Application deletion\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/applications/{{application_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"applications",
+								"{{application_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API deletion\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/{{api_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"{{api_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subscription Blocking Testcase",
+			"item": [
+				{
+					"name": "Create API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API creation\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// API creation response JSON",
+									"var apiCreationResponseJson = pm.response.json();",
+									"",
+									"var apiId = apiCreationResponseJson.id;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"api_id\", apiId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"PizzaShackAPI\",\n  \"description\": \"This is a simple API for Pizza Shack online pizza delivery store.\",\n  \"context\": \"/pizzashack\",\n  \"version\": \"1.0.0\",\n  \"transport\": [\n    \"http\",\n    \"https\"\n  ],\n  \"tags\": [\n    \"pizza\"\n  ],\n  \"policies\": [\n    \"Unlimited\"\n  ],\n  \"securityScheme\": [\n    \"oauth2\"\n  ],\n  \"visibility\": \"PUBLIC\",\n  \"businessInformation\": {\n    \"businessOwner\": \"Jane Roe\",\n    \"businessOwnerEmail\": \"marketing@pizzashack.com\",\n    \"technicalOwner\": \"John Doe\",\n    \"technicalOwnerEmail\": \"architecture@pizzashack.com\"\n  },\n  \"endpointConfig\": {\n    \"endpoint_type\": \"http\",\n    \"sandbox_endpoints\": {\n      \"url\": \"{{pizzashack_endpoint}}\"\n    },\n    \"production_endpoints\": {\n      \"url\": \"{{pizzashack_endpoint}}\"\n    }\n  },\n  \"operations\": [\n    {\n      \"target\": \"/order/{orderId}\",\n      \"verb\": \"GET\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    },\n    {\n      \"target\": \"/order/{orderId}\",\n      \"verb\": \"DELETE\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    },\n    {\n      \"target\": \"/order/{orderId}\",\n      \"verb\": \"PUT\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    },\n    {\n      \"target\": \"/menu\",\n      \"verb\": \"GET\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    },\n    {\n      \"target\": \"/order\",\n      \"verb\": \"POST\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis?openAPIVersion=v3",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis"
+							],
+							"query": [
+								{
+									"key": "openAPIVersion",
+									"value": "v3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API Revision",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API revision creation\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// API creation response JSON",
+									"var revisionCreationResponseJson = pm.response.json();",
+									"",
+									"var apiId = revisionCreationResponseJson.apiInfo.id;",
+									"",
+									"// Assert the API ID",
+									"pm.test(\"Revision created for the API\", function () {",
+									"    pm.expect(apiId).to.eql(pm.environment.get(\"api_id\"));",
+									"});",
+									"",
+									"// Assert the description",
+									"pm.test(\"Revision created with the description\", function () {",
+									"    pm.expect(revisionCreationResponseJson.description).to.eql(\"Initial Revision\");",
+									"});",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"revision_id\", revisionCreationResponseJson.id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Initial Revision\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/{{api_id}}/revisions",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"{{api_id}}",
+								"revisions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deploy API Revision",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API revision deployment\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// API creation response JSON",
+									"var revisionDeploymentResponseJson = pm.response.json();",
+									"",
+									"// Assert the revision ID",
+									"pm.test(\"Revision deployed for the API\", function () {",
+									"    pm.expect(revisionDeploymentResponseJson[0].revisionUuid).to.eql(pm.environment.get(\"revision_id\"));",
+									"});",
+									"",
+									"setTimeout(function(){}, pm.environment.get(\"wait_time_for_deployment\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"name\": \"Default\",\n        \"displayOnDevportal\": true,\n        \"vhost\": \"{{gateway_host}}\"\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/{{api_id}}/deploy-revision?revisionId={{revision_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"{{api_id}}",
+								"deploy-revision"
+							],
+							"query": [
+								{
+									"key": "revisionId",
+									"value": "{{revision_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Publish the API with schema validation\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/change-lifecycle?action=Publish&apiId={{api_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"change-lifecycle"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "Publish"
+								},
+								{
+									"key": "apiId",
+									"value": "{{api_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Application creation\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Application creation response JSON",
+									"var appCreationResponseJson = pm.response.json();",
+									"",
+									"var applicationId = appCreationResponseJson.applicationId;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"application_id\", applicationId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"PizzaShackApp\",\n  \"throttlingPolicy\": \"Unlimited\",\n  \"description\": \"\",\n  \"tokenType\": \"JWT\",\n  \"groups\": null,\n  \"attributes\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/applications",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Subscription to the API\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Application creation response JSON",
+									"var subscriptionCreationResponseJson = pm.response.json();",
+									"",
+									"var subscriptionId = subscriptionCreationResponseJson.subscriptionId;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"subscription_id\", subscriptionId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"applicationId\": \"{{application_id}}\",\n  \"apiId\": \"{{api_id}}\",\n  \"throttlingPolicy\": \"Unlimited\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/subscriptions",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Key Manager for Key Generation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Retrieve keymanager to generate keys\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Keymanager retrieval response JSON",
+									"var keymanagerArrayJsonResponse = pm.response.json();",
+									"",
+									"var keymanagerId = keymanagerArrayJsonResponse.list[0].id;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"keymanager_id\", keymanagerId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"host": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/key-managers",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"key-managers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Keys for Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Generate keys for the application\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Key generation response JSON",
+									"var keyGenerationResponseJson = pm.response.json();",
+									"",
+									"var keyMappingId = keyGenerationResponseJson.keyMappingId;",
+									"var appConsumerKey = keyGenerationResponseJson.consumerKey;",
+									"var appConsumerSecret = keyGenerationResponseJson.consumerSecret;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"key_mapping_id\", keyMappingId);",
+									"pm.environment.set(\"app_consumer_key\", appConsumerKey);",
+									"pm.environment.set(\"app_consumer_secret\", appConsumerSecret);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"keyType\": \"PRODUCTION\",\n  \"grantTypesToBeSupported\": [\n    \"refresh_token\",\n    \"urn:ietf:params:oauth:grant-type:saml2-bearer\",\n    \"password\",\n    \"client_credentials\",\n    \"iwa:ntlm\",\n    \"urn:ietf:params:oauth:grant-type:jwt-bearer\"\n  ],\n  \"callbackUrl\": \"\",\n  \"additionalProperties\": {\n    \"application_access_token_expiry_time\": \"N/A\",\n    \"user_access_token_expiry_time\": \"N/A\",\n    \"refresh_token_expiry_time\": \"N/A\",\n    \"id_token_expiry_time\": \"N/A\"\n  },\n  \"keyManager\": \"{{keymanager_id}}\",\n  \"validityTime\": 3600,\n  \"scopes\": [\n    \"default\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/applications/{{application_id}}/generate-keys",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"applications",
+								"{{application_id}}",
+								"generate-keys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Access Token for Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Generate access token to invoke APIs\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Access token response JSON",
+									"var accessTokenResponseJson = pm.response.json();",
+									"",
+									"var appAccessToken = accessTokenResponseJson.accessToken;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"app_access_token\", appAccessToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"consumerSecret\": \"{{app_consumer_secret}}\",\n  \"validityPeriod\": 3600,\n  \"revokeToken\": null,\n  \"scopes\": [],\n  \"additionalProperties\": {\n    \"id_token_expiry_time\": 3600,\n    \"application_access_token_expiry_time\": 3600,\n    \"user_access_token_expiry_time\": 3600,\n    \"refresh_token_expiry_time\": 86400\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/applications/{{application_id}}/oauth-keys/{{key_mapping_id}}/generate-token",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"applications",
+								"{{application_id}}",
+								"oauth-keys",
+								"{{key_mapping_id}}",
+								"generate-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoke API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API invocation\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, 1000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{gateway_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{gateway_port}}/pizzashack/1.0.0/menu",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{gateway_port}}",
+							"path": [
+								"pizzashack",
+								"1.0.0",
+								"menu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Block Subscription of the API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Block subscription of the API\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"// Subscription block response JSON",
+									"var subscriptionBlockResponseJson = pm.response.json();",
+									"",
+									"// Assert the response",
+									"pm.test(\"Subscription ID of the blocked subscription\", function () {",
+									"    pm.expect(subscriptionBlockResponseJson.subscriptionId).to.eql(pm.environment.get(\"subscription_id\"));",
+									"});",
+									"",
+									"pm.test(\"Application ID of the blocked subscription\", function () {",
+									"    pm.expect(subscriptionBlockResponseJson.applicationInfo.applicationId).to.eql(pm.environment.get(\"application_id\"));",
+									"});",
+									"",
+									"pm.test(\"Subscription status of the blocked subscription\", function () {",
+									"    pm.expect(subscriptionBlockResponseJson.subscriptionStatus).to.eql(\"BLOCKED\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"host": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/subscriptions/block-subscription?subscriptionId={{subscription_id}}&blockState=BLOCKED",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"subscriptions",
+								"block-subscription"
+							],
+							"query": [
+								{
+									"key": "subscriptionId",
+									"value": "{{subscription_id}}"
+								},
+								{
+									"key": "blockState",
+									"value": "BLOCKED"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoke API after Subscription Blocking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API invocation after subscription blocking\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"var apiResponse = pm.response.json();",
+									"",
+									"pm.test(\"Response received for subscription blocked API\", function() {",
+									"    pm.expect(apiResponse.message).to.eql(\"The requested API is temporarily blocked\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, 1000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{gateway_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{gateway_port}}/pizzashack/1.0.0/menu",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{gateway_port}}",
+							"path": [
+								"pizzashack",
+								"1.0.0",
+								"menu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unblock Subscription of the API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Block subscription of the API\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"// Subscription unblock response JSON",
+									"var subscriptionBlockResponseJson = pm.response.json();",
+									"",
+									"// Assert the response",
+									"pm.test(\"Subscription ID of the unblocked subscription\", function () {",
+									"    pm.expect(subscriptionBlockResponseJson.subscriptionId).to.eql(pm.environment.get(\"subscription_id\"));",
+									"});",
+									"",
+									"pm.test(\"Application ID of the unblocked subscription\", function () {",
+									"    pm.expect(subscriptionBlockResponseJson.applicationInfo.applicationId).to.eql(pm.environment.get(\"application_id\"));",
+									"});",
+									"",
+									"pm.test(\"Subscription status of the unblocked subscription\", function () {",
+									"    pm.expect(subscriptionBlockResponseJson.subscriptionStatus).to.eql(\"UNBLOCKED\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"host": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/subscriptions/unblock-subscription?subscriptionId={{subscription_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"subscriptions",
+								"unblock-subscription"
+							],
+							"query": [
+								{
+									"key": "subscriptionId",
+									"value": "{{subscription_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoke API after Unblocking Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API invocation\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, 1000);",
 									""
 								],
 								"type": "text/javascript"
