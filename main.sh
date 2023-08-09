@@ -74,10 +74,7 @@ echo "========== Running newman tests ================"
 collection_file=$tests_dir/tests-cases/profile-tests/Profile_Setup_Tests.postman_collection.json
 environment_file=$tests_dir/tests-cases/profile-tests/APIM_Environment.postman_environment.json
 
-profile_test_resource_dir=$tests_dir/tests-cases/profile-tests/resources/operation-policy-testcase
-mkdir -p "$profile_test_resource_dir"
-wget -q -O "$profile_test_resource_dir/changeHTTPMethod_v2.j2" "https://raw.githubusercontent.com/wso2/apim-test-integration/4.2.0-profile-automation/tests-cases/profile-tests/resources/operation-policy-testcase/changeHTTPMethod_v2.j2"
-operation_policy_file_path="$profile_test_resource_dir/changeHTTPMethod_v2.j2"
+operation_policy_file_path="$tests_dir/tests-cases/profile-tests/resources/operation-policy-testcase/changeHTTPMethod_v2.j2"
 
 /home/ubuntu/.nvm/versions/node/v19.0.1/bin/newman run "$collection_file" \
   --environment "$environment_file" \
