@@ -13,7 +13,7 @@ echo "ip:" $ip
 
 collection_file=$reldir/tests-cases/profile-tests/Profile_Setup_Tests.postman_collection.json
 environment_file=$reldir/tests-cases/profile-tests/APIM_Environment.postman_environment.json
-operation_policy_file_path="$tests_dir/tests-cases/profile-tests/resources/operation-policy-testcase/changeHTTPMethod_v2.j2"
+operation_policy_file_path="$reldir/tests-cases/profile-tests/resources/operation-policy-testcase/changeHTTPMethod_v2.j2"
 
 newman run "$collection_file" \
   --environment "$environment_file" \
