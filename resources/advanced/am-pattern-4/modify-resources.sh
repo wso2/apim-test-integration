@@ -43,3 +43,10 @@ sed -i '/env:/a \            - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n          
 sed -i '/env:/a \            - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n              value: {{ .Values.wso2.subscription.updateLevelState }}' $k8s_repo_dir/advanced/am-pattern-4/templates/am/traffic-manager/instance-2/wso2am-pattern-4-am-trafficmanager-deployment.yaml
 sed -i '/env:/a \        - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n          value: {{ .Values.wso2.subscription.updateLevelState }}' $k8s_repo_dir/advanced/am-pattern-4/templates/am/gateway/wso2am-pattern-4-am-gateway-deployment.yaml
 
+# add label to deployments
+
+sed -i 's/labels:/labels:\n        product: apim/' $k8s_repo_dir/advanced/am-pattern-4/templates/am/control-plane/instance-1/wso2am-pattern-4-am-control-plane-deployment.yaml
+sed -i 's/labels:/labels:\n        product: apim/' $k8s_repo_dir/advanced/am-pattern-4/templates/am/control-plane/instance-2/wso2am-pattern-4-am-control-plane-deployment.yaml
+sed -i 's/labels:/labels:\n        product: apim/' $k8s_repo_dir/advanced/am-pattern-4/templates/am/traffic-manager/instance-1/wso2am-pattern-4-am-trafficmanager-deployment.yaml
+sed -i 's/labels:/labels:\n        product: apim/' $k8s_repo_dir/advanced/am-pattern-4/templates/am/traffic-manager/instance-2/wso2am-pattern-4-am-trafficmanager-deployment.yaml
+sed -i 's/labels:/labels:\n        product: apim/' $k8s_repo_dir/advanced/am-pattern-4/templates/am/gateway/wso2am-pattern-4-am-gateway-deployment.yaml
