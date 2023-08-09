@@ -74,10 +74,13 @@ echo "========== Running newman tests ================"
 collection_file=$tests_dir/tests-cases/profile-tests/Profile_Setup_Tests.postman_collection.json
 environment_file=$tests_dir/tests-cases/profile-tests/APIM_Environment.postman_environment.json
 
+operation_policy_file_path="$tests_dir/tests-cases/profile-tests/resources/operation-policy-testcase/changeHTTPMethod_v2.j2"
+
 /home/ubuntu/.nvm/versions/node/v19.0.1/bin/newman run "$collection_file" \
   --environment "$environment_file" \
   --env-var "cluster_ip=${HOST_NAME}" \
   --env-var "pizzashack_endpoint=https://wso2am-pattern-4-am-cp-service:9443/am/sample/pizzashack/v1/api/" \
+  --env-var "operation_policy_file_path=$operation_policy_file_path" \
   --insecure \
   --reporters cli,junit \
   --reporter-junit-export newman-profile-results.xml
