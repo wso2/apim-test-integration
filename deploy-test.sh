@@ -32,6 +32,10 @@ kubectl create clusterrolebinding cluster-admin-binding \
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
 
+# Wait for nginx to come alive.
+echo "===== wait for nginx ========="
+kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=30s
+
 helm delete wso2am --namespace wso2
 kubectl get pods -n wso2 -o name | xargs kubectl delete --force --grace-period=0 -n wso2
 
