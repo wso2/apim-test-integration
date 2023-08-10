@@ -159,7 +159,7 @@
 								},
 								{
 									"key": "scope",
-									"value": "apim:api_view apim:api_publish apim:api_create apim:subscribe apim:subscription_view apim:document_create apim:comment_write apim:admin apim:tier_manage apim:scope_manage apim:admin_operations apim:shared_scope_manage apim:mediation_policy_create apim:api_import_export apim:mediation_policy_view apim:app_manage apim:sub_manage apim:admin apim:tier_view apim:subscription_block",
+									"value": "apim:api_view apim:api_publish apim:api_create apim:subscribe apim:subscription_view apim:document_create apim:comment_write apim:admin apim:tier_manage apim:scope_manage apim:admin_operations apim:shared_scope_manage apim:mediation_policy_create apim:api_import_export apim:mediation_policy_view apim:app_manage apim:sub_manage apim:admin apim:tier_view apim:subscription_block apim:mediation_policy_create apim:mediation_policy_manage apim:mediation_policy_view apim:policies_import_export apim:common_operation_policy_manage apim:common_operation_policy_view",
 									"type": "text"
 								}
 							]
@@ -7061,7 +7061,7 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"setTimeout(function(){}, 5000);",
+									"setTimeout(function(){}, 2000);",
 									""
 								],
 								"type": "text/javascript"
@@ -8372,6 +8372,1207 @@
 							"path": [
 								"apis",
 								"{{api_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Operation Policy Testcase",
+			"item": [
+				{
+					"name": "Create API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API creation\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// API creation response JSON",
+									"var apiCreationResponseJson = pm.response.json();",
+									"",
+									"var apiId = apiCreationResponseJson.id;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"api_id\", apiId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"PizzaShackAPI\",\n  \"description\": \"This is a simple API for Pizza Shack online pizza delivery store.\",\n  \"context\": \"/pizzashack\",\n  \"version\": \"1.0.0\",\n  \"transport\": [\n    \"http\",\n    \"https\"\n  ],\n  \"tags\": [\n    \"pizza\"\n  ],\n  \"policies\": [\n    \"Unlimited\"\n  ],\n  \"securityScheme\": [\n    \"oauth2\"\n  ],\n  \"visibility\": \"PUBLIC\",\n  \"businessInformation\": {\n    \"businessOwner\": \"Jane Roe\",\n    \"businessOwnerEmail\": \"marketing@pizzashack.com\",\n    \"technicalOwner\": \"John Doe\",\n    \"technicalOwnerEmail\": \"architecture@pizzashack.com\"\n  },\n  \"endpointConfig\": {\n    \"endpoint_type\": \"http\",\n    \"sandbox_endpoints\": {\n      \"url\": \"{{pizzashack_endpoint}}\"\n    },\n    \"production_endpoints\": {\n      \"url\": \"{{pizzashack_endpoint}}\"\n    }\n  },\n  \"operations\": [\n    {\n      \"target\": \"/order/{orderId}\",\n      \"verb\": \"GET\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    },\n    {\n      \"target\": \"/order/{orderId}\",\n      \"verb\": \"DELETE\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    },\n    {\n      \"target\": \"/order/{orderId}\",\n      \"verb\": \"PUT\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    },\n    {\n      \"target\": \"/menu\",\n      \"verb\": \"GET\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    },\n    {\n      \"target\": \"/order\",\n      \"verb\": \"POST\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"authType\": \"Application & Application User\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis?openAPIVersion=v3",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis"
+							],
+							"query": [
+								{
+									"key": "openAPIVersion",
+									"value": "v3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Change HTTP Method Operation Policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Create Change HTTP Method operation policy\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// API operation policy response JSON",
+									"var policyCreationResponseJson = pm.response.json();",
+									"",
+									"// Check if the name matches the response",
+									"pm.test(\"Policy created with name 'ChangeHTTPMethodv2'\", function() {",
+									"    pm.expect(policyCreationResponseJson.name).to.eql(\"ChangeHTTPMethodv2\");",
+									"});",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"policy_id\", policyCreationResponseJson.id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "policySpecFile",
+									"value": "{\"category\":\"Mediation\",\"name\":\"ChangeHTTPMethodv2\",\"displayName\":\"Change HTTP Method\",\"version\":\"v2\",\"description\":\"Change HTTP Method policy version 2\",\"applicableFlows\":[\"request\"],\"supportedApiTypes\":[\"HTTP\"],\"supportedGateways\":[\"Synapse\"],\"policyAttributes\":[{\"name\":\"httpMethod\",\"displayName\":\"HTTP Method\",\"version\":null,\"description\":\"\",\"required\":true,\"type\":\"String\",\"allowedValues\":[]}]}",
+									"type": "text"
+								},
+								{
+									"key": "synapsePolicyDefinitionFile",
+									"type": "file",
+									"src": "{{operation_policy_file_path}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/operation-policies",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"operation-policies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Add Header Operation Policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Retrieve operation policies\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// API operation policy response JSON",
+									"var policyResponseJson = pm.response.json();",
+									"var policyId = null;",
+									"",
+									"// Iterate through the array and find the object with displayName = \"Add Header\"",
+									"for (var i = 0; i < policyResponseJson.list.length; i++) {",
+									"    if (policyResponseJson.list[i].name === \"addHeader\") {",
+									"        policyId = policyResponseJson.list[i].id;",
+									"        break;",
+									"    }",
+									"}",
+									"",
+									"// Check if a matching object was found",
+									"pm.test(\"Policy with name 'Add Header' found\", function() {",
+									"    pm.expect(policyId).to.not.be.null;",
+									"});",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"policy_2_id\", policyId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/operation-policies?limit=500",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"operation-policies"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "500"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update API Swagger with New Resource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Update swagger with new resource\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"host": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "apiDefinition",
+									"value": "{\"openapi\":\"3.0.0\",\"info\":{\"title\":\"PizzaShackAPI\",\"description\":\"This is a RESTFul API for Pizza Shack online pizza delivery store.\\n\",\"contact\":{\"name\":\"John Doe\",\"url\":\"http://www.pizzashack.com\",\"email\":\"architecture@pizzashack.com\"},\"license\":{\"name\":\"Apache 2.0\",\"url\":\"http://www.apache.org/licenses/LICENSE-2.0.html\"},\"version\":\"1.0.0\"},\"servers\":[{\"url\":\"/\"}],\"security\":[{\"default\":[]}],\"paths\":{\"/order\":{\"post\":{\"description\":\"Create a new Order\",\"requestBody\":{\"$ref\":\"#/components/requestBodies/Order\"},\"responses\":{\"201\":{\"description\":\"Created. Successful response with the newly created object as entity inthe body.Location header contains URL of newly created entity.\",\"headers\":{\"Location\":{\"description\":\"The URL of the newly created resource.\",\"style\":\"simple\",\"explode\":false,\"schema\":{\"type\":\"string\"}},\"Content-Type\":{\"description\":\"The content type of the body.\",\"style\":\"simple\",\"explode\":false,\"schema\":{\"type\":\"string\"}}},\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Order\"}}}},\"400\":{\"description\":\"Bad Request. Invalid request or validation error.\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}},\"415\":{\"description\":\"Unsupported Media Type. The entity of the request was in a not supported format.\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}}},\"security\":[{\"default\":[]}],\"x-auth-type\":\"Application & Application User\",\"x-throttling-tier\":\"Unlimited\",\"x-wso2-application-security\":{\"security-types\":[\"oauth2\"],\"optional\":false}}},\"/menu\":{\"get\":{\"description\":\"Return a list of available menu items\",\"responses\":{\"200\":{\"description\":\"OK. List of APIs is returned.\",\"content\":{\"application/json\":{\"schema\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/MenuItem\"}}}}},\"406\":{\"description\":\"Not Acceptable. The requested media type is not supported\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}}},\"security\":[{\"default\":[]}],\"x-auth-type\":\"Application & Application User\",\"x-throttling-tier\":\"Unlimited\",\"x-wso2-application-security\":{\"security-types\":[\"oauth2\"],\"optional\":false}},\"post\":{\"x-auth-type\":\"Application & Application User\",\"responses\":{\"200\":{\"description\":\"ok\"}},\"parameters\":[]}},\"/order/{orderId}\":{\"get\":{\"description\":\"Get details of an Order\",\"parameters\":[{\"name\":\"orderId\",\"in\":\"path\",\"description\":\"Order Id\",\"required\":true,\"style\":\"simple\",\"explode\":false,\"schema\":{\"type\":\"string\",\"format\":\"string\"}}],\"responses\":{\"200\":{\"description\":\"OK Requested Order will be returned\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Order\"}}}},\"404\":{\"description\":\"Not Found. Requested API does not exist.\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}},\"406\":{\"description\":\"Not Acceptable. The requested media type is not supported\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}}},\"security\":[{\"default\":[]}],\"x-auth-type\":\"Application & Application User\",\"x-throttling-tier\":\"Unlimited\",\"x-wso2-application-security\":{\"security-types\":[\"oauth2\"],\"optional\":false}},\"put\":{\"description\":\"Update an existing Order\",\"parameters\":[{\"name\":\"orderId\",\"in\":\"path\",\"description\":\"Order Id\",\"required\":true,\"style\":\"simple\",\"explode\":false,\"schema\":{\"type\":\"string\",\"format\":\"string\"}}],\"requestBody\":{\"$ref\":\"#/components/requestBodies/Order\"},\"responses\":{\"200\":{\"description\":\"OK. Successful response with updated Order\",\"headers\":{\"Location\":{\"description\":\"The URL of the newly created resource.\",\"style\":\"simple\",\"explode\":false,\"schema\":{\"type\":\"string\"}},\"Content-Type\":{\"description\":\"The content type of the body.\",\"style\":\"simple\",\"explode\":false,\"schema\":{\"type\":\"string\"}}},\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Order\"}}}},\"400\":{\"description\":\"Bad Request. Invalid request or validation error\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}},\"404\":{\"description\":\"Not Found. The resource to be updated does not exist.\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}}},\"security\":[{\"default\":[]}],\"x-auth-type\":\"Application & Application User\",\"x-throttling-tier\":\"Unlimited\",\"x-wso2-application-security\":{\"security-types\":[\"oauth2\"],\"optional\":false}},\"delete\":{\"description\":\"Delete an existing Order\",\"parameters\":[{\"name\":\"orderId\",\"in\":\"path\",\"description\":\"Order Id\",\"required\":true,\"style\":\"simple\",\"explode\":false,\"schema\":{\"type\":\"string\",\"format\":\"string\"}}],\"responses\":{\"200\":{\"description\":\"OK. Resource successfully deleted.\"},\"404\":{\"description\":\"Not Found. Resource to be deleted does not exist.\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Error\"}}}}},\"security\":[{\"default\":[]}],\"x-auth-type\":\"Application & Application User\",\"x-throttling-tier\":\"Unlimited\",\"x-wso2-application-security\":{\"security-types\":[\"oauth2\"],\"optional\":false}}}},\"components\":{\"schemas\":{\"ErrorListItem\":{\"title\":\"Description of individual errors that may have occurred during a request.\",\"required\":[\"code\",\"message\"],\"properties\":{\"message\":{\"type\":\"string\",\"description\":\"Description about individual errors occurred\"},\"code\":{\"type\":\"integer\",\"format\":\"int64\"}}},\"MenuItem\":{\"title\":\"Pizza menu Item\",\"required\":[\"name\"],\"properties\":{\"price\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"image\":{\"type\":\"string\"}}},\"Order\":{\"title\":\"Pizza Order\",\"required\":[\"orderId\"],\"properties\":{\"customerName\":{\"type\":\"string\"},\"delivered\":{\"type\":\"boolean\"},\"address\":{\"type\":\"string\"},\"pizzaType\":{\"type\":\"string\"},\"creditCardNumber\":{\"type\":\"string\"},\"quantity\":{\"type\":\"number\"},\"orderId\":{\"type\":\"string\"}}},\"Error\":{\"title\":\"Error object returned with 4XX HTTP status\",\"required\":[\"code\",\"message\"],\"properties\":{\"message\":{\"type\":\"string\",\"description\":\"Error message.\"},\"error\":{\"type\":\"array\",\"description\":\"If there are more than one error list them out. Ex. list out validation errors by each field.\",\"items\":{\"$ref\":\"#/components/schemas/ErrorListItem\"}},\"description\":{\"type\":\"string\",\"description\":\"A detail description about the error message.\"},\"code\":{\"type\":\"integer\",\"format\":\"int64\"},\"moreInfo\":{\"type\":\"string\",\"description\":\"Preferably an url with more details about the error.\"}}}},\"requestBodies\":{\"Order\":{\"description\":\"Order object that needs to be added\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Order\"}}},\"required\":true}},\"securitySchemes\":{\"default\":{\"type\":\"oauth2\",\"flows\":{\"implicit\":{\"authorizationUrl\":\"https://test.com\",\"scopes\":{}}}}}},\"x-wso2-auth-header\":\"Authorization\",\"x-wso2-cors\":{\"corsConfigurationEnabled\":false,\"accessControlAllowOrigins\":[\"*\"],\"accessControlAllowCredentials\":false,\"accessControlAllowHeaders\":[\"authorization\",\"Access-Control-Allow-Origin\",\"Content-Type\",\"SOAPAction\",\"apikey\",\"Internal-Key\"],\"accessControlAllowMethods\":[\"GET\",\"PUT\",\"POST\",\"DELETE\",\"PATCH\",\"OPTIONS\"]},\"x-wso2-production-endpoints\":{\"urls\":[\"https://localhost:9443/am/sample/pizzashack/v1/api/\"],\"type\":\"http\"},\"x-wso2-sandbox-endpoints\":{\"urls\":[\"https://localhost:9443/am/sample/pizzashack/v1/api/\"],\"type\":\"http\"},\"x-wso2-basePath\":\"/pizzashack/1.0.0\",\"x-wso2-transports\":[\"http\",\"https\"],\"x-wso2-response-cache\":{\"enabled\":false,\"cacheTimeoutInSeconds\":300}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/{{api_id}}/swagger",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"{{api_id}}",
+								"swagger"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update API with Operation Policy Addition",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Update swagger with new resource\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"host": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{api_id}}\",\n  \"name\": \"PizzaShackAPI\",\n  \"description\": \"This is a simple API for Pizza Shack online pizza delivery store.\",\n  \"context\": \"/pizzashack\",\n  \"version\": \"1.0.0\",\n  \"provider\": \"admin\",\n  \"lifeCycleStatus\": \"CREATED\",\n  \"wsdlInfo\": null,\n  \"wsdlUrl\": null,\n  \"responseCachingEnabled\": false,\n  \"cacheTimeout\": 300,\n  \"hasThumbnail\": false,\n  \"isDefaultVersion\": false,\n  \"isRevision\": false,\n  \"revisionedApiId\": null,\n  \"revisionId\": 0,\n  \"enableSchemaValidation\": false,\n  \"type\": \"HTTP\",\n  \"audience\": null,\n  \"transport\": [\n    \"http\",\n    \"https\"\n  ],\n  \"tags\": [\n    \"pizza\"\n  ],\n  \"policies\": [\n    \"Unlimited\"\n  ],\n  \"apiThrottlingPolicy\": null,\n  \"authorizationHeader\": \"Authorization\",\n  \"securityScheme\": [\n    \"oauth2\",\n    \"oauth_basic_auth_api_key_mandatory\"\n  ],\n  \"maxTps\": null,\n  \"visibility\": \"PUBLIC\",\n  \"visibleRoles\": [],\n  \"visibleTenants\": [],\n  \"mediationPolicies\": [],\n  \"apiPolicies\": {\n    \"request\": [],\n    \"response\": [],\n    \"fault\": []\n  },\n  \"subscriptionAvailability\": \"CURRENT_TENANT\",\n  \"subscriptionAvailableTenants\": [],\n  \"additionalProperties\": [],\n  \"additionalPropertiesMap\": {},\n  \"monetization\": null,\n  \"accessControl\": \"NONE\",\n  \"accessControlRoles\": [],\n  \"businessInformation\": {\n    \"businessOwner\": \"Jane Roe\",\n    \"businessOwnerEmail\": \"marketing@pizzashack.com\",\n    \"technicalOwner\": \"John Doe\",\n    \"technicalOwnerEmail\": \"architecture@pizzashack.com\"\n  },\n  \"corsConfiguration\": {\n    \"corsConfigurationEnabled\": false,\n    \"accessControlAllowOrigins\": [\n      \"*\"\n    ],\n    \"accessControlAllowCredentials\": false,\n    \"accessControlAllowHeaders\": [\n      \"authorization\",\n      \"Access-Control-Allow-Origin\",\n      \"Content-Type\",\n      \"SOAPAction\",\n      \"apikey\",\n      \"Internal-Key\"\n    ],\n    \"accessControlAllowMethods\": [\n      \"GET\",\n      \"PUT\",\n      \"POST\",\n      \"DELETE\",\n      \"PATCH\",\n      \"OPTIONS\"\n    ]\n  },\n  \"websubSubscriptionConfiguration\": {\n    \"enable\": false,\n    \"secret\": \"\",\n    \"signingAlgorithm\": \"SHA1\",\n    \"signatureHeader\": \"x-hub-signature\"\n  },\n  \"workflowStatus\": null,\n  \"createdTime\": \"1691386656969\",\n  \"lastUpdatedTimestamp\": \"1691483994365\",\n  \"lastUpdatedTime\": \"2023-08-08 14:09:54.365\",\n  \"endpointConfig\": {\n    \"endpoint_type\": \"http\",\n    \"sandbox_endpoints\": {\n      \"url\": \"{{pizzashack_endpoint}}\"\n    },\n    \"production_endpoints\": {\n      \"url\": \"{{pizzashack_endpoint}}\"\n    }\n  },\n  \"endpointImplementationType\": \"ENDPOINT\",\n  \"scopes\": [],\n  \"operations\": [\n    {\n      \"id\": \"\",\n      \"target\": \"/order\",\n      \"verb\": \"POST\",\n      \"authType\": \"Application & Application User\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"scopes\": [],\n      \"usedProductIds\": [],\n      \"amznResourceName\": null,\n      \"amznResourceTimeout\": null,\n      \"payloadSchema\": null,\n      \"uriMapping\": null,\n      \"operationPolicies\": {\n        \"request\": [],\n        \"response\": [],\n        \"fault\": []\n      }\n    },\n    {\n      \"id\": \"\",\n      \"target\": \"/menu\",\n      \"verb\": \"GET\",\n      \"authType\": \"Application & Application User\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"scopes\": [],\n      \"usedProductIds\": [],\n      \"amznResourceName\": null,\n      \"amznResourceTimeout\": null,\n      \"payloadSchema\": null,\n      \"uriMapping\": null,\n      \"operationPolicies\": {\n        \"request\": [],\n        \"response\": [\n          {\n            \"policyName\": \"addHeader\",\n            \"policyId\": \"{{policy_2_id}}\",\n            \"policyVersion\": \"v1\",\n            \"parameters\": {\n              \"headerName\": \"TestHeader\",\n              \"headerValue\": \"TestValue\"\n            }\n          }\n        ],\n        \"fault\": []\n      }\n    },\n    {\n      \"id\": \"\",\n      \"target\": \"/menu\",\n      \"verb\": \"POST\",\n      \"authType\": \"Application & Application User\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"scopes\": [],\n      \"usedProductIds\": [],\n      \"amznResourceName\": null,\n      \"amznResourceTimeout\": null,\n      \"payloadSchema\": null,\n      \"uriMapping\": null,\n      \"operationPolicies\": {\n        \"request\": [\n          {\n            \"policyName\": \"ChangeHTTPMethodv2\",\n            \"policyId\": \"{{policy_id}}\",\n            \"policyVersion\": \"v2\",\n            \"parameters\": {\n              \"httpMethod\": \"GET\"\n            }\n          }\n        ],\n        \"response\": [],\n        \"fault\": []\n      }\n    },\n    {\n      \"id\": \"\",\n      \"target\": \"/order/{orderId}\",\n      \"verb\": \"GET\",\n      \"authType\": \"Application & Application User\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"scopes\": [],\n      \"usedProductIds\": [],\n      \"amznResourceName\": null,\n      \"amznResourceTimeout\": null,\n      \"payloadSchema\": null,\n      \"uriMapping\": null,\n      \"operationPolicies\": {\n        \"request\": [],\n        \"response\": [],\n        \"fault\": []\n      }\n    },\n    {\n      \"id\": \"\",\n      \"target\": \"/order/{orderId}\",\n      \"verb\": \"PUT\",\n      \"authType\": \"Application & Application User\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"scopes\": [],\n      \"usedProductIds\": [],\n      \"amznResourceName\": null,\n      \"amznResourceTimeout\": null,\n      \"payloadSchema\": null,\n      \"uriMapping\": null,\n      \"operationPolicies\": {\n        \"request\": [],\n        \"response\": [],\n        \"fault\": []\n      }\n    },\n    {\n      \"id\": \"\",\n      \"target\": \"/order/{orderId}\",\n      \"verb\": \"DELETE\",\n      \"authType\": \"Application & Application User\",\n      \"throttlingPolicy\": \"Unlimited\",\n      \"scopes\": [],\n      \"usedProductIds\": [],\n      \"amznResourceName\": null,\n      \"amznResourceTimeout\": null,\n      \"payloadSchema\": null,\n      \"uriMapping\": null,\n      \"operationPolicies\": {\n        \"request\": [],\n        \"response\": [],\n        \"fault\": []\n      }\n    }\n  ],\n  \"threatProtectionPolicies\": null,\n  \"categories\": [],\n  \"keyManagers\": [\n    \"all\"\n  ],\n  \"serviceInfo\": null,\n  \"advertiseInfo\": {\n    \"advertised\": false,\n    \"apiExternalProductionEndpoint\": null,\n    \"apiExternalSandboxEndpoint\": null,\n    \"originalDevPortalUrl\": null,\n    \"apiOwner\": \"admin\",\n    \"vendor\": \"WSO2\"\n  },\n  \"gatewayVendor\": \"wso2\",\n  \"gatewayType\": \"wso2/synapse\",\n  \"asyncTransportProtocols\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/{{api_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"{{api_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API Revision",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API revision creation\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// API creation response JSON",
+									"var revisionCreationResponseJson = pm.response.json();",
+									"",
+									"var apiId = revisionCreationResponseJson.apiInfo.id;",
+									"",
+									"// Assert the API ID",
+									"pm.test(\"Revision created for the API\", function () {",
+									"    pm.expect(apiId).to.eql(pm.environment.get(\"api_id\"));",
+									"});",
+									"",
+									"// Assert the description",
+									"pm.test(\"Revision created with the description\", function () {",
+									"    pm.expect(revisionCreationResponseJson.description).to.eql(\"Initial Revision\");",
+									"});",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"revision_id\", revisionCreationResponseJson.id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Initial Revision\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/{{api_id}}/revisions",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"{{api_id}}",
+								"revisions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deploy API Revision",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API revision deployment\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// API creation response JSON",
+									"var revisionDeploymentResponseJson = pm.response.json();",
+									"",
+									"// Assert the revision ID",
+									"pm.test(\"Revision deployed for the API\", function () {",
+									"    pm.expect(revisionDeploymentResponseJson[0].revisionUuid).to.eql(pm.environment.get(\"revision_id\"));",
+									"});",
+									"",
+									"setTimeout(function(){}, pm.environment.get(\"wait_time_for_deployment\"));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"name\": \"Default\",\n        \"displayOnDevportal\": true,\n        \"vhost\": \"{{gateway_host}}\"\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/{{api_id}}/deploy-revision?revisionId={{revision_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"{{api_id}}",
+								"deploy-revision"
+							],
+							"query": [
+								{
+									"key": "revisionId",
+									"value": "{{revision_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Publish the API with schema validation\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/change-lifecycle?action=Publish&apiId={{api_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"change-lifecycle"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "Publish"
+								},
+								{
+									"key": "apiId",
+									"value": "{{api_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Application creation\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Application creation response JSON",
+									"var appCreationResponseJson = pm.response.json();",
+									"",
+									"var applicationId = appCreationResponseJson.applicationId;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"application_id\", applicationId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"PizzaShackApp\",\n  \"throttlingPolicy\": \"Unlimited\",\n  \"description\": \"\",\n  \"tokenType\": \"JWT\",\n  \"groups\": null,\n  \"attributes\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/applications",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Subscription to the API\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Application creation response JSON",
+									"var subscriptionCreationResponseJson = pm.response.json();",
+									"",
+									"var subscriptionId = subscriptionCreationResponseJson.subscriptionId;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"subscription_id\", subscriptionId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"applicationId\": \"{{application_id}}\",\n  \"apiId\": \"{{api_id}}\",\n  \"throttlingPolicy\": \"Unlimited\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/subscriptions",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Key Manager for Key Generation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Retrieve keymanager to generate keys\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Keymanager retrieval response JSON",
+									"var keymanagerArrayJsonResponse = pm.response.json();",
+									"",
+									"var keymanagerId = keymanagerArrayJsonResponse.list[0].id;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"keymanager_id\", keymanagerId);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"host": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/key-managers",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"key-managers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Keys for Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Generate keys for the application\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Key generation response JSON",
+									"var keyGenerationResponseJson = pm.response.json();",
+									"",
+									"var keyMappingId = keyGenerationResponseJson.keyMappingId;",
+									"var appConsumerKey = keyGenerationResponseJson.consumerKey;",
+									"var appConsumerSecret = keyGenerationResponseJson.consumerSecret;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"key_mapping_id\", keyMappingId);",
+									"pm.environment.set(\"app_consumer_key\", appConsumerKey);",
+									"pm.environment.set(\"app_consumer_secret\", appConsumerSecret);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"keyType\": \"PRODUCTION\",\n  \"grantTypesToBeSupported\": [\n    \"refresh_token\",\n    \"urn:ietf:params:oauth:grant-type:saml2-bearer\",\n    \"password\",\n    \"client_credentials\",\n    \"iwa:ntlm\",\n    \"urn:ietf:params:oauth:grant-type:jwt-bearer\"\n  ],\n  \"callbackUrl\": \"\",\n  \"additionalProperties\": {\n    \"application_access_token_expiry_time\": \"N/A\",\n    \"user_access_token_expiry_time\": \"N/A\",\n    \"refresh_token_expiry_time\": \"N/A\",\n    \"id_token_expiry_time\": \"N/A\"\n  },\n  \"keyManager\": \"{{keymanager_id}}\",\n  \"validityTime\": 3600,\n  \"scopes\": [\n    \"default\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/applications/{{application_id}}/generate-keys",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"applications",
+								"{{application_id}}",
+								"generate-keys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Access Token for Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Generate access token to invoke APIs\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Access token response JSON",
+									"var accessTokenResponseJson = pm.response.json();",
+									"",
+									"var appAccessToken = accessTokenResponseJson.accessToken;",
+									"",
+									"// Set the environment variables",
+									"pm.environment.set(\"app_access_token\", appAccessToken);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"consumerSecret\": \"{{app_consumer_secret}}\",\n  \"validityPeriod\": 3600,\n  \"revokeToken\": null,\n  \"scopes\": [],\n  \"additionalProperties\": {\n    \"id_token_expiry_time\": 3600,\n    \"application_access_token_expiry_time\": 3600,\n    \"user_access_token_expiry_time\": 3600,\n    \"refresh_token_expiry_time\": 86400\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/applications/{{application_id}}/oauth-keys/{{key_mapping_id}}/generate-token",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"applications",
+								"{{application_id}}",
+								"oauth-keys",
+								"{{key_mapping_id}}",
+								"generate-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoke API to Test Request Mediation Policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API invocation\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, 1000);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{gateway_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{gateway_port}}/pizzashack/1.0.0/menu",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{gateway_port}}",
+							"path": [
+								"pizzashack",
+								"1.0.0",
+								"menu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoke API to Test Response Mediation Policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API invocation\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Assert the \"TestHeader\" header",
+									"pm.test(\"Response has expected TestHeader header\", function() {",
+									"    pm.expect(pm.response.headers.get(\"TestHeader\")).to.eql(\"TestValue\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{gateway_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{gateway_port}}/pizzashack/1.0.0/menu",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{gateway_port}}",
+							"path": [
+								"pizzashack",
+								"1.0.0",
+								"menu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Application deletion\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{devportal_base_path}}/applications/{{application_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{devportal_base_path}}",
+							"path": [
+								"applications",
+								"{{application_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"API deletion\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/{{api_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"{{api_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Operation Policy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Operation policy deletion\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/operation-policies/{{policy_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"operation-policies",
+								"{{policy_id}}"
 							]
 						}
 					},
