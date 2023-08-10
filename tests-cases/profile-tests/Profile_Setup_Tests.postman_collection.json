@@ -7061,7 +7061,7 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"setTimeout(function(){}, 2000);",
+									"setTimeout(function(){}, 5000);",
 									""
 								],
 								"type": "text/javascript"
