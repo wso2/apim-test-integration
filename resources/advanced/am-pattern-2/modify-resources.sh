@@ -68,4 +68,6 @@ awk '/\[\[apim.event_hub.publish.url_group\]\]/{c++;if(c==2){sub(/\[\[apim.event
 sed -i '/^\s*traffic_manager_urls = \["tcp:\/\/{{ template "am-pattern-2\.resource\.prefix" \. }}-am-2-service:9611"\]$/,/^\s*type = "loadbalance"$/d' $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml
 awk '/\[\[apim.throttling.url_group\]\]/{c++;if(c==2){sub(/\[\[apim.throttling.url_group\]\]/,"")}}1' $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml > tmpfile && mv tmpfile $k8s_repo_dir/advanced/am-pattern-2/templates/am/pub-devportal-tm/instance-1/wso2am-pattern-2-am-conf.yaml
 
+## add ingress for gateway 9443 port
+sed -i '/paths:/a \      - path: /api/am/gateway/v1/\n        pathType: Prefix\n        backend:\n          service:\n            name: {{ template "am-pattern-2.resource.prefix" . }}-am-gateway-service\n            port:\n              number: 9443' $k8s_repo_dir/advanced/am-pattern-2/templates/am/gateway/wso2am-pattern-2-am-gateway-ingress.yaml
 
