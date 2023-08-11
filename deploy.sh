@@ -194,7 +194,7 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     --set wso2.deployment.am.cp.db.apim_shared.url="$dbAPIMSharedUrl" \
     --set wso2.deployment.dependencies.cluster_mysql=false \
     --set wso2.deployment.am.trafficmanager.livenessProbe.initialDelaySeconds=180 \
-    --set wso2.deployment.am.trafficmanager.readinessProbe.initialDelaySeconds=318000 \
+    --set wso2.deployment.am.trafficmanager.readinessProbe.initialDelaySeconds=180 \
     --set wso2.deployment.am.cp.startupProbe.initialDelaySeconds=200 \
     --set wso2.deployment.am.cp.readinessProbe.initialDelaySeconds=200 \
     --set wso2.deployment.am.startupProbe.initialDelaySeconds=180 \
