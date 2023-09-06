@@ -41,6 +41,15 @@ data:
     echo "Updating apim to $WSO2_UPDATES_UPDATE_LEVEL_STATE pack ............."
     cd ${WSO2_SERVER_HOME}/bin/
     ./wso2update_linux --backup /home/wso2carbon/ --username {{ .Values.wso2.subscription.username }} --password {{ .Values.wso2.subscription.password }}
+
+    # log update ids
+    log_directory="../updates/logs"
+    for log_file in "$log_directory"/*; do
+      if [ -f "$log_file" ]; then
+        echo "Searching in $log_file:"
+        grep 'Applied updates' "$log_file"
+      fi
+    done
     echo "===================================================================================================================="
 
 
