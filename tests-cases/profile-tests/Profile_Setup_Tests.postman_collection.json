@@ -7358,7 +7358,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.variables.set(\"retryCount\", 5);",
+									"pm.variables.set(\"retryCount\", 10);",
 									"setTimeout(function(){}, 800);"
 								],
 								"type": "text/javascript"
