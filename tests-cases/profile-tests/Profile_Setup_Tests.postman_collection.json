@@ -7342,7 +7342,7 @@
 									"}",
 									"",
 									"if (retryCount > 1 && !revoked) {",
-									"    setTimeout(function(){}, 800);",
+									"    setTimeout(function(){}, 1500);",
 									"    pm.variables.set('revocationRetryCounter', --retryCount)",
 									"    postman.setNextRequest(pm.info.requestName);",
 									"} else if (retryCount == 1 && !revoked) {",
@@ -7361,7 +7361,7 @@
 							"script": {
 								"exec": [
 									"pm.variables.set(\"retryCount\", 10);",
-									"setTimeout(function(){}, 800);"
+									"setTimeout(function(){}, 1500);"
 								],
 								"type": "text/javascript"
 							}
