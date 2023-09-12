@@ -47,8 +47,8 @@ sed -i '/env:/a \        - name: WSO2_UPDATES_UPDATE_LEVEL_STATE\n          valu
 sed -i "/initContainers:/a \        - name: init-cp-1\n          image: busybox:1.32\n          command: ['sh', '-c', 'echo -e \"Checking for the availability of control plane instance one deployment\"; while ! nc -z {{ template \"am-pattern-4.resource.prefix\" . }}-am-cp-1-service 9443; do sleep 1; printf \"-\"; done; echo -e\"  >> API Manager Control Plane instance one has started\";']" $k8s_repo_dir/advanced/am-pattern-4/templates/am/control-plane/instance-2/wso2am-pattern-4-am-control-plane-deployment.yaml
 
 # Add log4j config to all the nodes as a configmap
-cat $k8s_repo_dir/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/control-plane/instance-1/wso2am-pattern-4-am-control-plane-conf.yaml
-cat $k8s_repo_dir/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/control-plane/instance-2/wso2am-pattern-4-am-control-plane-conf.yaml
-cat $k8s_repo_dir/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/traffic-manager/instance-1/wso2am-pattern-4-am-trafficmanager-conf.yaml
-cat $k8s_repo_dir/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/traffic-manager/instance-2/wso2am-pattern-4-am-trafficmanager-conf.yaml
-cat $k8s_repo_dir/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/gateway/wso2am-pattern-4-am-gateway-conf.yaml
+cat $k8s_repo_dir/advanced/am-pattern-4/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/control-plane/instance-1/wso2am-pattern-4-am-control-plane-conf.yaml
+cat $k8s_repo_dir/advanced/am-pattern-4/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/control-plane/instance-2/wso2am-pattern-4-am-control-plane-conf.yaml
+cat $k8s_repo_dir/advanced/am-pattern-4/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/traffic-manager/instance-1/wso2am-pattern-4-am-trafficmanager-conf.yaml
+cat $k8s_repo_dir/advanced/am-pattern-4/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/traffic-manager/instance-2/wso2am-pattern-4-am-trafficmanager-conf.yaml
+cat $k8s_repo_dir/advanced/am-pattern-4/log4j.yaml >> $k8s_repo_dir/advanced/am-pattern-4/templates/am/gateway/wso2am-pattern-4-am-gateway-conf.yaml
