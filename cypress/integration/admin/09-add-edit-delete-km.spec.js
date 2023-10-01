@@ -22,9 +22,10 @@ describe("admin-09 : Add key manager", () => {
     
     const { carbonUsername, carbonPassword, testTenant, superTenant } = Utils.getUserInfo();
 
-    const addKeyManager = (usernameLocal, passwordLocal, tenant) => {
+    const addKeyManager = (usernameLocal, passwordLocal, tenant, isGlobal) => {
+        isGlobal = !!isGlobal;
         cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
-        const km = 'myAuth0';
+        const km = isGlobal ? 'myGlobalAuth0' : 'myAuth0';
         const wellKnowUrl = 'https://my-tenant.us.auth0.com/.well-known/openid-configuration';
         const clientId = 'test';
         const clientSecret = 'test';
@@ -36,7 +37,11 @@ describe("admin-09 : Add key manager", () => {
         const claimValueRegex2 = 'claimValueRegex2';
 
         cy.get('[data-testid="Key Managers"]').click();
-        cy.get('.MuiButton-label').contains('Add Key Manager').click();
+        if (isGlobal) {
+            cy.get('.MuiButton-label').contains('Add Global Key Manager').click();
+        } else {
+            cy.get('.MuiButton-label').contains('Add Key Manager').click();
+        }
         cy.get('input[name="name"]').type(km);
         cy.get('input[name="displayName"]').type(km);
         cy.get('[data-testid="key-manager-type-select"]').click();
@@ -89,10 +94,12 @@ describe("admin-09 : Add key manager", () => {
         cy.get('td > div').contains(km).should('not.exist');
     }
     it.only("Add key manager - super admin", () => {
-        addKeyManager(carbonUsername, carbonPassword, superTenant);
+        addKeyManager(carbonUsername, carbonPassword, superTenant, false);
     });
     it.only("Add key manager - tenant user", () => {
-        addKeyManager(carbonUsername, carbonPassword, testTenant);
+        addKeyManager(carbonUsername, carbonPassword, testTenant, false);
     });
-
+    it.only("Add global key manager - super admin", () => {
+        addKeyManager(carbonUsername, carbonPassword, superTenant, true);
+    });
 })
