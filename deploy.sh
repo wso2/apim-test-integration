@@ -189,7 +189,7 @@ helm install apim \
     --set wso2.deployment.dependencies.mysql=false \
     --set wso2.deployment.am.gateway.replicas=1 \
     --set wso2.deployment.am.km.replicas=1 \
-    --set wso2.deployment.analytics.dashboard.replicas=0 \
+    --set wso2.deployment.analytics.dashboard.replicas=1 \
     --set wso2.deployment.analytics.worker.replicas=1 \
     --set wso2.deployment.am.imagePullPolicy=IfNotPresent \
     --set wso2.deployment.analytics.worker.ingress.hostname='worker.analytics.am.wso2.com' \
