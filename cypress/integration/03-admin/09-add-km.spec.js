@@ -29,7 +29,6 @@ describe("admin-09 : Verify admin user can add key manager", () => {
         const wellKnowUrl = 'https://my-tenant.us.auth0.com/.well-known/openid-configuration';
         const clientId = 'test';
         const clientSecret = 'test';
-        const audience = 'test';
         const introspectionEp = 'https://my-tenant.auth0.com/oauth/token';
 
         cy.get('[data-testid="Key Managers-link"]').click();
@@ -37,7 +36,7 @@ describe("admin-09 : Verify admin user can add key manager", () => {
         cy.get('input[name="name"]').type(km);
         cy.get('input[name="displayName"]').type(km);
         cy.get('[data-testid="key-manager-type-select"]').click();
-        cy.get('li[data-value="Auth0"]').click();
+        cy.contains('[role="option"]', 'WSO2 Identity Server').click()
         cy.get('input[name="wellKnownEndpoint"]').type(wellKnowUrl);
         // importing config'
         cy.intercept('**/key-managers/discover').as('importConfig');
@@ -46,9 +45,8 @@ describe("admin-09 : Verify admin user can add key manager", () => {
 
         // filing the tokens
         cy.get('input[name="introspectionEndpoint"]').clear().type(introspectionEp);
-        cy.get('input[name="client_id"]').type(clientId);
-        cy.get('input[name="client_secret"]').type(clientSecret);
-        cy.get('input[name="audience"]').type(audience);
+        cy.get('input[name="Username"]').type(clientId);
+        cy.get('input[name="Password"]').type(clientSecret);
         cy.get('button.MuiButton-containedPrimary span').contains('Add').click();
 
         // validating
