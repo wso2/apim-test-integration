@@ -1,6 +1,3 @@
-CREATE DATABASE apim_db character set latin1;
-CREATE DATABASE shared_db character set latin1;
-
 CREATE TABLE IF NOT EXISTS REG_CLUSTER_LOCK (
              REG_LOCK_NAME VARCHAR (20),
              REG_LOCK_STATUS VARCHAR (20),
