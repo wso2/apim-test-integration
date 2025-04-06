@@ -55,7 +55,7 @@ describe("Endpoint certificate usage testing", () => {
 
             // Select endpoint
             cy.get('#endpoint-certificate').click();
-            cy.get(`[data-value="${selectedEndpoint}"]`).click({ multiple: true });
+            cy.get(`[data-value="${selectedEndpoint}"]`, { timeout: 10000 }).should('exist').click({ force: true, multiple: true }); 
 
             // Set alias
             cy.get('#certificateAlias').click();

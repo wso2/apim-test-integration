@@ -729,12 +729,13 @@ Cypress.Commands.add('disableSelfSignUpInCarbonPortal', (username, password, ten
     })
 
     cy.carbonLogin(username, password, tenant);
-    cy.get('[style="background-image: url(../idpmgt/images/resident-idp.png);"]').click();
+    cy.get('[style="background-image: url(../idpmgt/images/resident-idp.png);"]').should('be.visible').click();
     cy.contains('User Onboarding').click();
     cy.contains('Self Registration').click();
     cy.get('[value="SelfRegistration.Enable"]').uncheck({force: true});
     cy.get('#idp-mgt-edit-local-form').submit();
-    cy.get('[class="ui-dialog-buttonpane"]').click();
+    cy.get('.ui-dialog-buttonpane', { timeout: 10000 }).should('be.visible');
+    cy.get('.ui-dialog-buttonpane button').click({ force: true });
     cy.carbonLogout();
 })
 
@@ -745,12 +746,13 @@ Cypress.Commands.add('enableSelfSignUpInCarbonPortal', (username, password, tena
     })
 
     cy.carbonLogin(username, password, tenant);
-    cy.get('[style="background-image: url(../idpmgt/images/resident-idp.png);"]').click();
+    cy.get('[style="background-image: url(../idpmgt/images/resident-idp.png);"]').should('be.visible').click();
     cy.contains('User Onboarding').click();
     cy.contains('Self Registration').click();
     cy.get('[value="SelfRegistration.Enable"]').check({force: true});
     cy.get('#idp-mgt-edit-local-form').submit();
-    cy.get('[class="ui-dialog-buttonpane"]').click();
+    cy.get('.ui-dialog-buttonpane', { timeout: 10000 }).should('be.visible');
+    cy.get('.ui-dialog-buttonpane button').click({ force: true });
     cy.carbonLogout();
 })
 
