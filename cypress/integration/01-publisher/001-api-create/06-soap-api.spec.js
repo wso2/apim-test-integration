@@ -101,10 +101,8 @@ describe("publisher-001-06 : Verify SOAP API creation", () => {
         cy.wait('@genToken');
 
         // Test the console
-        cy.get('#operations-default-post__').click();
-        cy.get('#operations-default-post__ .try-out__btn').click();
-
-        
+        cy.get('#operations-default-post__').find('.opblock-summary-control').click();
+        cy.get('#operations-default-post__').find('.try-out__btn').click();
         const soapRequestBody = `<?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
         <soap:Body>
@@ -119,16 +117,12 @@ describe("publisher-001-06 : Verify SOAP API creation", () => {
         
         cy.get('div[data-param-name="SOAP Request"] .body-param__text').clear().type(soapRequestBody);
         cy.get('tr[data-param-name="SOAPAction"] .parameters-col_description > input').type(sopaAction)
+        cy.wait(1000);
 
-        cy.get('#operations-default-post__ .execute-wrapper .execute').click();
-        cy.get('.loading-container',{timeout:25000}).should('not.exist');
-
-        // verify response
-        cy.get('tr[class="response"] > td.response-col_status').contains('200').should('exist');
+        cy.get('#operations-default-post__').find('.execute').click();
+        cy.wait(3000);
+        cy.get('#operations-default-post__').find('.response-col_status').contains('200').should('exist');
         cy.contains('Toll Free') // response body contains : <Company>Toll Free</Company>
-        cy.wait(1000)
-
-        
     });
 
     /*

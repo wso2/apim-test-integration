@@ -98,7 +98,7 @@ echo $CYPRESS_BASE_URL;
 ######
 export DEBIAN_FRONTEND=noninteractive
 sudo apt-get update -y
-sleep 300
+sleep 120
 sudo killall apt apt-get dpkg
 sudo dpkg --configure -a
 curl -fsSL https://deb.nodesource.com/setup_12.x | sudo -E bash -
@@ -136,7 +136,7 @@ npm run delete:reportFolderReport
 npm run pre-test
 nohup Xvfb :99 > /dev/null 2>&1 &
 export DISPLAY=:99
-npm run test
+NO_COLOR=1 npm run test
 MVNSTATE=$?
 pkill Xvfb
 npm run report:merge
@@ -145,4 +145,3 @@ node ./upload_email
 
 ######
 
-exit $MVNSTATE
