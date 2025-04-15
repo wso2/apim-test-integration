@@ -76,7 +76,7 @@ environment_file=$tests_dir/tests-cases/profile-tests/APIM_Environment.postman_e
 
 operation_policy_file_path="$tests_dir/tests-cases/profile-tests/resources/operation-policy-testcase/changeHTTPMethod_v2.j2"
 
-newman run "$collection_file" \
+/home/ubuntu/.nvm/versions/node/v19.0.1/bin/newman run "$collection_file" \
   --environment "$environment_file" \
   --env-var "cluster_ip=${HOST_NAME}" \
   --env-var "pizzashack_endpoint=https://apim-acp-wso2am-acp-service:9443/am/sample/pizzashack/v1/api/" \
