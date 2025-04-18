@@ -86,7 +86,7 @@ operation_policy_file_path="$tests_dir/tests-cases/profile-tests/resources/opera
     --insecure \
     --reporters cli,junit \
     --reporter-junit-export newman-profile-results.xml \
-    --delay-request 4000
+    --delay-request 2000
 
 # Capture the exit code of the Newman test run
 newmanExitCode=$?
