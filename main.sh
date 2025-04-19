@@ -85,8 +85,7 @@ operation_policy_file_path="$tests_dir/tests-cases/profile-tests/resources/opera
     --env-var "gateway_host=${GATEWAY_HOST}" \
     --insecure \
     --reporters cli,junit \
-    --reporter-junit-export newman-profile-results.xml \
-    --delay-request 2000
+    --reporter-junit-export newman-profile-results.xml
 
 # Capture the exit code of the Newman test run
 newmanExitCode=$?
