@@ -4,6 +4,32 @@ reldir=`dirname $0`
 cd $reldir
 tests_dir=$(pwd)
 
+# Parse command line arguments
+for arg in "$@"
+do
+    case $arg in
+        --HOSTNAME=*)
+            HOST_NAME="${arg#*=}"
+            shift
+            ;;
+        --PORTAL_HOST=*)
+            PORTAL_HOST="${arg#*=}"
+            shift
+            ;;
+        --GATEWAY_HOST=*)
+            GATEWAY_HOST="${arg#*=}"
+            shift
+            ;;
+        --kubernetes_namespace=*)
+            kubernetes_namespace="${arg#*=}"
+            shift
+            ;;
+        *)
+            # unknown option
+            ;;
+    esac
+done
+
 kubectl get pods -l product=apim -n="${kubernetes_namespace}"  -o custom-columns=:metadata.name > podNames.txt
 dateWithMinute=$(date +"%Y_%m_%d_%H_%M")
 date=$(date +"%Y_%m_%d")
