@@ -24,47 +24,6 @@ resource "aws_db_parameter_group" "mysql-pg" {
     }
 }
 
-# resource "aws_rds_cluster_parameter_group" "mysql-cluster-pg" {
-#   name        = "rds-cluster-pg"
-#   family      = "aurora-mysql5.7"
-#   description = "RDS default cluster parameter group"
-
-#   parameter {
-#     name  = "max_connections"
-#     value = "540"
-#   }
-# }
-
-# module "aurora_rds_cluster" {
-#   source             = "./modules/RDS-Aurora"
-#   for_each           = { for opt in var.db_engine_options : "${opt.engine}-${opt.version}" => opt }
-#   project            = var.project
-#   environment        = var.environment_name
-#   region             = var.region
-#   application        = "${var.client_name}-${each.value.engine}"
-#   database_port      = each.value.port 
-#   availability_zones = sort(slice(data.aws_availability_zones.available.names, 0, 2))
-#   cluster_instances = {
-#     "1" : {
-#       "name" : "1"
-#       "instance_class" : var.db_instance_size
-#     }
-#   }
-#   database_name      = var.db_primary_db_name
-#   master_username    = var.db_master_username
-#   master_password    = var.db_password
-#   engine             = each.value.engine
-#   engine_version     = each.value.version
-#   engine_mode        = var.db_engine_mode
-#   db_subnet_group_name    = module.db_subnet_group.subnet_group_name
-#   backup_retention_period = var.db_backup_retention_period
-#   vpc_security_group_ids  = [module.db_security_group.security_group_id]
-#   skip_final_snapshot     = true
-#   publicly_accessible = true
-#   db_instance_parameter_group_name = each.value.engine == "aurora-mysql" ? aws_db_parameter_group.mysql-pg.name : null
-#   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.mysql-cluster-pg.name
-# }
-
 module "aurora_rds_cluster" {
   for_each           = { for opt in var.db_engine_options : "${opt.engine}-${opt.version}" => opt }
   source             = "./modules/RDS"
