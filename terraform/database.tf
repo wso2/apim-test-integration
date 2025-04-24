@@ -97,7 +97,7 @@ module "db_subnet_group" {
 }
 
 module "db_security_group" {
-  source      = "./Security-Group"
+  source      = "./modules/Security-Group"
   project     = var.project
   environment = var.environment_name
   region      = var.region
