@@ -6,20 +6,19 @@ metadata:
         nginx.ingress.kubernetes.io/proxy-buffer-size: 8k
         nginx.ingress.kubernetes.io/proxy-buffering: "on"
     name: gw-rest-ingress
-    namespace: {{ .Values.namespace }}
 spec:
     ingressClassName: nginx
     tls:
     - hosts:
-        - gw-{{ .Values.database }}.wso2.com
+        - {{ .Values.hostname }}
     rules:
-    - host: gw-{{ .Values.database }}.wso2.com
+    - host: {{ .Values.hostname }}
       http:
         paths:
-        - backend:
+        - path: /api/am/gateway/v2/
+          pathType: Prefix
+          backend:
             service:
                 name: apim-universal-gw-wso2am-universal-gw-service
                 port:
-                number: 9443
-            path: /api/am/gateway/v2/
-            pathType: Prefix
+                  number: 9443
