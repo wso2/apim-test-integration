@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: test-runner
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: test-runner
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app: test-runner
+    spec:
+      containers:
+      - name: test-runner
+        image: cypress/included:cypress-13.11.0-node-18.20.3-chrome-125.0.6422.141-1-ff-126.0.1-edge-125.0.2535.85-1
+        command: ["sh", "-c", "cypress/script.sh"]
+        env:
+          - name: GIT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: git-username
+          - name: GIT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: git-password
+          - name: GIT_REPO
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: git-repo
+          - name: GIT_BRANCH
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: git-branch
+          - name: CYPRESS_BASE_URL
+            value: {{ .Values.host }}
+        volumeMounts:
+        - name: test-script
+          mountPath: /cypress/script.sh
+          subPath: script.sh
+      volumes:
+      - name: test-script
+        configMap:
+          name: test-script
+          defaultMode: 0755
+      - name: test-secret
+        secret:
+          secretName: test-secret
+      restartPolicy: Never

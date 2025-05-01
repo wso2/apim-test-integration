@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-script
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+data:
+  script.sh: |
+    #!/bin/bash
+    set -e
+
+    apt update
+
+    apt-get install -y g++ build-essential
+    apt-get install -y curl
+    apt-get install -y vim
+
+    # Add host mapping
+    echo "{{ .Values.host_ip }} {{ .Values.host }}" >> /etc/hosts
+    
+    git clone --branch GIT_BRANCH https://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_REPO} support-apim-apps
+
+    cd support-apim-apps/tests
+    npm install
+    npm run test
