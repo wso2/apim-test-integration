@@ -30,4 +30,4 @@ data:
 
     cd support-apim-apps/tests
     npm install
-    npm run test
+    NO_COLOR=1 npm run test
