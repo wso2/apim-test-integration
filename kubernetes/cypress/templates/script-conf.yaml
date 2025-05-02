@@ -22,7 +22,7 @@ data:
     # Add host mapping
     echo "{{ .Values.host_ip }} {{ .Values.host }}" >> /etc/hosts
     
-    git clone --branch GIT_BRANCH https://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_REPO} support-apim-apps
+    git clone --branch ${GIT_BRANCH} https://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_REPO} support-apim-apps
 
     cd support-apim-apps/tests
     npm install
