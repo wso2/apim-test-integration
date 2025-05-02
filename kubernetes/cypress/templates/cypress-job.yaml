@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: test-runner
-        image: cypress/included:cypress-13.11.0-node-18.20.3-chrome-125.0.6422.141-1-ff-126.0.1-edge-125.0.2535.85-1
+        image: cypress/included:cypress-14.3.2-node-22.15.0-chrome-135.0.7049.114-1-ff-137.0.2-edge-135.0.3179.85-1
         command: ["sh", "-c", "cypress/script.sh"]
         env:
           - name: GIT_USERNAME
@@ -42,7 +42,7 @@ spec:
                 name: test-secret
                 key: git-branch
           - name: CYPRESS_BASE_URL
-            value: {{ .Values.host }}
+            value: "https://{{ .Values.host }}"
         volumeMounts:
         - name: test-script
           mountPath: /cypress/script.sh
