@@ -41,4 +41,4 @@ data:
 
     cd support-apim-apps/tests
     npm install
-    NO_COLOR=1 npm run test -- --env gatewayUrl=https://gw-mysql.wso2.com
+    NO_COLOR=1 npm run test -- --env gatewayUrl=https://{{ .Values.gw_hostname }}
