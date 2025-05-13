@@ -44,19 +44,21 @@ data:
 
     cd support-apim-apps/tests
     npm install
-    NO_COLOR=1 npm run test -- --env gatewayUrl=https://{{ .Values.gw_hostname }}
-    MVNSTATE=$?
+    echo "Deleting old reports"
     npm run delete:reportFolderHTML
     npm run delete:reportFolderJUnit
     npm run delete:reportFolderReport
     npm run pre-test
     nohup Xvfb :99 > /dev/null 2>&1 &
     export DISPLAY=:99
-    NO_COLOR=1 npm run test
+    echo "Running tests"
+    NO_COLOR=1 npm run test -- --env gatewayUrl=https://{{ .Values.gw_hostname }}
     MVNSTATE=$?
     pkill Xvfb
+    echo "Generating reports"
     npm run report:merge
     npm run report:generate
+    echo "Uploading reports to S3"
     node ./upload_email.js
 
     exit $MVNSTATE
