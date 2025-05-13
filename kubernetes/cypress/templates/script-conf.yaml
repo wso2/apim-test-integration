@@ -22,7 +22,7 @@ metadata:
 data:
   script.sh: |
     #!/bin/bash
-    set -e
+    set -x
 
     apt update
 
