@@ -54,6 +54,16 @@ spec:
                 key: git-branch
           - name: CYPRESS_BASE_URL
             value: "https://{{ .Values.host }}"
+          - name: S3_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: aws-s3-access-key
+          - name: S3_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: aws-s3-secret-key
         volumeMounts:
         - name: test-script
           mountPath: /cypress/script.sh
