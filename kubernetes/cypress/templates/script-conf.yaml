@@ -43,7 +43,6 @@ data:
     npm install
     npm install archiver
     npm install nodemailer
-    npm install yamljs
     echo "Deleting old reports"
     npm run delete:reportFolderHTML
     npm run delete:reportFolderJUnit
