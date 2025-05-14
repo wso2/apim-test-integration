@@ -41,6 +41,8 @@ data:
 
     cd support-apim-apps/tests
     npm install
+    npm install archiver
+    npm install yamljs
     echo "Deleting old reports"
     npm run delete:reportFolderHTML
     npm run delete:reportFolderJUnit
