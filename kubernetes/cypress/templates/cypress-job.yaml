@@ -59,6 +59,10 @@ spec:
               secretKeyRef:
                 name: test-secret
                 key: aws-s3-access-key
+          - name: S3_BUCKET
+            value: "{{ .Values.aws_s3_bucket }}"
+          - name: S3_REGION
+            value: "{{ .Values.aws_s3_region }}"
           - name: S3_SECRET_KEY
             valueFrom:
               secretKeyRef:
