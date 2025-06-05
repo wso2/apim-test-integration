@@ -46,7 +46,7 @@ describe("Endpoint certificate usage testing", () => {
             // Uploading a certificate
             // Visiting endpoints tab of selected API
             cy.visit(`/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-api-config-acc').click();;
+            cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemendpoints').click();
 
             // Expand the general config section to upload certificate
