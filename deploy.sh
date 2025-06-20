@@ -199,6 +199,7 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     --set wso2.deployment.am.cp.db.apim_shared.password="$dbPasswordAPIMShared" \
     --set wso2.deployment.am.cp.db.apim.url="$dbAPIMUrl" \
     --set wso2.deployment.am.cp.db.apim_shared.url="$dbAPIMSharedUrl" \
+    --set wso2.deployment.am.cp.ingress.hostname="am-${product_version}.wso2.com" \
     --set wso2.deployment.dependencies.cluster_mysql=false \
     --set wso2.deployment.am.trafficmanager.livenessProbe.initialDelaySeconds=180 \
     --set wso2.deployment.am.trafficmanager.readinessProbe.initialDelaySeconds=180 \
@@ -207,6 +208,7 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     --set wso2.deployment.am.startupProbe.initialDelaySeconds=180 \
     --set wso2.deployment.am.startupProbe.periodSeconds=10 \
     --set wso2.deployment.am.readinessProbe.initialDelaySeconds=180 \
+    --set wso2.deployment.am.gateway.ingress.hostname="gateway.am-${product_version}.wso2.com" \
     --set wso2.deployment.dependencies.nfsServerProvisioner=false \
     --set wso2.deployment.mi.replicas=0 \
     --set wso2.deployment.am.gateway.replicas=1 \
