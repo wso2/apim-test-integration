@@ -95,11 +95,17 @@ aws eks update-kubeconfig --region ${EKS_CLUSTER_REGION} --name ${EKS_CLUSTER_NA
 # Scale node group with one EC2 instance.
 eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
 
-# Install nginx ingress controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml || { echo "failed to install nginx ingress controller." ; exit 1 ; }
+# Check if nginx ingress controller exists
+if ! kubectl get deployment -n ingress-nginx ingress-nginx-controller &> /dev/null; then
+    echo "Nginx ingress controller not found. Installing..."
+    # Install nginx ingress controller
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml || { echo "failed to install nginx ingress controller." ; exit 1 ; }
 
-# Delete Nginx admission if it exists.
-kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo "WARNING : Failed to delete nginx admission."
+    # Delete Nginx admission if it exists.
+    kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo "WARNING : Failed to delete nginx admission."
+else
+    echo "Nginx ingress controller already exists. Skipping installation."
+fi
 
 # Create fargate profile
 eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${product_version}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
