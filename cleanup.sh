@@ -29,7 +29,8 @@ echo "Uninstalling APIM in cluster."
 helm uninstall "${product_name}" -n="${kubernetes_namespace}" || true
 
 echo "Delete fargate profile."
-eksctl delete fargateprofile  --name "${product_name}-fargate-profile" --cluster "${EKS_CLUSTER_NAME}" --region ${EKS_CLUSTER_REGION}
+temp_product_version=$(echo "${product_version}" | tr '.' '_') # Fargate profile name does not support '.' character.
+eksctl delete fargateprofile  --name "${product_name}-${temp_product_version}-fargate-profile" --cluster "${EKS_CLUSTER_NAME}" --region ${EKS_CLUSTER_REGION}
 
 cd "$workingdir"
 
