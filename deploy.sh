@@ -93,7 +93,7 @@ wget -O "./${db_engine}/apim.sql" "https://raw.githubusercontent.com/wso2/apim-t
 aws eks update-kubeconfig --region ${EKS_CLUSTER_REGION} --name ${EKS_CLUSTER_NAME} || { echo 'Failed to update cluster kube config.';  exit 1; }
 
 # Scale node group with one EC2 instance.
-eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
+# eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
 
 # Check if nginx ingress controller exists
 if ! kubectl get deployment -n ingress-nginx ingress-nginx-controller &> /dev/null; then
