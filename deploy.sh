@@ -106,8 +106,7 @@ else
 fi
 
 # Create fargate profile
-temp_product_version=$(echo "${product_version}" | tr '.' '_') # Fargate profile name does not support '.' character.
-eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${temp_product_version}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
+eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${SHORT_PRODUCT_VERSION}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
 
 # Extract DB port and DB host name detail.
 dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCPort`].OutputValue' --output text | xargs)
@@ -198,7 +197,7 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     --set wso2.deployment.am.cp.db.apim_shared.password="$dbPasswordAPIMShared" \
     --set wso2.deployment.am.cp.db.apim.url="$dbAPIMUrl" \
     --set wso2.deployment.am.cp.db.apim_shared.url="$dbAPIMSharedUrl" \
-    --set wso2.deployment.am.cp.ingress.hostname="am-${product_version}.wso2.com" \
+    --set wso2.deployment.am.cp.ingress.hostname="am-${SHORT_PRODUCT_VERSION}.wso2.com" \
     --set wso2.deployment.dependencies.cluster_mysql=false \
     --set wso2.deployment.am.trafficmanager.livenessProbe.initialDelaySeconds=180 \
     --set wso2.deployment.am.trafficmanager.readinessProbe.initialDelaySeconds=180 \
@@ -207,7 +206,7 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     --set wso2.deployment.am.startupProbe.initialDelaySeconds=180 \
     --set wso2.deployment.am.startupProbe.periodSeconds=10 \
     --set wso2.deployment.am.readinessProbe.initialDelaySeconds=180 \
-    --set wso2.deployment.am.gateway.ingress.hostname="gateway.am-${product_version}.wso2.com" \
+    --set wso2.deployment.am.gateway.ingress.hostname="gateway.am-${SHORT_PRODUCT_VERSION}.wso2.com" \
     --set wso2.deployment.dependencies.nfsServerProvisioner=false \
     --set wso2.deployment.mi.replicas=0 \
     --set wso2.deployment.am.gateway.replicas=1 \
