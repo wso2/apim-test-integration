@@ -108,7 +108,8 @@ else
 fi
 
 # Create fargate profile
-eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${product_version}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
+temp_product_version=$(echo "${product_version}" | tr '.' '_') # Fargate profile name does not support '.' character.
+eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${temp_product_version}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
 
 # Extract DB port and DB host name detail.
 dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCPort`].OutputValue' --output text | xargs)
