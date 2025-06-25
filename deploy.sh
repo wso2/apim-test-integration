@@ -91,17 +91,20 @@ aws s3 cp "s3://test-grid-apim/profile-automation/apim/${product_version}/${db_e
 # Update kube config file.
 aws eks update-kubeconfig --region ${EKS_CLUSTER_REGION} --name ${EKS_CLUSTER_NAME} || { echo 'Failed to update cluster kube config.';  exit 1; }
 
-# Scale node group with one EC2 instance.
-eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
+# Check if nginx ingress controller exists
+if ! kubectl get deployment -n ingress-nginx ingress-nginx-controller &> /dev/null; then
+    echo "Nginx ingress controller not found. Installing..."
+    # Install nginx ingress controller
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml || { echo "failed to install nginx ingress controller." ; exit 1 ; }
 
-# Install nginx ingress controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml || { echo "failed to install nginx ingress controller." ; exit 1 ; }
-
-# Delete Nginx admission if it exists.
-kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo "WARNING : Failed to delete nginx admission."
+    # Delete Nginx admission if it exists.
+    kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo "WARNING : Failed to delete nginx admission."
+else
+    echo "Nginx ingress controller already exists. Skipping installation."
+fi
 
 # Create fargate profile
-eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
+eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${SHORT_PRODUCT_VERSION}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
 
 # Extract DB port and DB host name detail.
 dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCPort`].OutputValue' --output text | xargs)
@@ -190,6 +193,7 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     --set wso2.deployment.am.cp.db.apim_shared.password="$dbPasswordAPIMShared" \
     --set wso2.deployment.am.cp.db.apim.url="$dbAPIMUrl" \
     --set wso2.deployment.am.cp.db.apim_shared.url="$dbAPIMSharedUrl" \
+    --set wso2.deployment.am.cp.ingress.hostname="am-${SHORT_PRODUCT_VERSION}.wso2.com" \
     --set wso2.deployment.dependencies.cluster_mysql=false \
     --set wso2.deployment.am.trafficmanager.livenessProbe.initialDelaySeconds=300 \
     --set wso2.deployment.am.trafficmanager.readinessProbe.initialDelaySeconds=300 \
@@ -198,6 +202,7 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     --set wso2.deployment.am.startupProbe.initialDelaySeconds=200 \
     --set wso2.deployment.am.startupProbe.periodSeconds=10 \
     --set wso2.deployment.am.readinessProbe.initialDelaySeconds=200 \
+    --set wso2.deployment.am.gateway.ingress.hostname="gateway.am-${SHORT_PRODUCT_VERSION}.wso2.com" \
     --set wso2.deployment.dependencies.nfsServerProvisioner=false \
     --set wso2.deployment.mi.replicas=0 \
     --set wso2.deployment.am.gateway.replicas=1 \
