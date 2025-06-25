@@ -90,6 +90,8 @@ environment_file=$tests_dir/tests-cases/profile-tests/APIM_Environment.postman_e
 /home/ubuntu/.nvm/versions/node/v19.0.1/bin/newman run "$collection_file" \
   --environment "$environment_file" \
   --env-var "cluster_ip=${HOST_NAME}" \
+  --env-var "portals_host=am-${SHORT_PRODUCT_VERSION}.wso2.com" \
+  --env-var "gateway_host=gateway.am-${SHORT_PRODUCT_VERSION}.wso2.com" \
   --insecure \
   --reporters cli,junit \
   --reporter-junit-export newman-profile-results.xml
