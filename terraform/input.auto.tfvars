@@ -22,7 +22,7 @@ vpc_cidr_block   = "172.17.0.0/16"
 
 management_subnet_az_cidr = "172.17.15.0/26"
 
-eks_default_nodepool_desired_size         = "5"
+eks_default_nodepool_desired_size         = "6"
 eks_default_nodepool_max_size             = "25"
 eks_default_nodepool_min_size             = "1"
 eks_default_nodepool_max_unavailable      = "1"
