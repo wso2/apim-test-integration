@@ -92,8 +92,8 @@ wget -O "./${db_engine}/apim.sql" "https://raw.githubusercontent.com/wso2/apim-t
 # Update kube config file.
 aws eks update-kubeconfig --region ${EKS_CLUSTER_REGION} --name ${EKS_CLUSTER_NAME} || { echo 'Failed to update cluster kube config.';  exit 1; }
 
-# Scale node group with one EC2 instance.
-eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
+# Create fargate profile
+eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${SHORT_PRODUCT_VERSION}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
 
 # Check if nginx ingress controller exists
 if ! kubectl get deployment -n ingress-nginx ingress-nginx-controller &> /dev/null; then
@@ -106,9 +106,6 @@ if ! kubectl get deployment -n ingress-nginx ingress-nginx-controller &> /dev/nu
 else
     echo "Nginx ingress controller already exists. Skipping installation."
 fi
-
-# Create fargate profile
-eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${SHORT_PRODUCT_VERSION}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
 
 # Extract DB port and DB host name detail.
 dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCPort`].OutputValue' --output text | xargs)
