@@ -40,7 +40,15 @@ data:
     echo "========================================== update product =========================================================="
     echo "Updating apim to $WSO2_UPDATES_UPDATE_LEVEL_STATE pack ............."
     cd ${WSO2_SERVER_HOME}/bin/
+    set +e
     ./wso2update_linux --backup /home/wso2carbon/ --username {{ .Values.wso2.subscription.username }} --password {{ .Values.wso2.subscription.password }}
+    update_exit_code=$?
+    set -e
+
+    if [ $update_exit_code -eq 2 ]; then
+      echo "Self Update."
+      ./wso2update_linux --backup /home/wso2carbon/ --username {{ .Values.wso2.subscription.username }} --password {{ .Values.wso2.subscription.password }}
+    fi
 
     # log update ids
     log_directory="../updates/logs"
