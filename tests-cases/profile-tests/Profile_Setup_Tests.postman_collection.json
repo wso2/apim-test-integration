@@ -388,6 +388,59 @@
 					"response": []
 				},
 				{
+					"name": "Get Lifecycle State",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assert the response code",
+									"pm.test(\"Get the lifecycle states of the API\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{dcr_app_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Host",
+								"value": "{{portals_host}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{cluster_ip}}:{{portals_port}}{{publisher_base_path}}/apis/{{api_id}}/lifecycle-state",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{cluster_ip}}"
+							],
+							"port": "{{portals_port}}{{publisher_base_path}}",
+							"path": [
+								"apis",
+								"{{api_id}}",
+								"lifecycle-state"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Publish API",
 					"event": [
 						{
