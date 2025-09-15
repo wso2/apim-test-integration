@@ -388,13 +388,6 @@ versions:
       parameters:
         location: "step1"
         schema: "um"
-    - name: "GroupsAndRolesMigrator"
-      order: 4
-      # parameters:
-        # Absolute path for the dry report. This is required in the dry run mode.
-        # reportPath:
-        # Admin role of the current version. This is required only if changing the name of admin role in migrate Version.
-        # currentAdminRoleName:
     - name: "ConfigurationManagementSchemaMigrator"
       order: 5
       parameters:

@@ -26,7 +26,8 @@ MIGRATION_RESOURCES_LOCATION=$3
 DB_TYPE=$4
 WORKSPACE=/opt/testgrid/workspace
 APIM_VERSION="4.5.0"
-SOURCE_VERSION="3.2.0"
+SOURCE_APIM_VERSION="3.2.0"
+IS_MIGRATION_CLIENT_VERSION_BASE="1.1"
 APIM_HOME="${WORKSPACE}/wso2am-${APIM_VERSION}"
 IS_MIGRATION_LOG_FILE="$APIM_HOME/repository/logs/is-migration-$DB_TYPE.log"
 APIM_MIGRATION_LOG_FILE="$APIM_HOME/repository/logs/apim-migration-$DB_TYPE.log"
@@ -52,22 +53,104 @@ function install_jdk() {
 }
 install_jdk ${JDK_TYPE}
 
-# S3 base path
-S3_BASE_PATH="s3://integration-testgrid-resources/apim-migration-resources/migrate-to-${APIM_VERSION}"
+get_latest_version() {
+  local GROUP_ID="$1"
+  local ARTIFACT_ID="$2"
+  local VERSION_RANGE="$3"
+  local REPO_URL="$4"
+  local FILE_NAME="$5"
+  local POM_FILE="resolver-pom.xml"
 
-# Get the latest WSO2 AM migration client
-wso2am_file=$(aws s3 ls ${S3_BASE_PATH}/ | awk '{print $4}' | grep '^wso2am-migration-.*\.zip$' | sort -V | tail -n1)
+  cat > "$POM_FILE" <<EOF
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>dummy</groupId>
+  <artifactId>resolver</artifactId>
+  <version>1.0.0</version>
 
-# Get the latest WSO2 IS migration client
-wso2is_file=$(aws s3 ls ${S3_BASE_PATH}/ | awk '{print $4}' | grep '^wso2is-migration-.*\.zip$' | sort -V | tail -n1)
+  <repositories>
+    <repository>
+        <id>wso2-nexus</id>
+        <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+    </repository>
+    <repository>
+        <id>wso2-releases</id>
+        <url>https://maven.wso2.org/nexus/content/repositories/releases/</url>
+    </repository>
+    <repository>
+      <id>updates2-nexus</id>
+      <name>Support Nexus Repository of WSO2</name>
+      <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>
+      <releases>
+          <enabled>true</enabled>
+          <updatePolicy>daily</updatePolicy>
+          <checksumPolicy>fail</checksumPolicy>
+      </releases>
+    </repository>
+    <repository>
+        <id>wso2-nexus-support</id>
+        <name>WSO2 internal Repository</name>
+        <url>https://support-maven.wso2.org/nexus/content/repositories/releases/</url>
+        <releases>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
+        </releases>
+    </repository>
+  </repositories>
 
-# Print what files will be downloaded
-echo "Latest WSO2 AM Migration Client: $wso2am_file"
-echo "Latest WSO2 IS Migration Client: $wso2is_file"
+  <dependencies>
+    <dependency>
+      <groupId>${GROUP_ID}</groupId>
+      <artifactId>${ARTIFACT_ID}</artifactId>
+      <version>${VERSION_RANGE}</version>
+    </dependency>
+  </dependencies>
+</project>
+EOF
 
-# Copy files from S3
-aws s3 cp "${S3_BASE_PATH}/${wso2am_file}" .
-aws s3 cp "${S3_BASE_PATH}/${wso2is_file}" .
+  mvn -f "$POM_FILE" \
+    org.codehaus.mojo:versions-maven-plugin:2.16.2:resolve-ranges \
+    -DremoteRepositories="$REPO_URL" -U -q
+
+  local LATEST_VER
+  LATEST_VER=$(mvn -f "$POM_FILE" \
+    org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate \
+    -Dexpression="project.dependencies[0].version" -q -DforceStdout)
+
+  LATEST_VER=${LATEST_VER%\%}
+  LATEST_VER=$(echo "$LATEST_VER" | xargs)
+
+  LATEST_FILE="$FILE_NAME-$LATEST_VER.zip"
+
+  mvn -f "$POM_FILE" dependency:get \
+    -Dartifact="$GROUP_ID:$ARTIFACT_ID:$LATEST_VER:zip" \
+    -Ddest="./$LATEST_FILE" 1>&2
+  
+  rm -f "$POM_FILE" "$POM_FILE".*
+
+  echo "$LATEST_FILE"
+}
+
+wso2am_file=$(get_latest_version \
+  "org.wso2.carbon.apim.migration.resources" \
+  "org.wso2.carbon.apimgt.migrate.client" \
+  "[$APIM_VERSION,$(IFS='.' read -r a b c <<< "$APIM_VERSION"; echo "$a.$b.$((c+1))"))" \
+  "https://support-maven.wso2.org/nexus/content/repositories/releases"\
+  "wso2am-migration")
+
+echo "Latest WSO2 APIM Migration Client: $wso2am_file"
+
+wso2is_file=$(get_latest_version \
+  "org.wso2.carbon.apimgt.identity.migration.resources" \
+  "org.wso2.carbon.is.migration" \
+  "[$IS_MIGRATION_CLIENT_VERSION_BASE,$(IFS='.' read -r a b <<< "$IS_MIGRATION_CLIENT_VERSION_BASE"; echo "$a.$((b+1))"))" \
+  "https://maven.wso2.org/nexus/content/repositories/releases"\
+  "wso2is-migration")
+
+echo "Latest WSO2 APIM Identity Migration Client: $wso2is_file"
 
 unzip -q -o "${WORKSPACE}/${wso2am_file}" -d "$WORKSPACE"
 unzip -q -o "${WORKSPACE}/${wso2is_file}" -d "$WORKSPACE"
@@ -164,7 +247,7 @@ cp "${APIM_MIGRATION_RESOURCES_DIR}/dropins/"*.jar "$APIM_HOME/repository/compon
 
 echo "Starting APIM migration..."
 sudo chmod 755 $APIM_HOME/bin/api-manager.sh
-nohup sh "$APIM_HOME/bin/api-manager.sh" -Dmigrate -DmigrateFromVersion="$SOURCE_VERSION" > "$APIM_MIGRATION_LOG_FILE" 2>&1 &
+nohup sh "$APIM_HOME/bin/api-manager.sh" -Dmigrate -DmigrateFromVersion="$SOURCE_APIM_VERSION" > "$APIM_MIGRATION_LOG_FILE" 2>&1 &
 SERVER_PID=$!
 
 echo "Waiting for server to start..."
