@@ -11,7 +11,7 @@
 
 resource "aws_db_parameter_group" "mysql-pg" {
   name   = "${var.project}-${var.environment_name}-rds-pg"
-  family = "mysql5.7"
+  family = "mysql8.0"
 
   parameter {
     name  = "max_connections"
