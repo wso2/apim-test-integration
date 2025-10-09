@@ -1,0 +1,35 @@
+# -------------------------------------------------------------------------------------
+#
+# Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+#
+# This software is the property of WSO2 LLC. and its suppliers, if any.
+# Dissemination of any information or reproduction of any material contained 
+# herein is strictly forbidden, unless permitted by WSO2 in accordance with the 
+# WSO2 Commercial License available at https://wso2.com/licenses/eula/3.2
+#
+# --------------------------------------------------------------------------------------
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    annotations:
+        nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+        nginx.ingress.kubernetes.io/proxy-buffer-size: 8k
+        nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    name: gw-rest-ingress
+spec:
+    ingressClassName: nginx
+    tls:
+    - hosts:
+        - {{ .Values.hostname }}
+    rules:
+    - host: {{ .Values.hostname }}
+      http:
+        paths:
+        - path: /api/am/gateway/v2/
+          pathType: Prefix
+          backend:
+            service:
+                name: apim-universal-gw-wso2am-universal-gw-service
+                port:
+                  number: 9443

@@ -1,0 +1,83 @@
+# -------------------------------------------------------------------------------------
+#
+# Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+#
+# This software is the property of WSO2 LLC. and its suppliers, if any.
+# Dissemination of any information or reproduction of any material contained 
+# herein is strictly forbidden, unless permitted by WSO2 in accordance with the 
+# WSO2 Commercial License available at https://wso2.com/licenses/eula/3.2
+#
+# --------------------------------------------------------------------------------------
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: test-runner
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: test-runner
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: test-runner
+    spec:
+      containers:
+      - name: test-runner
+        image: cypress/included:cypress-14.3.2-node-22.15.0-chrome-135.0.7049.114-1-ff-137.0.2-edge-135.0.3179.85-1
+        command: ["sh", "-c", "cypress/script.sh"]
+        env:
+          - name: GIT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: git-username
+          - name: GIT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: git-password
+          - name: GIT_REPO
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: git-repo
+          - name: GIT_BRANCH
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: git-branch
+          - name: CYPRESS_BASE_URL
+            value: "https://{{ .Values.host }}"
+          - name: S3_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: aws-s3-access-key
+          - name: S3_BUCKET
+            value: "{{ .Values.aws_s3_bucket }}"
+          - name: S3_REGION
+            value: "{{ .Values.aws_s3_region }}"
+          - name: S3_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: test-secret
+                key: aws-s3-secret-key
+        volumeMounts:
+        - name: test-script
+          mountPath: /cypress/script.sh
+          subPath: script.sh
+      volumes:
+      - name: test-script
+        configMap:
+          name: test-script
+          defaultMode: 0755
+      - name: test-secret
+        secret:
+          secretName: test-secret
+      restartPolicy: Never

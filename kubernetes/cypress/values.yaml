@@ -1,0 +1,29 @@
+# -------------------------------------------------------------------------------------
+#
+# Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+#
+# This software is the property of WSO2 LLC. and its suppliers, if any.
+# Dissemination of any information or reproduction of any material contained 
+# herein is strictly forbidden, unless permitted by WSO2 in accordance with the 
+# WSO2 Commercial License available at https://wso2.com/licenses/eula/3.2
+#
+# --------------------------------------------------------------------------------------
+
+# Host configuration for the AM server
+host: "am.wso2.com"
+host_ip: "127.0.0.1"
+
+# Gateway hostname configuration (used in tests)
+gw_hostname: "gw.wso2.com"
+
+# Git configuration
+git_user_name: ""
+git_user_password: ""
+git_repo: ""
+git_branch: "main"
+
+# AWS S3 bucket configuration
+aws_s3_bucket: "apim-ui-testing"
+aws_s3_access_key: ""
+aws_s3_secret_key: ""
+aws_s3_region: "us-east-1"
