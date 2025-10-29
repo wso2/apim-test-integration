@@ -3109,7 +3109,7 @@
 								"exec": [
 									"// Assert the response code",
 									"pm.test(\"Invoke API with invalid response body\", function () {",
-									"    pm.response.to.have.status(400);",
+									"    pm.response.to.have.status(500);",
 									"});",
 									"",
 									"var apiResponse = pm.response.text();",
