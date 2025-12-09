@@ -33,7 +33,7 @@ eks_external_lb_az1_subnet_cidr           = "172.18.19.0/24"
 eks_external_lb_az2_subnet_cidr           = "172.18.20.0/24"
 eks_service_ipv4_cidr                     = "10.0.0.0/16"
 az_dmz_subnet_cidr_block                  = "172.18.12.0/26"
-kubernetes_version                        = "1.28"
+kubernetes_version                        = "1.33"
 
 # DB
 db_engine_options = [
