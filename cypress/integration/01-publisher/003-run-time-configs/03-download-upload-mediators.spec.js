@@ -1,17 +1,11 @@
 
+import PublisherComonPage from '../../../support/pages/publisher/PublisherComonPage';
+
 describe("publisher-003-03 : Verify authorized user can download/upload mediators in runtime configuration", () => {
     const publisher = 'publisher';
     const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
     const apiName = 'newapi' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.0';
-
-    before(function () {
-        //cy.carbonLogin(carbonUsername, carbonPassword);
-        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        //cy.loginToPublisher(publisher, password);
-    })
 
     const downloadMediator = (type) => {
         cy.wait(2000);
@@ -43,11 +37,11 @@ describe("publisher-003-03 : Verify authorized user can download/upload mediator
         cy.get('[data-testid="select-mediator-from-list"]').click();
         // save runtime configs
         cy.get('[data-testid="save-runtime-configurations"]').click();
-        //cy.wait(5000);
+        PublisherComonPage.waitUntillProgressComponentsExit();
         cy.get(`[data-testid="mediation-edit-${type}"]`).then(() => {
             cy.get(`[data-testid="mediation-edit-${type}"]`).click();
-
-            cy.contains(fileName).should('exist');
+            cy.get('[data-testid="download-custom-radio-group"]').contains(fileName);
+            cy.get('[data-testid="cancel-seq"]').click();
         });
     }
     it.only("User download and upload mediation policies for In Flow, Out Flow, Fault Flow", () => {
