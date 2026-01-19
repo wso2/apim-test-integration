@@ -22,20 +22,12 @@ describe("Tryout API invocations", () => {
     const developer = 'developer';
     const publisher = 'publisher';
     const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
 
-    before(function () {
-        //cy.carbonLogin(carbonUsername, carbonPassword);
-        //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-    })
     it.only("Tryout API invocations from swagger console", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishApi(apiName, apiVersion);
         cy.logoutFromPublisher();
         cy.loginToDevportal(developer, password);
-
 
         // Create an app and subscribe
         cy.createApp(appName, appDescription);
@@ -66,18 +58,42 @@ describe("Tryout API invocations", () => {
         cy.wait('@oauthKeys');
 
         cy.get('[data-testid="gen-test-key"]').should('not.have.attr', 'disabled', { timeout: 30000 });
+
         // Generate token and wait for response
         cy.get('[data-testid="gen-test-key"]').click();
 
         cy.intercept('**/generate-token').as('genToken');
         cy.wait('@genToken');
 
-        // Test the console
+        // Test GET operation
         cy.get('#operations-pet-getPetById').click();
         cy.get('#operations-pet-getPetById .try-out__btn').click();
-        //cy.get('#operations-pet-getPetById [placeholder="petId - ID of pet to return"]').type('1');
+        cy.get('#operations-pet-getPetById [placeholder="petId"]').type('10');
         cy.get('#operations-pet-getPetById button.execute').click();
-        cy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');
+        cy.get('#operations-pet-getPetById .loading-container').should('not.exist');
+        cy.get('#operations-pet-getPetById .live-responses-table .response-col_status').contains(/200|404/).should('exist');
+
+        // Test POST operation
+        cy.get('#operations-pet-addPet').click();
+        cy.get('#operations-pet-addPet .try-out__btn').click();
+        cy.get('#operations-pet-addPet button.execute').click();
+        cy.get('#operations-pet-addPet .loading-container').should('not.exist');
+        cy.get('#operations-pet-addPet .live-responses-table .response-col_status').contains('200').should('exist');
+
+        // Test PUT operation
+        cy.get('#operations-pet-updatePet').click();
+        cy.get('#operations-pet-updatePet .try-out__btn').click();
+        cy.get('#operations-pet-updatePet button.execute').click();
+        cy.get('#operations-pet-updatePet .loading-container').should('not.exist');
+        cy.get('#operations-pet-updatePet .live-responses-table .response-col_status').contains('200').should('exist');
+
+        // Test DELETE operation
+        cy.get('#operations-pet-deletePet').click();
+        cy.get('#operations-pet-deletePet .try-out__btn').click();
+        cy.get('#operations-pet-deletePet [placeholder="petId"]').type('10');
+        cy.get('#operations-pet-deletePet button.execute').click();
+        cy.get('#operations-pet-deletePet .loading-container').should('not.exist');
+        cy.get('#operations-pet-deletePet .live-responses-table .response-col_status').contains(/200|404/).should('exist');
     });
 
     after(function () {
@@ -91,10 +107,5 @@ describe("Tryout API invocations", () => {
         cy.logoutFromDevportal();
         cy.loginToPublisher(publisher, password);
         cy.deleteApi(apiName, apiVersion);
-        
-        // delete users
-        //cy.visit('carbon/user/user-mgt.jsp');
-        //cy.deleteUser(developer);
-        //cy.deleteUser(publisher);
-    })
+    });
 });
