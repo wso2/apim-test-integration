@@ -306,6 +306,7 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
         cy.get('[data-testid="itest-id-apiname-input"]').clear().type(apiName);
         cy.get('[data-testid="itest-id-apicontext-input"] input').click();
         cy.get('[data-testid="itest-id-apicontext-input"] input').clear().type(`/api_${random_number}`);
+        cy.get('#itest-id-apiendpoint-input').click().clear().type('https://petstore.swagger.io/v2');
     }
     cy.get('[data-testid="select-policy-dropdown"]').click();
     cy.get('[data-testid="policy-item-Silver"]').click();

@@ -122,7 +122,9 @@ describe("publisher-001-06 : Verify SOAP API creation", () => {
         cy.get('#operations-default-post__').find('.execute').click();
         cy.wait(3000);
         cy.get('#operations-default-post__').find('.response-col_status').contains('200').should('exist');
-        cy.contains('Toll Free') // response body contains : <Company>Toll Free</Company>
+        // Check for a part of the response body to confirm the request was successful
+        cy.contains('<CleanNumber>8006785432</CleanNumber>')
+        
     });
 
     /*
