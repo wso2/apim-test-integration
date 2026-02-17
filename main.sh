@@ -78,6 +78,8 @@ environment_file=$tests_dir/tests-cases/profile-tests/APIM_Environment.postman_e
   --environment "$environment_file" \
   --env-var "cluster_ip=${HOST_NAME}" \
   --env-var "pizzashack_endpoint=https://wso2am-pattern-4-am-cp-service:9443/am/sample/pizzashack/v1/api/" \
+  --env-var "portals_host=am-${SHORT_PRODUCT_VERSION}.wso2.com" \
+  --env-var "gateway_host=gateway.am-${SHORT_PRODUCT_VERSION}.wso2.com" \
   --insecure \
   --reporters cli,junit \
   --reporter-junit-export newman-profile-results.xml
