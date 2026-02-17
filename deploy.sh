@@ -94,14 +94,20 @@ aws eks update-kubeconfig --region ${EKS_CLUSTER_REGION} --name ${EKS_CLUSTER_NA
 # Scale node group with one EC2 instance.
 eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
 
-# Install nginx ingress controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml || { echo "failed to install nginx ingress controller." ; exit 1 ; }
+# Check if nginx ingress controller exists
+if ! kubectl get deployment -n ingress-nginx ingress-nginx-controller &> /dev/null; then
+    echo "Nginx ingress controller not found. Installing..."
+    # Install nginx ingress controller
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml || { echo "failed to install nginx ingress controller." ; exit 1 ; }
 
-# Delete Nginx admission if it exists.
-kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo "WARNING : Failed to delete nginx admission."
+    # Delete Nginx admission if it exists.
+    kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo "WARNING : Failed to delete nginx admission."
+else
+    echo "Nginx ingress controller already exists. Skipping installation."
+fi
 
 # Create fargate profile
-eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
+eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${SHORT_PRODUCT_VERSION}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
 
 # Extract DB port and DB host name detail.
 dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCPort`].OutputValue' --output text | xargs)
@@ -225,9 +231,11 @@ helm install apim \
     --set wso2.deployment.analytics.db.persistence_db.password="wso2carbon" \
     --set wso2.deployment.analytics.db.persistence_db.url='jdbc:h2:\${sys:carbon.home}/wso2/${sys:wso2.runtime}/database/PERSISTENCE_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;AUTO_SERVER=TRUE' \
     --set wso2.deployment.am.gateway.readinessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.am.gateway.ingress.hostname="gateway.am-${SHORT_PRODUCT_VERSION}.wso2.com" \
     --set wso2.deployment.am.gateway.livenessProbe.initialDelaySeconds=300 \
     --set wso2.deployment.am.km.readinessProbe.initialDelaySeconds=300 \
     --set wso2.deployment.am.km.livenessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.am.pubDevPortalTM.ingress.hostname="am-${SHORT_PRODUCT_VERSION}.wso2.com" \
     --set wso2.deployment.analytics.worker.readinessProbe.initialDelaySeconds=60 \
     --set wso2.deployment.analytics.worker.livenessProbe.initialDelaySeconds=60 \
     ||  { echo 'Error while installing APIM to cluster.';  exit 1; }
