@@ -30,7 +30,7 @@ TEST_GROUP=$8
 PRODUCT_REPOSITORY_NAME=$(echo $PRODUCT_REPOSITORY | rev | cut -d'/' -f1 | rev | cut -d'.' -f1)
 PRODUCT_REPOSITORY_PACK_DIR="$TESTGRID_DIR/$PRODUCT_REPOSITORY_NAME/all-in-one-apim/modules/distribution/product/target"
 INT_TEST_MODULE_DIR="$TESTGRID_DIR/$PRODUCT_REPOSITORY_NAME/all-in-one-apim/modules/integration-v2"
-MIGRATION_RESOURCES_LOCATION="https://raw.githubusercontent.com/wso2/apim-test-integration/refs/heads/4.2.0-migration/apim-migration/"
+MIGRATION_RESOURCES_LOCATION="https://raw.githubusercontent.com/dakshina99/apim-test-integration/refs/heads/4.2.0-migration/apim-migration/"
 
 # CloudFormation properties
 CFN_PROP_FILE="${TESTGRID_DIR}/cfn-props.properties"
