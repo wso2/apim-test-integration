@@ -10,7 +10,7 @@
 # --------------------------------------------------------------------------------------
 
 apiVersion: v1
-appVersion: "4.5.0"
+appVersion: "4.7.0"
 description: A Helm chart to run cypress tests in a Kubernetes pod
 name: wso2am-cypress
-version: 4.5.0-1
+version: 4.7.0-1
