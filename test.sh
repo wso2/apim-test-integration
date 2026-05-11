@@ -101,8 +101,8 @@ sudo apt-get update -y
 sleep 120
 sudo killall apt apt-get dpkg
 sudo dpkg --configure -a
-curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-sudo apt-get install -y nodejs
+curl -fsSL https://nodejs.org/dist/v12.13.0/node-v12.13.0-linux-x64.tar.xz -o /tmp/node-v12.13.0-linux-x64.tar.xz
+sudo tar -xJf /tmp/node-v12.13.0-linux-x64.tar.xz -C /usr/local --strip-components=1
 npm -v
 sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y
 export LC_CTYPE="en_US.UTF-8"
