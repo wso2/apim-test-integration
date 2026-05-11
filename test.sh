@@ -101,7 +101,7 @@ sudo apt-get update -y
 sleep 120
 sudo killall apt apt-get dpkg
 sudo dpkg --configure -a
-curl -fsSL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
 npm -v
 sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y
