@@ -101,14 +101,8 @@ sudo apt-get update -y
 sleep 120
 sudo killall apt apt-get dpkg
 sudo dpkg --configure -a
-NODE_VERSION=v16.20.2
-wget https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz
-tar -xf node-${NODE_VERSION}-linux-x64.tar.xz
-sudo rm -f /usr/bin/node /usr/bin/npm /usr/bin/npx
-sudo ln -s $HOME/node-${NODE_VERSION}-linux-x64/bin/node /usr/bin/node
-sudo ln -s $HOME/node-${NODE_VERSION}-linux-x64/bin/npm /usr/bin/npm
-sudo ln -s $HOME/node-${NODE_VERSION}-linux-x64/bin/npx /usr/bin/npx
-node -v
+curl -fsSL https://nodejs.org/dist/v12.13.0/node-v12.13.0-linux-x64.tar.xz -o /tmp/node-v12.13.0-linux-x64.tar.xz
+sudo tar -xJf /tmp/node-v12.13.0-linux-x64.tar.xz -C /usr/local --strip-components=1
 npm -v
 sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y
 export LC_CTYPE="en_US.UTF-8"
