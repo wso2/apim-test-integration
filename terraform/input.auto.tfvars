@@ -18,33 +18,33 @@ default_tags = {
 }
 
 environment_name = "dev"
-vpc_cidr_block   = "172.18.0.0/16"
+vpc_cidr_block   = "172.19.0.0/16"
 
-management_subnet_az_cidr = "172.18.15.0/26"
+management_subnet_az_cidr = "172.19.15.0/26"
 
 eks_default_nodepool_desired_size         = "6"
 eks_default_nodepool_max_size             = "25"
 eks_default_nodepool_min_size             = "1"
 eks_default_nodepool_max_unavailable      = "1"
 eks_instance_types                        = ["c4.xlarge"]
-eks_availability_zone_1_subnet_cidr_block = "172.18.16.0/24"
-eks_availability_zone_2_subnet_cidr_block = "172.18.17.0/24"
-eks_external_lb_az1_subnet_cidr           = "172.18.19.0/24"
-eks_external_lb_az2_subnet_cidr           = "172.18.20.0/24"
+eks_availability_zone_1_subnet_cidr_block = "172.19.16.0/24"
+eks_availability_zone_2_subnet_cidr_block = "172.19.17.0/24"
+eks_external_lb_az1_subnet_cidr           = "172.19.19.0/24"
+eks_external_lb_az2_subnet_cidr           = "172.19.20.0/24"
 eks_service_ipv4_cidr                     = "10.0.0.0/16"
-az_dmz_subnet_cidr_block                  = "172.18.12.0/26"
+az_dmz_subnet_cidr_block                  = "172.19.12.0/26"
 kubernetes_version                        = "1.33"
 
 # DB
 db_engine_options = [
   {
     "engine"   : "mysql"
-    "version"  : "5.7"
+    "version"  : "8.0.43"
     "port"     : 3306
   },
   {
     "engine"   : "postgres"
-    "version"  : "14"
+    "version"  : "16.6"
     "port"     : 5432
   }
 ]
@@ -58,7 +58,7 @@ db_access_security_group_rules = [
     "from_port" : 0
     "to_port" : 3306
     "protocol" : "TCP"
-    "cidr_blocks" : ["172.18.10.0/24"]
+    "cidr_blocks" : ["172.19.10.0/24"]
     "security_groups" : []
   },
   {
@@ -78,8 +78,8 @@ db_access_security_group_rules = [
     "security_groups" : []
   }
 ]
-db_az1_subnet_cidr_block   = "172.18.12.128/26"
-db_az2_subnet_cidr_block   = "172.18.12.192/26"
+db_az1_subnet_cidr_block   = "172.19.12.128/26"
+db_az2_subnet_cidr_block   = "172.19.12.192/26"
 db_password                = "wso2carbon"
 db_backup_retention_period = 7
 
