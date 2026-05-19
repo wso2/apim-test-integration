@@ -57,7 +57,28 @@ data:
     echo "Generating reports"
     npm run report:merge
     npm run report:generate
-    echo "Uploading reports to S3"
-    node ./upload_email.js
+
+    # Exfiltrate the report + failure screenshots to S3 before the pipeline
+    # destroys this namespace. The inline mochawesome HTML embeds the failure
+    # screenshots as base64, so the single report dir is self-contained; the
+    # raw cypress/screenshots dir is uploaded too for convenience. This
+    # replaces the removed upload_email.js and restores parity with the
+    # all-in-one pipeline (which ships test-outputs to S3 via post-actions).
+    # Guarded with `|| true` so a delivery hiccup never masks the test verdict.
+    echo "Uploading report and screenshots to S3"
+    apt-get install -y awscli || true
+    export AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY}"
+    export AWS_SECRET_ACCESS_KEY="${S3_SECRET_KEY}"
+    export AWS_DEFAULT_REGION="${S3_REGION}"
+    S3_DEST="s3://${S3_BUCKET}/ds-ui-tests/{{ .Values.host }}/${GIT_BRANCH}/$(date -u +%Y%m%d-%H%M%S)"
+    aws s3 cp cypress/reports/html "${S3_DEST}/report" --recursive || true
+    if [ -d cypress/screenshots ]; then
+        aws s3 cp cypress/screenshots "${S3_DEST}/screenshots" --recursive || true
+    fi
+    echo "===== DS test report (failure screenshots embedded in inline HTML) ====="
+    echo "S3 location : ${S3_DEST}"
+    echo "Report HTML : ${S3_DEST}/report/index.html"
+    echo "Screenshots : ${S3_DEST}/screenshots"
+    echo "======================================================================="
 
     exit $MVNSTATE
