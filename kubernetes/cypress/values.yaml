@@ -27,3 +27,6 @@ aws_s3_bucket: "apim-ui-testing"
 aws_s3_access_key: ""
 aws_s3_secret_key: ""
 aws_s3_region: "us-east-1"
+# Deterministic S3 prefix injected by the pipeline (e.g. ds-ui-tests/${JOB_NAME}/build-${BUILD_NUMBER}/${pattern}-${db}).
+# When empty, the in-pod script falls back to the legacy timestamped path so ad-hoc helm installs still work.
+s3_prefix: ""

@@ -61,7 +61,9 @@ data:
     # Exfiltrate the report + failure screenshots to S3 before the pipeline
     # destroys this namespace. The inline mochawesome HTML embeds the failure
     # screenshots as base64, so the single report dir is self-contained; the
-    # raw cypress/screenshots dir is uploaded too for convenience. This
+    # raw screenshots are uploaded too — flattened into a single folder so
+    # downstream consumers (e.g. the Jenkins build page after the pipeline's
+    # post-test s3 cp) don't have to navigate spec-name subdirs. This
     # replaces the removed upload_email.js and restores parity with the
     # all-in-one pipeline (which ships test-outputs to S3 via post-actions).
     # Guarded with `|| true` so a delivery hiccup never masks the test verdict.
@@ -70,15 +72,37 @@ data:
     export AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY}"
     export AWS_SECRET_ACCESS_KEY="${S3_SECRET_KEY}"
     export AWS_DEFAULT_REGION="${S3_REGION}"
+
+    # Prefer the deterministic prefix injected by the pipeline (lets Jenkins
+    # `aws s3 cp` the artifacts back into ${WORKSPACE}/logs/ and archive them on
+    # the build page). Fall back to a timestamp-suffixed legacy path so ad-hoc
+    # helm installs still get a unique destination.
+    {{- if .Values.s3_prefix }}
+    S3_DEST="s3://${S3_BUCKET}/{{ .Values.s3_prefix }}"
+    {{- else }}
     S3_DEST="s3://${S3_BUCKET}/ds-ui-tests/{{ .Values.host }}/${GIT_BRANCH}/$(date -u +%Y%m%d-%H%M%S)"
+    {{- end }}
+
     aws s3 cp cypress/reports/html "${S3_DEST}/report" --recursive || true
+
+    # Flatten cypress/screenshots/<spec>/<title>.png into a single
+    # cypress/screenshots-flat/<spec>__<title>.png file before upload.
+    # Cypress's default layout is folder-per-spec; the encoded prefix keeps
+    # filenames collision-safe across specs that share a test title.
     if [ -d cypress/screenshots ]; then
-        aws s3 cp cypress/screenshots "${S3_DEST}/screenshots" --recursive || true
+        mkdir -p cypress/screenshots-flat
+        find cypress/screenshots -type f -name '*.png' | while IFS= read -r f; do
+            rel="${f#cypress/screenshots/}"
+            flat="$(printf '%s' "$rel" | tr '/' '_' | tr ' ' '_')"
+            cp "$f" "cypress/screenshots-flat/${flat}"
+        done
+        aws s3 cp cypress/screenshots-flat "${S3_DEST}/screenshots" --recursive || true
     fi
+
     echo "===== DS test report (failure screenshots embedded in inline HTML) ====="
     echo "S3 location : ${S3_DEST}"
     echo "Report HTML : ${S3_DEST}/report/index.html"
-    echo "Screenshots : ${S3_DEST}/screenshots"
+    echo "Screenshots : ${S3_DEST}/screenshots  (flat layout)"
     echo "======================================================================="
 
     exit $MVNSTATE
