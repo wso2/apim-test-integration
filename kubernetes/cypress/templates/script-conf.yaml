@@ -29,6 +29,10 @@ data:
     apt-get install -y g++ build-essential
     apt-get install -y curl
     apt-get install -y vim
+    # zip is required by 06-wsdl-url-generation.cy.js, which builds a .wsdl
+    # zip on the fly via cy.exec('zip ...'). The base cypress/included image
+    # does not ship it.
+    apt-get install -y zip
 
     # Add host mapping
     echo "{{ .Values.host_ip }} {{ .Values.host }}" >> /etc/hosts
