@@ -29,9 +29,7 @@ data:
     apt-get install -y g++ build-essential
     apt-get install -y curl
     apt-get install -y vim
-    # zip is required by 06-wsdl-url-generation.cy.js, which builds a .wsdl
-    # zip on the fly via cy.exec('zip ...'). The base cypress/included image
-    # does not ship it.
+    # Required by 06-wsdl-url-generation.cy.js (cy.exec('zip ...')).
     apt-get install -y zip
 
     # Add host mapping
@@ -62,25 +60,15 @@ data:
     npm run report:merge
     npm run report:generate
 
-    # Exfiltrate the report + failure screenshots to S3 before the pipeline
-    # destroys this namespace. The inline mochawesome HTML embeds the failure
-    # screenshots as base64, so the single report dir is self-contained; the
-    # raw screenshots are uploaded too — flattened into a single folder so
-    # downstream consumers (e.g. the Jenkins build page after the pipeline's
-    # post-test s3 cp) don't have to navigate spec-name subdirs. This
-    # replaces the removed upload_email.js and restores parity with the
-    # all-in-one pipeline (which ships test-outputs to S3 via post-actions).
-    # Guarded with `|| true` so a delivery hiccup never masks the test verdict.
+    # Upload report + screenshots to S3 before the namespace is torn down.
+    # Guarded with `|| true` so delivery hiccups don't mask the test verdict.
     echo "Uploading report and screenshots to S3"
     apt-get install -y awscli || true
     export AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY}"
     export AWS_SECRET_ACCESS_KEY="${S3_SECRET_KEY}"
     export AWS_DEFAULT_REGION="${S3_REGION}"
 
-    # Prefer the deterministic prefix injected by the pipeline (lets Jenkins
-    # `aws s3 cp` the artifacts back into ${WORKSPACE}/logs/ and archive them on
-    # the build page). Fall back to a timestamp-suffixed legacy path so ad-hoc
-    # helm installs still get a unique destination.
+    # Prefer pipeline-injected prefix; fall back to timestamped path for ad-hoc helm installs.
     {{- if .Values.s3_prefix }}
     S3_DEST="s3://${S3_BUCKET}/{{ .Values.s3_prefix }}"
     {{- else }}
@@ -89,10 +77,7 @@ data:
 
     aws s3 cp cypress/reports/html "${S3_DEST}/report" --recursive || true
 
-    # Flatten cypress/screenshots/<spec>/<title>.png into a single
-    # cypress/screenshots-flat/<spec>__<title>.png file before upload.
-    # Cypress's default layout is folder-per-spec; the encoded prefix keeps
-    # filenames collision-safe across specs that share a test title.
+    # Flatten cypress/screenshots/<spec>/<title>.png → screenshots-flat/<spec>_<title>.png to avoid collisions.
     if [ -d cypress/screenshots ]; then
         mkdir -p cypress/screenshots-flat
         find cypress/screenshots -type f -name '*.png' | while IFS= read -r f; do
