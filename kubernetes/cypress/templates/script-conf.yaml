@@ -29,6 +29,8 @@ data:
     apt-get install -y g++ build-essential
     apt-get install -y curl
     apt-get install -y vim
+    # Needed for tests that create zip archives via cy.exec.
+    apt-get install -y zip
 
     # Add host mapping
     echo "{{ .Values.host_ip }} {{ .Values.host }}" >> /etc/hosts
@@ -57,7 +59,39 @@ data:
     echo "Generating reports"
     npm run report:merge
     npm run report:generate
-    echo "Uploading reports to S3"
-    node ./upload_email.js
+
+    # Upload report + screenshots to S3 before the namespace is torn down.
+    # Guarded with `|| true` so delivery hiccups don't mask the test verdict.
+    echo "Uploading report and screenshots to S3"
+    apt-get install -y awscli || true
+    export AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY}"
+    export AWS_SECRET_ACCESS_KEY="${S3_SECRET_KEY}"
+    export AWS_DEFAULT_REGION="${S3_REGION}"
+
+    # Prefer pipeline-injected prefix; fall back to timestamped path for ad-hoc helm installs.
+    {{- if .Values.s3_prefix }}
+    S3_DEST="s3://${S3_BUCKET}/{{ .Values.s3_prefix }}"
+    {{- else }}
+    S3_DEST="s3://${S3_BUCKET}/ds-ui-tests/{{ .Values.host }}/${GIT_BRANCH}/$(date -u +%Y%m%d-%H%M%S)"
+    {{- end }}
+
+    aws s3 cp cypress/reports/html "${S3_DEST}/report" --recursive || true
+
+    # Flatten cypress/screenshots/<spec>/<title>.png → screenshots-flat/<spec>_<title>.png to avoid collisions.
+    if [ -d cypress/screenshots ]; then
+        mkdir -p cypress/screenshots-flat
+        find cypress/screenshots -type f -name '*.png' | while IFS= read -r f; do
+            rel="${f#cypress/screenshots/}"
+            flat="$(printf '%s' "$rel" | tr '/' '_' | tr ' ' '_')"
+            cp "$f" "cypress/screenshots-flat/${flat}"
+        done
+        aws s3 cp cypress/screenshots-flat "${S3_DEST}/screenshots" --recursive || true
+    fi
+
+    echo "===== DS test report (failure screenshots embedded in inline HTML) ====="
+    echo "S3 location : ${S3_DEST}"
+    echo "Report HTML : ${S3_DEST}/report/index.html"
+    echo "Screenshots : ${S3_DEST}/screenshots  (flat layout)"
+    echo "======================================================================="
 
     exit $MVNSTATE

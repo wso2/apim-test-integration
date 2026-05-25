@@ -27,3 +27,5 @@ aws_s3_bucket: "apim-ui-testing"
 aws_s3_access_key: ""
 aws_s3_secret_key: ""
 aws_s3_region: "us-east-1"
+# Optional S3 prefix from the pipeline; empty falls back to a timestamped path.
+s3_prefix: ""
