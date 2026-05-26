@@ -53,7 +53,15 @@ data:
     nohup Xvfb :99 > /dev/null 2>&1 &
     export DISPLAY=:99
     echo "Running tests"
-    NO_COLOR=1 npm run test -- --env gatewayUrl=https://{{ .Values.gw_hostname }}
+    if [ -n "$TEST_SPECS" ]; then
+        echo "===== test_specs set — running user-selected specs only ====="
+        echo "$TEST_SPECS" | tr ',' '\n'
+        NO_COLOR=1 npx cypress run --e2e \
+            --spec "$TEST_SPECS" \
+            --env gatewayUrl=https://{{ .Values.gw_hostname }}
+    else
+        NO_COLOR=1 npm run test -- --env gatewayUrl=https://{{ .Values.gw_hostname }}
+    fi
     MVNSTATE=$?
     pkill Xvfb
     echo "Generating reports"
