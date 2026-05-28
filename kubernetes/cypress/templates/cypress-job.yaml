@@ -68,6 +68,8 @@ spec:
               secretKeyRef:
                 name: test-secret
                 key: aws-s3-secret-key
+          - name: TEST_SPECS
+            value: {{ .Values.test_specs | quote }}
         volumeMounts:
         - name: test-script
           mountPath: /cypress/script.sh

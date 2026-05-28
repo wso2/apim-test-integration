@@ -29,3 +29,7 @@ aws_s3_secret_key: ""
 aws_s3_region: "us-east-1"
 # Optional S3 prefix from the pipeline; empty falls back to a timestamped path.
 s3_prefix: ""
+
+# Optional comma-separated Cypress spec paths/globs (relative to tests/).
+# Empty = run the full suite. Set by the Jenkins pipeline via --set.
+test_specs: ""
