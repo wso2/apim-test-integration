@@ -24,11 +24,30 @@ do
             kubernetes_namespace="${arg#*=}"
             shift
             ;;
+        --LB_IP=*)
+            LB_IP="${arg#*=}"
+            shift
+            ;;
+        --USE_GATEWAY_API=*)
+            USE_GATEWAY_API="${arg#*=}"
+            shift
+            ;;
         *)
             # unknown option
             ;;
     esac
 done
+
+# Gateway API (4.7.0+) routes HTTPS by TLS SNI: map the APIM hostnames to the Envoy LB IP.
+if [ "${USE_GATEWAY_API}" = "true" ] && [ -n "${LB_IP}" ]; then
+    echo "Gateway API mode: mapping ${PORTAL_HOST} and ${GATEWAY_HOST} -> ${LB_IP} in /etc/hosts"
+    # Reused agents keep stale entries that shadow the fresh mapping -> ETIMEDOUT; clear first.
+    for h in "${PORTAL_HOST}" "${GATEWAY_HOST}"; do
+        sudo sed -i "\|${h}|d" /etc/hosts > /dev/null 2>&1 || sed -i "\|${h}|d" /etc/hosts > /dev/null 2>&1 || true
+    done
+    HOSTS_LINE="${LB_IP} ${PORTAL_HOST} ${GATEWAY_HOST}"
+    echo "${HOSTS_LINE}" | sudo tee -a /etc/hosts > /dev/null 2>&1 || echo "${HOSTS_LINE}" >> /etc/hosts
+fi
 
 kubectl get pods -l product=apim -n="${kubernetes_namespace}"  -o custom-columns=:metadata.name > podNames.txt
 dateWithMinute=$(date +"%Y_%m_%d_%H_%M")
@@ -105,6 +124,7 @@ operation_policy_file_path="$tests_dir/tests-cases/profile-tests/resources/opera
 /home/ubuntu/.nvm/versions/node/v19.0.1/bin/newman run "$collection_file" \
     --environment "$environment_file" \
     --env-var "cluster_ip=${HOST_NAME}" \
+    --env-var "useGatewayApi=${USE_GATEWAY_API}" \
     --env-var "pizzashack_endpoint=https://apim-acp-wso2am-acp-service:9443/am/sample/pizzashack/v1/api/" \
     --env-var "operation_policy_file_path=$operation_policy_file_path" \
     --env-var "portals_host=${PORTAL_HOST}" \
