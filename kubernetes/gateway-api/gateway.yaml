@@ -1,0 +1,60 @@
+# Gateway the helm-apim HTTPRoutes attach to. Listener sectionNames
+# (control-plane/gateway/websocket/websub-https) and hostnames must match the chart;
+# allowedRoutes=Same (the Gateway lives in the same namespace as the routes).
+# Rendered by the pipeline: substitute the __PLACEHOLDER__ tokens before kubectl apply.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: wso2-apim-gateway
+  namespace: __NAMESPACE__
+spec:
+  gatewayClassName: eg
+  listeners:
+  - name: control-plane-https
+    hostname: "__CONTROL_PLANE_HOST__"
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: wso2-apim-tls
+    allowedRoutes:
+      namespaces:
+        from: Same
+  - name: gateway-https
+    hostname: "__GATEWAY_HOST__"
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: wso2-apim-tls
+    allowedRoutes:
+      namespaces:
+        from: Same
+  - name: websocket-https
+    hostname: "__WEBSOCKET_HOST__"
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: wso2-apim-tls
+    allowedRoutes:
+      namespaces:
+        from: Same
+  - name: websub-https
+    hostname: "__WEBSUB_HOST__"
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: wso2-apim-tls
+    allowedRoutes:
+      namespaces:
+        from: Same
