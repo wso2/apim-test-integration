@@ -1,0 +1,33 @@
+# -------------------------------------------------------------------------------------
+#
+# Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+#
+# This software is the property of WSO2 LLC. and its suppliers, if any.
+# Dissemination of any information or reproduction of any material contained
+# herein is strictly forbidden, unless permitted by WSO2 in accordance with the
+# WSO2 Commercial License available at https://wso2.com/licenses/eula/3.2
+#
+# --------------------------------------------------------------------------------------
+
+# The chart's gateway HTTPRoute sends gw- -> 8243 (API traffic), but the gateway mgmt REST
+# API (/api/am/gateway/v2/) is on 9443 (nginx used gw-ingress). This HTTPRoute routes that
+# path to 9443. Rendered by the pipeline: substitute the __PLACEHOLDER__ tokens before apply.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: gw-rest-httproute
+  namespace: __NAMESPACE__
+spec:
+  parentRefs:
+  - name: wso2-apim-gateway
+    sectionName: gateway-https
+  hostnames:
+  - "__GATEWAY_HOST__"
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /api/am/gateway/v2/
+    backendRefs:
+    - name: apim-universal-gw-wso2am-universal-gw-service
+      port: 9443

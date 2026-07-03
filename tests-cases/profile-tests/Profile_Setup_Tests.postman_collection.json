@@ -5,6 +5,26 @@
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "3432412"
 	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Gateway API (4.7.0+) SNI routing: rewrite each request's URL host to its resolved Host.",
+					"if (pm.environment.get('useGatewayApi') === 'true' || pm.variables.get('useGatewayApi') === 'true') {",
+					"    var hostHeader = pm.request.headers.get('Host');",
+					"    if (hostHeader) {",
+					"        var resolved = pm.variables.replaceIn(hostHeader);",
+					"        if (resolved && resolved.indexOf('{{') === -1) {",
+					"            pm.request.url.host = resolved.split('.');",
+					"        }",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
 	"item": [
 		{
 			"name": "Authentication for the Super Admin",
