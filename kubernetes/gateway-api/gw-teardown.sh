@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+
+# -------------------------------------------------------------------------------------
+#
+# Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+#
+# This software is the property of WSO2 LLC. and its suppliers, if any.
+# Dissemination of any information or reproduction of any material contained
+# herein is strictly forbidden, unless permitted by WSO2 in accordance with the
+# WSO2 Commercial License available at https://wso2.com/licenses/eula/3.2
+#
+# --------------------------------------------------------------------------------------
 # Release the Gateway API load balancers (AWS ELBs) that Terraform does not manage.
 # Delete the Gateways + EnvoyProxy LB Services directly so the cloud controller removes the
 # ELBs; do NOT uninstall the Envoy Gateway controller first, or the orphaned ELB's ENIs stall
