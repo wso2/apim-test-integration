@@ -188,8 +188,8 @@ helm install apim \
     --version 3.2.0-5 \
     --namespace "${kubernetes_namespace}" \
     --create-namespace \
-    --set wso2.subscription.username=${WUM_USER} \
-    --set wso2.subscription.password=${WUM_PWD} \
+    --set-string "wso2.subscription.username=${WUM_USER}" \
+    --set-string "wso2.subscription.password=${WUM_PWD}" \
     --set wso2.subscription.updateLevelState=$updateLevelState \
     --set wso2.deployment.dependencies.nfsServerProvisioner=false \
     --set wso2.deployment.dependencies.mysql=false \
