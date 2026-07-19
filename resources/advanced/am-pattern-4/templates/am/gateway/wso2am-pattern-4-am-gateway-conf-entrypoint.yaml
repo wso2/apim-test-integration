@@ -59,7 +59,7 @@ data:
     echo "========================================== update product =========================================================="
     echo "Updating apim to $WSO2_UPDATES_UPDATE_LEVEL_STATE pack ............."
     cd ${WSO2_SERVER_HOME}/bin/
-    ./wso2update_linux --backup /home/wso2carbon/ --username {{ .Values.wso2.subscription.username }} --password {{ .Values.wso2.subscription.password }}
+    ./wso2update_linux --backup /home/wso2carbon/ --username "{{ .Values.wso2.subscription.username }}" --password "{{ .Values.wso2.subscription.password }}"
 
     # log update ids
     log_directory="../updates/logs"
