@@ -2,6 +2,11 @@ import 'cypress-file-upload';
 import Portals from "../support/functions/Portals";
 
 //const commandDelay = 0;
+const CARBON_SOAP = {
+    auth: 'http://authentication.services.core.carbon.wso2.org',
+    userStore: 'http://service.ws.um.carbon.wso2.org',
+    userMgt: 'http://common.mgt.user.carbon.wso2.org/xsd',
+};
 
 Cypress.Commands.add('carbonLogin', (username, password) => {
     Cypress.log({
@@ -354,3 +359,57 @@ Cypress.Commands.add('logoutFromPublisher', () => {
 //        });
 //    });
 //}
+
+// Fire a SOAP call against a carbon admin service. Cookies from a prior call
+// (e.g. the admin login session) are reused automatically by cy.request.
+Cypress.Commands.add('carbonSoap', (service, namespace, operation, innerXml, extraXmlns = '') => {
+    const body =
+        `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="${namespace}"${extraXmlns}>` +
+        `<soapenv:Header/><soapenv:Body><ser:${operation}>${innerXml}</ser:${operation}></soapenv:Body></soapenv:Envelope>`;
+    return cy.request({
+        method: 'POST',
+        url: `/services/${service}`,
+        headers: { 'Content-Type': 'text/xml; charset=UTF-8', 'SOAPAction': `urn:${operation}` },
+        body,
+        failOnStatusCode: false,
+    });
+});
+
+Cypress.Commands.add('soapLoginAsAdmin', (username = 'admin', password = 'admin') => {
+    cy.carbonSoap('AuthenticationAdmin', CARBON_SOAP.auth, 'login',
+        `<ser:username>${username}</ser:username>` +
+        `<ser:password>${password}</ser:password>` +
+        `<ser:remoteAddress>127.0.0.1</ser:remoteAddress>`)
+        .its('body').should('contain', '<ns:return>true</ns:return>');
+});
+
+// Create a role and grant it the given permissions (each with the ui.execute action).
+Cypress.Commands.add('soapCreateRole', (roleName, permissions = []) => {
+    const permissionsXml = permissions.map(p =>
+        `<ser:permissions><xsd:resourceId>${p}</xsd:resourceId><xsd:action>ui.execute</xsd:action></ser:permissions>`).join('');
+    cy.carbonSoap('RemoteUserStoreManagerService', CARBON_SOAP.userStore, 'addRole',
+        `<ser:roleName>${roleName}</ser:roleName>${permissionsXml}`,
+        ` xmlns:xsd="${CARBON_SOAP.userMgt}"`)
+        .its('status').should('eq', 202);
+});
+
+// Create a user with the given password and assign them to the given roles.
+Cypress.Commands.add('soapCreateUser', (username, password, roles = []) => {
+    const rolesXml = roles.map(r => `<ser:roleList>${r}</ser:roleList>`).join('');
+    cy.carbonSoap('RemoteUserStoreManagerService', CARBON_SOAP.userStore, 'addUser',
+        `<ser:userName>${username}</ser:userName>` +
+        `<ser:credential>${password}</ser:credential>${rolesXml}` +
+        `<ser:requirePasswordChange>false</ser:requirePasswordChange>`)
+        .its('status').should('eq', 202);
+});
+
+Cypress.Commands.add('soapDeleteRole', (roleName) => {
+    cy.carbonSoap('RemoteUserStoreManagerService', CARBON_SOAP.userStore, 'deleteRole',
+        `<ser:roleName>${roleName}</ser:roleName>`);
+});
+
+// Best-effort: a 500 (user does not exist) is fine, so status is not asserted.
+Cypress.Commands.add('soapDeleteUser', (username) => {
+    cy.carbonSoap('RemoteUserStoreManagerService', CARBON_SOAP.userStore, 'deleteUser',
+        `<ser:userName>${username}</ser:userName>`);
+});
