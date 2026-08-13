@@ -109,6 +109,18 @@ fi
 # Create fargate profile
 eksctl create fargateprofile --cluster "${EKS_CLUSTER_NAME}" --name "${product_name}-${SHORT_PRODUCT_VERSION}-fargate-profile" --namespace "${kubernetes_namespace}" --region ${EKS_CLUSTER_REGION} || { echo "Failed to create fargate profile." ; exit 1 ; }
 
+# Create the namespace up front so the registry pull secret can be placed in it.
+kubectl create namespace "${kubernetes_namespace}" --dry-run=client -o yaml | kubectl apply -f - || { echo 'Failed to create namespace.'; exit 1; }
+
+# Pull secret for the private container registry. Kept separate from the WSO2 Updates
+# credentials (wso2.subscription.*), which authenticate against a different service.
+kubectl create secret docker-registry wso2-registry-creds \
+    --docker-server=registry.wso2.com \
+    --docker-username="${REGISTRY_CREDS_USR}" \
+    --docker-password="${REGISTRY_CREDS_PSW}" \
+    --namespace "${kubernetes_namespace}" \
+    --dry-run=client -o yaml | kubectl apply -f - || { echo 'Failed to create registry pull secret.'; exit 1; }
+
 # Extract DB port and DB host name detail.
 dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCPort`].OutputValue' --output text | xargs)
 dbHost=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCConnectionString`].OutputValue' --output text | xargs)
@@ -190,6 +202,14 @@ helm install apim \
     --create-namespace \
     --set-string "wso2.subscription.username=${WUM_USER}" \
     --set-string "wso2.subscription.password=${WUM_PWD}" \
+    --set wso2.deployment.am.imagePullSecrets=wso2-registry-creds \
+    --set wso2.deployment.analytics.dashboard.imagePullSecrets=wso2-registry-creds \
+    --set-string "wso2.deployment.am.dockerRegistry=registry.wso2.com" \
+    --set-string "wso2.deployment.am.imageName=wso2-apim/am" \
+    --set-string "wso2.deployment.analytics.dashboard.dockerRegistry=registry.wso2.com" \
+    --set-string "wso2.deployment.analytics.dashboard.imageName=wso2-apim/am-analytics-dashboard" \
+    --set-string "wso2.deployment.analytics.worker.dockerRegistry=registry.wso2.com" \
+    --set-string "wso2.deployment.analytics.worker.imageName=wso2-apim/am-analytics-worker" \
     --set wso2.subscription.updateLevelState=$updateLevelState \
     --set wso2.deployment.dependencies.nfsServerProvisioner=false \
     --set wso2.deployment.dependencies.mysql=false \
