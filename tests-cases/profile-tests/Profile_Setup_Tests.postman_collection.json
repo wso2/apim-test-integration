@@ -7360,7 +7360,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.variables.set(\"retryCount\", 100);",
+									"pm.variables.set(\"retryCount\", 20);",
 									"setTimeout(function(){}, 1500);"
 								],
 								"type": "text/javascript"
