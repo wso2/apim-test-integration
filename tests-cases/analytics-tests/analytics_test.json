@@ -822,6 +822,19 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(\"Waiting 5 minutes before request...\");",
+									"await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));",
+									"console.log(\"Delay finished, sending request now.\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
 						}
 					],
 					"protocolProfileBehavior": {
