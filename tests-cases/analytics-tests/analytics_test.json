@@ -807,10 +807,12 @@
 									"console.log(value);",
 									"console.log(retryCount);",
 									"if (value !== 'Published array' && retryCount > 1) {",
+									"   console.log('Retrying the request...');",
 									"   pm.variables.set(\"apiUsageRetryCounter\", --retryCount);",
 									"   setTimeout(function(){}, 1000);",
 									"   pm.execution.setNextRequest(pm.info.requestName);",
 									"} else {",
+									"   console.log('No more retries left or data is available.');",
 									"   pm.variables.unset(\"apiUsageRetryCounter\");",
 									"   pm.test(\"Checking API usage summery\", () => {",
 									"      pm.expect(value).to.eql('Published array');",
@@ -891,19 +893,33 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Checking API Geo Location Stats\", () => {",
-									"  var response = JSON.parse(responseBody);",
-									"  var record = response.records;",
 									"",
-									"  var value;",
-									"  if (!record.length) {",
-									"      value = 'empty';",
-									"  } else {",
-									"      value = 'Published Geo location';",
-									"  }",
-									"   pm.expect(value).to.eql('Published Geo location');",
-									"  ",
-									"});"
+									"// check the geoLocationRetryCounter",
+									"pm.variables.get(\"geoLocationRetryCounter\") === undefined ? pm.variables.set('geoLocationRetryCounter', pm.variables.get(\"retryCount\")) : null",
+									"retryCount = pm.variables.get(\"geoLocationRetryCounter\");",
+									"var response = JSON.parse(responseBody);",
+									"var record = response.records;",
+									"var value = (!record || !record.length) ? 'empty' : 'Published Geo location';",
+									"if (value !== 'Published Geo location' && retryCount > 1) {",
+									"   pm.variables.set(\"geoLocationRetryCounter\", --retryCount);",
+									"   setTimeout(function(){}, 1000);",
+									"   pm.execution.setNextRequest(pm.info.requestName);",
+									"} else {",
+									"   pm.variables.unset(\"geoLocationRetryCounter\");",
+									"   pm.test(\"Checking API Geo Location Stats\", () => {",
+									"      pm.expect(value).to.eql('Published Geo location');",
+									"   });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"retryCount\", 15);",
+									"setTimeout(function(){}, 1000);"
 								],
 								"type": "text/javascript"
 							}
@@ -969,19 +985,33 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Checking API Faulty Invocation summery Stats\", () => {",
-									"  var response = JSON.parse(responseBody);",
-									"  var record = response.records;",
 									"",
-									"  var value;",
-									"  if (!record.length) {",
-									"      value = 'empty';",
-									"  } else {",
-									"      value = 'Published Faulty Invocations';",
-									"  }",
-									"   pm.expect(value).to.eql('Published Faulty Invocations');",
-									"  ",
-									"});"
+									"// check the faultySummaryRetryCounter",
+									"pm.variables.get(\"faultySummaryRetryCounter\") === undefined ? pm.variables.set('faultySummaryRetryCounter', pm.variables.get(\"retryCount\")) : null",
+									"retryCount = pm.variables.get(\"faultySummaryRetryCounter\");",
+									"var response = JSON.parse(responseBody);",
+									"var record = response.records;",
+									"var value = (!record || !record.length) ? 'empty' : 'Published Faulty Invocations';",
+									"if (value !== 'Published Faulty Invocations' && retryCount > 1) {",
+									"   pm.variables.set(\"faultySummaryRetryCounter\", --retryCount);",
+									"   setTimeout(function(){}, 1000);",
+									"   pm.execution.setNextRequest(pm.info.requestName);",
+									"} else {",
+									"   pm.variables.unset(\"faultySummaryRetryCounter\");",
+									"   pm.test(\"Checking API Faulty Invocation summery Stats\", () => {",
+									"      pm.expect(value).to.eql('Published Faulty Invocations');",
+									"   });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"retryCount\", 15);",
+									"setTimeout(function(){}, 1000);"
 								],
 								"type": "text/javascript"
 							}
@@ -1958,19 +1988,23 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Checking API throttling stats\", () => {",
-									"  var response = JSON.parse(responseBody);",
-									"  var record = response.records;",
 									"",
-									"  var value;",
-									"  if (!record.length) {",
-									"      value = 'empty';",
-									"  } else {",
-									"      value = 'Published array';",
-									"  }",
-									"   pm.expect(value).to.eql('Published array');",
-									"  ",
-									"});"
+									"// check the throttlingStatRetryCounter",
+									"pm.variables.get(\"throttlingStatRetryCounter\") === undefined ? pm.variables.set('throttlingStatRetryCounter', pm.variables.get(\"retryCount\")) : null",
+									"retryCount = pm.variables.get(\"throttlingStatRetryCounter\");",
+									"var response = JSON.parse(responseBody);",
+									"var record = response.records;",
+									"var value = (!record || !record.length) ? 'empty' : 'Published array';",
+									"if (value !== 'Published array' && retryCount > 1) {",
+									"   pm.variables.set(\"throttlingStatRetryCounter\", --retryCount);",
+									"   setTimeout(function(){}, 1000);",
+									"   pm.execution.setNextRequest(pm.info.requestName);",
+									"} else {",
+									"   pm.variables.unset(\"throttlingStatRetryCounter\");",
+									"   pm.test(\"Checking API Faulty Invocation summery Stats\", () => {",
+									"      pm.expect(value).to.eql('Published array');",
+									"   });",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -1980,7 +2014,7 @@
 							"script": {
 								"exec": [
 									"pm.variables.set(\"retryCount\", 15);",
-									"setTimeout(function(){}, 800);"
+									"setTimeout(function(){}, 1000);"
 								],
 								"type": "text/javascript"
 							}
