@@ -810,12 +810,12 @@
 									"   pm.variables.set(\"apiUsageRetryCounter\", --retryCount);",
 									"   setTimeout(function(){}, 1000);",
 									"   pm.execution.setNextRequest(pm.info.requestName);",
-									"   return; ",
-									"}",
-									"pm.variables.unset(\"apiUsageRetryCounter\");",
-									"pm.test(\"Checking API usage summery\", () => {",
-									"   pm.expect(value).to.eql('Published array');",
-									"});"
+									"} else {",
+									"   pm.variables.unset(\"apiUsageRetryCounter\");",
+									"   pm.test(\"Checking API usage summery\", () => {",
+									"      pm.expect(value).to.eql('Published array');",
+									"   });",
+									"}"
 								],
 								"type": "text/javascript"
 							}
