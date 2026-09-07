@@ -809,7 +809,7 @@
 									"if (value !== 'Published array' && retryCount > 1) {",
 									"   console.log('Retrying the request...');",
 									"   pm.variables.set(\"apiUsageRetryCounter\", --retryCount);",
-									"   setTimeout(function(){}, 1000);",
+									"   setTimeout(function(){}, 2000);",
 									"   postman.setNextRequest(pm.info.requestName);",
 									"} else {",
 									"   console.log('No more retries left or data is available.');",
@@ -827,7 +827,7 @@
 							"script": {
 								"exec": [
 									"pm.variables.set(\"retryCount\", 15);",
-									"setTimeout(function(){}, 1000);"
+									"setTimeout(function(){}, 2000);"
 								],
 								"type": "text/javascript"
 							}
