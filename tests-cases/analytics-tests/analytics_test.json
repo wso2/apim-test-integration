@@ -797,18 +797,24 @@
 							"script": {
 								"exec": [
 									"",
+									"// check the apiUsageRetryCounter",
+									"pm.variables.get(\"apiUsageRetryCounter\") === undefined ? pm.variables.set('apiUsageRetryCounter', pm.variables.get(\"retryCount\")) : null",
+									"retryCount = pm.variables.get(\"apiUsageRetryCounter\");",
+									"var response = JSON.parse(responseBody);",
+									"var record = response.records;",
+									"var value = (!record || !record.length) ? 'empty' : 'Published array';",
+									"console.log(record);",
+									"console.log(value);",
+									"console.log(retryCount);",
+									"if (value !== 'Published array' && retryCount > 1) {",
+									"   pm.variables.set(\"apiUsageRetryCounter\", --retryCount);",
+									"   setTimeout(function(){}, 1000);",
+									"   pm.execution.setNextRequest(pm.info.requestName);",
+									"   return; ",
+									"}",
+									"pm.variables.unset(\"apiUsageRetryCounter\");",
 									"pm.test(\"Checking API usage summery\", () => {",
-									"  var response = JSON.parse(responseBody);",
-									"  var record = response.records;",
-									"",
-									"  var value;",
-									"  if (!record.length) {",
-									"      value = 'empty';",
-									"  } else {",
-									"      value = 'Published array';",
-									"  }",
 									"   pm.expect(value).to.eql('Published array');",
-									"  ",
 									"});"
 								],
 								"type": "text/javascript"
@@ -818,7 +824,8 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									""
+									"pm.variables.set(\"retryCount\", 15);",
+									"setTimeout(function(){}, 1000);"
 								],
 								"type": "text/javascript"
 							}
