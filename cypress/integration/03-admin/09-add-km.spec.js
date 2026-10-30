@@ -31,6 +31,7 @@ describe("admin-09 : Verify admin user can add key manager", () => {
         const clientSecret = 'test';
         const audience = 'test';
         const introspectionEp = 'https://my-tenant.auth0.com/oauth/token';
+        const clientRegistrationEp = 'https://my-tenant.auth0.com/oidc/register';
 
         cy.get('[data-testid="Key Managers-link"]').click();
         cy.get('.MuiButton-label').contains('Add Key Manager').click();
@@ -46,6 +47,8 @@ describe("admin-09 : Verify admin user can add key manager", () => {
 
         // filing the tokens
         cy.get('input[name="introspectionEndpoint"]').clear().type(introspectionEp);
+        // The imported configuration no longer has a client registration endpoint, which is a required field
+        cy.get('input[name="clientRegistrationEndpoint"]').clear().type(clientRegistrationEp);
         cy.get('input[name="client_id"]').type(clientId);
         cy.get('input[name="client_secret"]').type(clientSecret);
         cy.get('input[name="audience"]').type(audience);
