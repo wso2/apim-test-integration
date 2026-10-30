@@ -31,6 +31,7 @@ describe("admin-09 : Add key manager", () => {
         const clientSecret = 'test';
         const audience = 'test';
         const introspectionEp = 'https://my-tenant.auth0.com/oauth/token';
+        const clientRegistrationEp = 'https://my-tenant.auth0.com/oidc/register';
         const claimKey1 = 'claimKey1';
         const claimValueRegex1 = 'claimValueRegex1';
         const claimKey2 = 'claimKey2';
@@ -55,6 +56,8 @@ describe("admin-09 : Add key manager", () => {
         cy.wait('@importConfig', {timeout: 3000}).then(() => {
             // filing the tokens
             cy.get('input[name="introspectionEndpoint"]').clear().type(introspectionEp);
+            // The imported configuration no longer has a client registration endpoint, which is a required field
+            cy.get('input[name="clientRegistrationEndpoint"]').clear().type(clientRegistrationEp);
             cy.get('input[name="client_id"]').type(clientId);
             cy.get('input[name="client_secret"]').type(clientSecret);
             cy.get('input[name="audience"]').type(audience);
